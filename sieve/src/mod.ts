@@ -120,13 +120,13 @@ function isPreservedTextEl(tag: string): boolean {
 	return "pre" === tag;
 }
 
-function getCloseSequenceFromAltTextTag(tag: string): string {
+function getCloseSequenceFromAltTextTag(tag: string): string | undefined {
 	if ("script" === tag) return "</script>";
 	if ("style" === tag) return "</style>";
 	if ("!--" === tag) return "--!";
 }
 
-function getTagFromCloseSequence(tag: string): string {
+function getTagFromCloseSequence(tag: string): string | undefined {
 	if ("</script" === tag) return "script";
 	if ("</style>" === tag) return "style";
 	if ("-->" === tag) return "!--";
