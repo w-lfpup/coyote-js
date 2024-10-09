@@ -108,18 +108,6 @@ function isComment(tag: string): boolean {
 	return "!--" === tag;
 }
 
-function isBannedEl(tag: string): boolean {
-	return "script" === tag || "style" === tag || "!--" === tag;
-}
-
-function isNameSpaceEl(tag: string): boolean {
-	return "html" === tag || "svg" === tag || "math" === tag;
-}
-
-function isPreservedTextEl(tag: string): boolean {
-	return "pre" === tag;
-}
-
 function getCloseSequenceFromAltTextTag(tag: string): string | undefined {
 	if ("script" === tag) return "</script>";
 	if ("style" === tag) return "</style>";
@@ -130,6 +118,18 @@ function getTagFromCloseSequence(tag: string): string | undefined {
 	if ("</script" === tag) return "script";
 	if ("</style>" === tag) return "style";
 	if ("-->" === tag) return "!--";
+}
+
+function isBannedEl(tag: string): boolean {
+	return "script" === tag || "style" === tag || "!--" === tag;
+}
+
+function isNameSpaceEl(tag: string): boolean {
+	return "html" === tag || "svg" === tag || "math" === tag;
+}
+
+function isPreservedTextEl(tag: string): boolean {
+	return "pre" === tag;
 }
 
 export type { SieveInterface }
