@@ -41,7 +41,6 @@ class Step implements StepInterface {
 
 type Results = Step[];
 
-
 function getTextFromStep(templateStr: string, step: StepInterface): string {
 	return templateStr.slice(step.origin, step.target);
 }
@@ -52,7 +51,6 @@ function isInjectionKind(stepKind: StepKind): boolean {
 		"DescendantInjection" === stepKind
 	)
 }
-
 
 export type { StepKind, StepInterface, Results }
 
