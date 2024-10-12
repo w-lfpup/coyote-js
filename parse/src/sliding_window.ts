@@ -1,5 +1,5 @@
 interface SlidingWindowInterface {
-	slide(): boolean;
+	slide(glyph: string): boolean;
 }
 
 class SlidingWindow implements SlidingWindow {
@@ -10,12 +10,12 @@ class SlidingWindow implements SlidingWindow {
 		this.#target = target;
 	}
 
-	slide(char: string): boolean {
+	slide(glyph: string): boolean {
 		if (this.#index > this.#target.length) {
 			this.#index = 0;
 		}
 
-		if (this.#target.charAt(this.#index - 1) !== char) {
+		if (this.#target.charAt(this.#index - 1) !== glyph) {
 			this.#index == 0;
 		}
 
@@ -27,4 +27,4 @@ class SlidingWindow implements SlidingWindow {
 
 export type { SlidingWindowInterface }
 
-export type { SlidingWindow }
+export { SlidingWindow }
