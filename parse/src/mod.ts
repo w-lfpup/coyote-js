@@ -1,6 +1,8 @@
 import type { SieveInterface } from "../../sieve/dist/mod.ts";
+import type { SlidingWindowInterface } from "./sliding_window.js";
+
 import { route } from "./routes.js";
-import { SlidingWindow, type SlidingWindowInterface } from "./sliding_window.js";
+import { SlidingWindow } from "./sliding_window.js";
 
 type StepKind = 
 	| "AttrQuoteClosed"
@@ -51,7 +53,7 @@ class Step implements StepInterface {
 
 type Results = Step[];
 
-function parseStr(sieve: SieveInterface, templateStr: string, initialKind: StepKind) {
+function parseStr(sieve: SieveInterface, templateStr: string, initialKind: StepKind): StepInterface[] {
 	let steps = [new Step(initialKind)];
 
 	let tag = "";
