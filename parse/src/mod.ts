@@ -73,7 +73,7 @@ function parseStr(sieve: SieveInterface, templateStr: string, initialKind: StepK
 		let step = steps[steps.length - 1];
 		if (step === undefined) return steps;
 	
-		let currKind = step.kind === "InjectionConfirmed"
+		let currKind = "InjectionConfirmed" === step.kind 
 			? route(glyph, prevInjKind)
 			: route(glyph, step.kind);
 		
@@ -129,10 +129,8 @@ function getTextFromStep(templateStr: string, step: StepInterface): string {
 }
 
 function isInjectionKind(stepKind: StepKind): boolean {
-	return (
-		"AttrMapInjection" === stepKind ||
-		"DescendantInjection" === stepKind
-	)
+	return "AttrMapInjection" === stepKind
+		|| "DescendantInjection" === stepKind;
 }
 
 function addReservedElementText(

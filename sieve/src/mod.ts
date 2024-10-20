@@ -132,4 +132,5 @@ function isPreservedTextEl(tag: string): boolean {
 }
 
 export type { SieveInterface }
+
 export { Sieve, ClientSieve }

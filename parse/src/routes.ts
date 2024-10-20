@@ -141,5 +141,4 @@ function getKindFromInitial(glyph: string): StepKind {
 	return "Text";
 }
 
-
 export { route }

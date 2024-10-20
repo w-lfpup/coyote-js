@@ -68,4 +68,5 @@ function from(
 	return tagInfo;
 }
 
+export type { TagInfoInterface, DescendantStatus }
 export { TagInfo, from }
