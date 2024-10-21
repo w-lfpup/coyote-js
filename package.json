@@ -1,7 +1,9 @@
 {
     "workspaces": [
 		"sieve",
-        "parse"
+        "parse",
+        "html",
+        "coyote_html"
     ],
     "scripts": {
         "build": "npm run --workspaces build"
