@@ -1,6 +1,6 @@
 {
     "workspaces": [
-		"sieve",
+        "sieve",
         "parse",
         "html",
         "coyote_html"
@@ -10,6 +10,7 @@
     },
     "devDependencies": {
         "@types/node": "^22.5.5",
+        "jackrabbit": "github:wolfpup-software/jackrabbit-js",
         "typescript": "^5.6.3"
     }
 }
