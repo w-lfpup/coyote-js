@@ -4,157 +4,159 @@ import type { SlidingWindowInterface } from "./sliding_window.js";
 import { route } from "./routes.js";
 import { SlidingWindow } from "./sliding_window.js";
 
-type StepKind = 
-	| "AttrQuoteClosed"
-	| "AttrQuote"
-	| "AttrMapInjection"
-	| "AttrSetter"
-	| "AttrValue"
-	| "AttrValueUnquoted"
-	| "Attr"
-	| "TailElementClosed"
-	| "TailElementSolidus"
-	| "TailElementSpace"
-	| "TailTag"
-	| "DescendantInjection"
-	| "FragmentClosed"
-	| "Fragment"
-	| "EmptyElementClosed"
-	| "EmptyElement"
-	| "Initial"
-	| "InjectionConfirmed"
-	| "InjectionSpace"
-	| "ElementClosed"
-	| "ElementSpace"
-	| "Element"
-	| "Tag"
-	| "Text"
-	| "AltText"
-	| "AltTextCloseSequence"
-	| "CommentText";
+type StepKind =
+  | "AttrQuoteClosed"
+  | "AttrQuote"
+  | "AttrMapInjection"
+  | "AttrSetter"
+  | "AttrValue"
+  | "AttrValueUnquoted"
+  | "Attr"
+  | "TailElementClosed"
+  | "TailElementSolidus"
+  | "TailElementSpace"
+  | "TailTag"
+  | "DescendantInjection"
+  | "FragmentClosed"
+  | "Fragment"
+  | "EmptyElementClosed"
+  | "EmptyElement"
+  | "Initial"
+  | "InjectionConfirmed"
+  | "InjectionSpace"
+  | "ElementClosed"
+  | "ElementSpace"
+  | "Element"
+  | "Tag"
+  | "Text"
+  | "AltText"
+  | "AltTextCloseSequence"
+  | "CommentText";
 
 interface StepInterface {
-	kind: StepKind;
-	origin: number;
-	target: number;
+  kind: StepKind;
+  origin: number;
+  target: number;
 }
 
 class Step implements StepInterface {
-	kind: StepKind = "Initial";
-	origin: number = 0;
-	target: number = 0;
+  kind: StepKind = "Initial";
+  origin: number = 0;
+  target: number = 0;
 
-	constructor(kind: StepKind, origin: number = 0, target: number = 0) {
-		this.kind = kind;
-		this.origin = origin;
-		this.target = target;
-	}
+  constructor(kind: StepKind, origin: number = 0, target: number = 0) {
+    this.kind = kind;
+    this.origin = origin;
+    this.target = target;
+  }
 }
 
 type Results = Step[];
 
-function parseStr(sieve: SieveInterface, templateStr: string, initialKind: StepKind): StepInterface[] {
-	let steps = [new Step(initialKind)];
-	let tag = "";
-	let prevInjKind = initialKind;
-	let slidingWindow: SlidingWindowInterface | undefined;
+function parseStr(
+  sieve: SieveInterface,
+  templateStr: string,
+  initialKind: StepKind,
+): StepInterface[] {
+  let steps = [new Step(initialKind)];
+  let tag = "";
+  let prevInjKind = initialKind;
+  let slidingWindow: SlidingWindowInterface | undefined;
 
-	for (let index = 0; index < templateStr.length; index++) {
-		let glyph = templateStr.charAt(index);
-		// slide window
-		if (slidingWindow) {
-			if (!slidingWindow.slide(glyph)) continue;
-			if (!addReservedElementText(sieve, steps, tag, index)) return steps;
-			
-			slidingWindow = undefined;
-			continue;
-		}
+  for (let index = 0; index < templateStr.length; index++) {
+    let glyph = templateStr.charAt(index);
+    // slide window
+    if (slidingWindow) {
+      if (!slidingWindow.slide(glyph)) continue;
+      if (!addReservedElementText(sieve, steps, tag, index)) return steps;
 
-		let step = steps[steps.length - 1];
-		if (step === undefined) return steps;
-	
-		let currKind = "InjectionConfirmed" === step.kind 
-			? route(glyph, prevInjKind)
-			: route(glyph, step.kind);
-		
-		if (currKind === step.kind) continue;
+      slidingWindow = undefined;
+      continue;
+    }
 
-		if (isInjectionKind(currKind)) {
-			prevInjKind = step.kind;
-		}
+    let step = steps[steps.length - 1];
+    if (step === undefined) return steps;
 
-		step.target = index;
+    let currKind =
+      "InjectionConfirmed" === step.kind
+        ? route(glyph, prevInjKind)
+        : route(glyph, step.kind);
 
-		if ("Tag" === step.kind) {
-			tag = getTextFromStep(templateStr, step);
-		}
+    if (currKind === step.kind) continue;
 
-		if (sieve.isComment(tag)) {
-			let closeSequence = sieve.getCloseSequenceFromAltTextTag(tag);
-			if (closeSequence) {
-				let slider = new SlidingWindow(closeSequence);
-				slider.slide(glyph);
-				slidingWindow = slider;
-				currKind = "CommentText";
-			}
-		}
+    if (isInjectionKind(currKind)) {
+      prevInjKind = step.kind;
+    }
 
-		if ("ElementClosed" === step.kind) {
-			let closeSequence = sieve.getCloseSequenceFromAltTextTag(tag);
-			if (closeSequence) {	
-				let slider = new SlidingWindow(closeSequence);
-				slider.slide(glyph);
-				slidingWindow = slider;	
-				currKind = "AltText";		
-			}
-		}
+    step.target = index;
 
-		steps.push(new Step(
-			currKind,
-			index,
-			index,
-		));
-	}
+    if ("Tag" === step.kind) {
+      tag = getTextFromStep(templateStr, step);
+    }
 
-	let step = steps[steps.length - 1];
-	if (step) {
-		step.target = templateStr.length;
-	}
+    if (sieve.isComment(tag)) {
+      let closeSequence = sieve.getCloseSequenceFromAltTextTag(tag);
+      if (closeSequence) {
+        let slider = new SlidingWindow(closeSequence);
+        slider.slide(glyph);
+        slidingWindow = slider;
+        currKind = "CommentText";
+      }
+    }
 
-	return steps;
+    if ("ElementClosed" === step.kind) {
+      let closeSequence = sieve.getCloseSequenceFromAltTextTag(tag);
+      if (closeSequence) {
+        let slider = new SlidingWindow(closeSequence);
+        slider.slide(glyph);
+        slidingWindow = slider;
+        currKind = "AltText";
+      }
+    }
+
+    steps.push(new Step(currKind, index, index));
+  }
+
+  let step = steps[steps.length - 1];
+  if (step) {
+    step.target = templateStr.length;
+  }
+
+  return steps;
 }
 
 function getTextFromStep(templateStr: string, step: StepInterface): string {
-	return templateStr.slice(step.origin, step.target);
+  return templateStr.slice(step.origin, step.target);
 }
 
 function isInjectionKind(stepKind: StepKind): boolean {
-	return "AttrMapInjection" === stepKind
-		|| "DescendantInjection" === stepKind;
+  return "AttrMapInjection" === stepKind || "DescendantInjection" === stepKind;
 }
 
 function addReservedElementText(
-	sieve: SieveInterface,
-	steps: Step[],
-	tag: string,
-	index: number,
+  sieve: SieveInterface,
+  steps: Step[],
+  tag: string,
+  index: number,
 ): boolean {
-	let step = steps[steps.length - 1];
-	if (step === undefined) return false;
+  let step = steps[steps.length - 1];
+  if (step === undefined) return false;
 
-	let closingSequence = sieve.getCloseSequenceFromAltTextTag(tag);
-	if (closingSequence === undefined) return true;
+  let closingSequence = sieve.getCloseSequenceFromAltTextTag(tag);
+  if (closingSequence === undefined) return true;
 
-	step.target = index - (closingSequence.length - 1);
-	steps.push(new Step(
-		"AltTextCloseSequence",
-		index - (closingSequence.length - 1),
-		index - (closingSequence.length),
-	));
+  step.target = index - (closingSequence.length - 1);
+  steps.push(
+    new Step(
+      "AltTextCloseSequence",
+      index - (closingSequence.length - 1),
+      index - closingSequence.length,
+    ),
+  );
 
-	return true;
+  return true;
 }
 
-export type { StepKind, StepInterface, Results }
+export type { StepKind, StepInterface, Results };
 
-export { parseStr, getTextFromStep }
+export { parseStr, getTextFromStep };
