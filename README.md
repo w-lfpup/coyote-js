@@ -4,7 +4,7 @@ Coyote templates for Typescript / Javascript!
 
 ## Meaningful Differences
 
-`Coyote` was originally written in rust and go for fast (and optionally dynamic) server side rendering.
+`Coyote` was originally written in rust for fast (and optionally dynamic) server side rendering.
 
 Javascript ships with many MANY string utilities including tagged template literals.
 

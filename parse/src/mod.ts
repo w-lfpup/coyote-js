@@ -55,19 +55,19 @@ type Results = Step[];
 
 function parseStr(sieve: SieveInterface, templateStr: string, initialKind: StepKind): StepInterface[] {
 	let steps = [new Step(initialKind)];
-
 	let tag = "";
 	let prevInjKind = initialKind;
 	let slidingWindow: SlidingWindowInterface | undefined;
 
-	let index = 0;
-	while (index < templateStr.length) {
+	for (let index = 0; index < templateStr.length; index++) {
 		let glyph = templateStr.charAt(index);
 		// slide window
 		if (slidingWindow) {
 			if (!slidingWindow.slide(glyph)) continue;
-			if (addReservedElementText(sieve, steps, tag, index)) return steps;
+			if (!addReservedElementText(sieve, steps, tag, index)) return steps;
+			
 			slidingWindow = undefined;
+			continue;
 		}
 
 		let step = steps[steps.length - 1];

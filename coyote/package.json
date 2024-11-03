@@ -5,8 +5,10 @@
 	"type": "module",
 	"main": "dist/mod.js",
 	"scripts": {
-		"build": "tsc --build"
+		"build": "npx tsc --build",
+		"test": ""
 	},
+	"files": ["dist/"],
 	"author": "wolfpup",
 	"license": "BSD-3-Clause"
 }
