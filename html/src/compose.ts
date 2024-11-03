@@ -1,9 +1,9 @@
-import type { StepInterface, StepKind } from "../../parse/dist/mod.ts";
+import type { StepInterface, StepKind } from "../../parse_str/dist/mod.ts";
 import type { SieveInterface } from "../../sieve/dist/mod.ts";
 import type { TagInfoInterface } from "./tag_info.ts";
 
 import { TagInfo, from } from "./tag_info.js";
-import { getTextFromStep, parseStr } from "../../parse/dist/mod.js";
+import { getTextFromStep, parseStr } from "../../parse_str/dist/mod.js";
 
 type Router = (
   results: string[],

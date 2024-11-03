@@ -1,7 +1,7 @@
 {
   "workspaces": [
     "sieve",
-    "parse",
+    "parse_str",
     "html",
     "coyote_html"
   ],
