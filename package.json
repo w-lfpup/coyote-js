@@ -6,6 +6,7 @@
     "coyote_html"
   ],
   "scripts": {
+    "install": "npm run build",
     "build": "npm run --workspaces build",
     "test": "npm run --workspaces test",
     "fmt": "npx prettier --write ./"
