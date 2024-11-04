@@ -5,10 +5,10 @@ function testCompose() {
   const expected = "";
   const templateStr = `
 		<form>
-			<input>
+			<input></input>
 			<div>
 			</div>
-			<p>you're a boy kisser, aren't you</p>
+			<p>you're a boy kisser, aren't you!</p>
 			<input type=checkbox>
 		</form>
 	`;

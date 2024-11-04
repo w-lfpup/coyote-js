@@ -49,6 +49,8 @@ function from(
 ): TagInfoInterface {
   let tagInfo = new TagInfo(sieve, tag);
 
+  tagInfo.indentCount = prevTagInfo.indentCount;
+
   if (sieve.isNamespaceEl(tag)) {
     tagInfo.namespace = tag;
   }
@@ -61,7 +63,7 @@ function from(
     tagInfo.bannedPath = true;
   }
 
-  if (sieve.isVoidEl(prevTagInfo.tag) && !sieve.isInlineEl(tag)) {
+  if (!sieve.isVoidEl(prevTagInfo.tag) && !sieve.isInlineEl(tag)) {
     tagInfo.indentCount += 1;
   }
 

@@ -60,11 +60,15 @@ function pushElement(
 
   if (tagInfo.bannedPath) {
     let prevTagInfo = stack[stack.length - 1];
-    if (prevTagInfo === undefined) return;
+    if (prevTagInfo) {
+      prevTagInfo.mostRecentDescendant = sieve.isInlineEl(tag)
+        ? "InlineElement"
+        : "Element";
 
-    prevTagInfo.mostRecentDescendant = sieve.isInlineEl(tag)
-      ? "InlineElement"
-      : "Element";
+      stack.push(tagInfo);
+
+      return;
+    }
 
     stack.push(tagInfo);
     return;
@@ -152,6 +156,7 @@ function popElement(
 
   if (tagInfo.bannedPath) {
     stack.pop();
+    return;
   }
 
   if (tagInfo.voidEl && "html" !== tagInfo.namespace) {
@@ -170,7 +175,7 @@ function popElement(
     sieve.respectIndentation() &&
     !tagInfo.inlineEl &&
     !tagInfo.preservedTextPath &&
-    "Initial" != tagInfo.mostRecentDescendant
+    "Initial" !== tagInfo.mostRecentDescendant
   ) {
     results.push("\n");
     results.push("\t".repeat(tagInfo.indentCount));
@@ -267,12 +272,7 @@ function pushText(
 ) {
   let text = getTextFromStep(templateStr, step);
   let tagInfo = stack[stack.length - 1];
-  if (tagInfo === undefined) return;
-  // if no stack?
-
-  if (tagInfo.bannedPath || tagInfo.voidEl) return;
-  if (tagInfo.preservedTextPath) {
-    tagInfo.mostRecentDescendant = "Text";
+  if (tagInfo === undefined) {
     let splitText = text.split("\n");
     for (let splitted of splitText) {
       let trimmed = splitted.trim();
@@ -280,6 +280,16 @@ function pushText(
       results.push("\n");
       results.push(trimmed);
     }
+    return;
+  }
+  // if no stack?
+
+  if (tagInfo.bannedPath || tagInfo.voidEl) return;
+
+  if (tagInfo.preservedTextPath) {
+    tagInfo.mostRecentDescendant = "Text";
+    results.push(text);
+    return;
   }
 
   // alt text
@@ -290,7 +300,7 @@ function pushText(
       if (line.length === getIndexOfFirstChar(line)) continue;
       results.push("\n");
       results.push("\t".repeat(tagInfo.indentCount + 1));
-      results.push(line.slice(commonIndex).trim());
+      results.push(line.slice(commonIndex).trimEnd());
     }
 
     tagInfo.mostRecentDescendant = "Text";
@@ -300,8 +310,12 @@ function pushText(
   // decide what to do with text
   let texts: string[] = [];
   for (let line of text.split("\n")) {
-    texts.push(line);
+    let trimmed = line.trim();
+    if (trimmed.length === 0) continue;
+    texts.push(line.trim());
   }
+
+  if (texts.length === 0) return;
 
   if (sieve.respectIndentation()) {
     if ("InlineElement" === tagInfo.mostRecentDescendant) {
@@ -438,7 +452,7 @@ function getMostCommonSpaceIndex(text: string): number {
     if (line.length === currIndex) continue;
 
     currSpace = line;
-    if (spaceIndex == currIndex) continue;
+    if (spaceIndex === currIndex) continue;
 
     spaceIndex = getMostCommonIndexBetweenTwoStrings(prevSpace, currSpace);
   }
@@ -453,7 +467,7 @@ function getMostCommonIndexBetweenTwoStrings(
   let minLength = Math.min(source.length, target.length);
   for (let index = 0; index < minLength; index++) {
     let sourceChar = source.charAt(index);
-    let targetChar = source.charAt(index);
+    let targetChar = target.charAt(index);
     if (
       sourceChar !== targetChar ||
       sourceChar.trim().length === sourceChar.length ||
@@ -462,7 +476,7 @@ function getMostCommonIndexBetweenTwoStrings(
       return index;
   }
 
-  return minLength;
+  return minLength - 1;
 }
 
 export { compose };
