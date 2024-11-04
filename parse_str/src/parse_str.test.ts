@@ -11,7 +11,6 @@ function testCompose() {
   const coyoteTemplate = parseStr(sieve, templateStr, "Initial");
 
   if (expected !== coyoteTemplate) {
-    console.log(coyoteTemplate);
     return `incorrect steps found`;
   }
 

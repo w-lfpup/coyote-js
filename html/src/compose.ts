@@ -34,10 +34,7 @@ function compose(sieve: SieveInterface, templateStr: string): string {
   let results = [];
   let stack: TagInfo[] = [];
 
-  console.log("HTML compose!");
-
   for (const step of parseStr(sieve, templateStr, "Initial")) {
-    console.log(step);
     let route = htmlRoutes.get(step.kind);
     if (route) {
       route(results, stack, sieve, templateStr, step);
