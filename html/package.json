@@ -6,7 +6,7 @@
   "main": "dist/mod.js",
   "scripts": {
     "build": "npx tsc --build",
-    "test": "npx jackrabbit --file ./dist/mod.test.js"
+    "test": "node ../node_modules/jackrabbit/nodejs_cli/bin/mod.js --file ./dist/mod.test.js"
   },
   "author": "wolfpup",
   "license": "BSD-3-Clause"
