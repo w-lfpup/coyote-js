@@ -13,6 +13,14 @@ type Router = (
   step: StepInterface,
 ) => void;
 
+const spaceCharCodes = new Set([
+  0x0009, 0x000b, 0x000c, 0xfeff,
+
+  // whitespace chars
+  0x0020, 0x00a0, 0x1680, 0x2000, 0x2001, 0x2002, 0x2003, 0x2004, 0x2005,
+  0x2006, 0x2007, 0x2008, 0x2009, 0x200a, 0x202f, 0x205f, 0x3000,
+]);
+
 const htmlRoutes = new Map<StepKind, Router>([
   ["Tag", pushElement],
   ["ElementClosed", closeElement],
@@ -63,7 +71,6 @@ function pushElement(
         : "Element";
 
       stack.push(tagInfo);
-
       return;
     }
 
@@ -71,8 +78,13 @@ function pushElement(
     return;
   }
 
-  if (sieve.respectIndentation() && results.length > 0 && tagInfo.inlineEl) {
-    results.push(" ");
+  if (sieve.respectIndentation() && results.length > 0) {
+    if (tagInfo.inlineEl) {
+      results.push(" ");
+    } else {
+      results.push("\n");
+      results.push("\t".repeat(tagInfo.indentCount));
+    }
   }
 
   if (!sieve.respectIndentation() && tagInfo.inlineEl && !tagInfo.voidEl) {
@@ -80,11 +92,6 @@ function pushElement(
     if (prevTagInfo && prevTagInfo.mostRecentDescendant === "Text") {
       results.push(" ");
     }
-  }
-
-  if (sieve.respectIndentation() && results.length > 0 && !tagInfo.inlineEl) {
-    results.push("\n");
-    results.push("\t".repeat(tagInfo.indentCount));
   }
 
   let prevTagInfo = stack[stack.length - 1];
@@ -272,10 +279,10 @@ function pushText(
   if (tagInfo === undefined) {
     let splitText = text.split("\n");
     for (let splitted of splitText) {
-      let trimmed = splitted.trim();
-      if (trimmed.length === 0) continue;
+      if (splitted.length === getIndexOfFirstChar(splitted)) continue;
+
       results.push("\n");
-      results.push(trimmed);
+      results.push(splitted.trim());
     }
     return;
   }
@@ -309,7 +316,7 @@ function pushText(
   for (let line of text.split("\n")) {
     let trimmed = line.trim();
     if (trimmed.length === 0) continue;
-    texts.push(line.trim());
+    texts.push(trimmed);
   }
 
   if (texts.length === 0) return;
@@ -433,7 +440,11 @@ function addText(results: string[], texts: string[], tagInfo: TagInfo) {
 }
 
 function getIndexOfFirstChar(text: string): number {
-  return text.length - text.trimStart().length;
+  for (let index = 0; index < text.length; index++) {
+    if (!spaceCharCodes.has(text.charCodeAt(index))) return index;
+  }
+
+  return text.length;
 }
 
 function getMostCommonSpaceIndex(text: string): number {
@@ -463,12 +474,13 @@ function getMostCommonIndexBetweenTwoStrings(
 ): number {
   let minLength = Math.min(source.length, target.length);
   for (let index = 0; index < minLength; index++) {
-    let sourceChar = source.charAt(index);
-    let targetChar = target.charAt(index);
+    let sourceChar = source.charCodeAt(index);
+    let targetChar = target.charCodeAt(index);
+
     if (
       sourceChar !== targetChar ||
-      sourceChar.trim().length === sourceChar.length ||
-      targetChar.trim().length === targetChar.length
+      !spaceCharCodes.has(sourceChar) ||
+      !spaceCharCodes.has(targetChar)
     )
       return index;
   }

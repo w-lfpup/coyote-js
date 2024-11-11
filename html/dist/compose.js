@@ -1,5 +1,29 @@
 import { TagInfo, from } from "./tag_info.js";
 import { getTextFromStep, parseStr } from "../../parse_str/dist/mod.js";
+const spaceCharCodes = new Set([
+    0x0009,
+    0x000B,
+    0x000C,
+    0xFEFF,
+    // whitespace chars
+    0x0020,
+    0x00A0,
+    0x1680,
+    0x2000,
+    0x2001,
+    0x2002,
+    0x2003,
+    0x2004,
+    0x2005,
+    0x2006,
+    0x2007,
+    0x2008,
+    0x2009,
+    0x200A,
+    0x202F,
+    0x205F,
+    0x3000,
+]);
 const htmlRoutes = new Map([
     ["Tag", pushElement],
     ["ElementClosed", closeElement],
@@ -43,18 +67,20 @@ function pushElement(results, stack, sieve, templateStr, step) {
         stack.push(tagInfo);
         return;
     }
-    if (sieve.respectIndentation() && results.length > 0 && tagInfo.inlineEl) {
-        results.push(" ");
+    if (sieve.respectIndentation() && results.length > 0) {
+        if (tagInfo.inlineEl) {
+            results.push(" ");
+        }
+        else {
+            results.push("\n");
+            results.push("\t".repeat(tagInfo.indentCount));
+        }
     }
     if (!sieve.respectIndentation() && tagInfo.inlineEl && !tagInfo.voidEl) {
         let prevTagInfo = stack[stack.length - 1];
         if (prevTagInfo && prevTagInfo.mostRecentDescendant === "Text") {
             results.push(" ");
         }
-    }
-    if (sieve.respectIndentation() && results.length > 0 && !tagInfo.inlineEl) {
-        results.push("\n");
-        results.push("\t".repeat(tagInfo.indentCount));
     }
     let prevTagInfo = stack[stack.length - 1];
     if (prevTagInfo) {
@@ -181,11 +207,10 @@ function pushText(results, stack, sieve, templateStr, step) {
     if (tagInfo === undefined) {
         let splitText = text.split("\n");
         for (let splitted of splitText) {
-            let trimmed = splitted.trim();
-            if (trimmed.length === 0)
+            if (splitted.length === getIndexOfFirstChar(splitted))
                 continue;
             results.push("\n");
-            results.push(trimmed);
+            results.push(splitted.trim());
         }
         return;
     }
@@ -217,7 +242,7 @@ function pushText(results, stack, sieve, templateStr, step) {
         let trimmed = line.trim();
         if (trimmed.length === 0)
             continue;
-        texts.push(line.trim());
+        texts.push(trimmed);
     }
     if (texts.length === 0)
         return;
@@ -319,7 +344,11 @@ function addText(results, texts, tagInfo) {
     }
 }
 function getIndexOfFirstChar(text) {
-    return text.length - text.trimStart().length;
+    for (let index = 0; index < text.length; index++) {
+        if (!spaceCharCodes.has(text.charCodeAt(index)))
+            return index;
+    }
+    return text.length;
 }
 function getMostCommonSpaceIndex(text) {
     let spaceIndex = 0;
@@ -340,11 +369,11 @@ function getMostCommonSpaceIndex(text) {
 function getMostCommonIndexBetweenTwoStrings(source, target) {
     let minLength = Math.min(source.length, target.length);
     for (let index = 0; index < minLength; index++) {
-        let sourceChar = source.charAt(index);
-        let targetChar = target.charAt(index);
+        let sourceChar = source.charCodeAt(index);
+        let targetChar = target.charCodeAt(index);
         if (sourceChar !== targetChar ||
-            sourceChar.trim().length === sourceChar.length ||
-            targetChar.trim().length === targetChar.length)
+            !spaceCharCodes.has(sourceChar) ||
+            !spaceCharCodes.has(targetChar))
             return index;
     }
     return minLength - 1;

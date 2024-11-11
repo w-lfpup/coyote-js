@@ -5,7 +5,8 @@ function testCompose() {
 	<input>
 	<div></div>
 	<p>
-		you're a boy kisser, aren't you!
+		you're a boy kisser,
+		aren't you!
 	</p>
 	<input type=checkbox>
 </form>`;
@@ -14,7 +15,9 @@ function testCompose() {
 			<input></input>
 			<div>
 			</div>
-			<p>you're a boy kisser, aren't you!</p>
+			<p>
+					you're a boy kisser,
+						aren't you!</p>
 			<input type=checkbox>
 		</form>
 	`;
