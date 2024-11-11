@@ -6,7 +6,7 @@
   "main": "dist/mod.js",
   "scripts": {
     "build": "npx tsc --build",
-    "test": ""
+    "test": "exit 0"
   },
   "author": "wolfpup",
   "license": "BSD-3-Clause"

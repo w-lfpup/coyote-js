@@ -20,15 +20,6 @@ function text(txt: string): string {
   // return Text Component new Text(text);
 }
 
-// this could just be default string
-// function unescaped_text(txt: string): Component {
-//     return txt
-// 		.replace("<", "&lt;")
-// 		.replace("&", "&amp;")
-// 		.replace("{", "&#123;");
-// 	// return new UnescapedText(text);
-// }
-
 function attr(attrStr: string): Component {
   // return new Attr(attrStr);
   return new AttrComponent();
@@ -40,7 +31,6 @@ function attrVal(attr: string, val: string): Component {
   return new AttrValComponent();
 }
 
-// These are just arrays in javascript
-// list
-// vlist
-// doesn't matter can just say "isArray" very important actually
+export type { Component, AttrValComponent };
+
+export { tmpl, text, attr, attrVal };

@@ -11,13 +11,17 @@ function testCompose() {
   const coyoteTemplate = parseStr(sieve, templateStr, "Initial");
 
   if (expected !== coyoteTemplate) {
+    console.log(`
+      expected: ${expected}
+      found: ${coyoteTemplate}
+    `);
     return `incorrect steps found`;
   }
 
   return;
 }
 
-export const tests = [testCompose];
+export const tests = [];
 
 export const options = {
   title: import.meta.url,

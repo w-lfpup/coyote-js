@@ -1,8 +1,7 @@
 import { compose } from "./mod.js";
-import { Sieve, ClientSieve } from "../../sieve/dist/mod.js";
-
+import { Sieve } from "../../sieve/dist/mod.js";
 function testCompose() {
-  const expected = `<form>
+    const expected = `<form>
 	<input>
 	<div></div>
 	<p>
@@ -11,8 +10,7 @@ function testCompose() {
 	</p>
 	<input type=checkbox>
 </form>`;
-
-  const templateStr = `
+    const templateStr = `
 		<form>
 			<input></input>
 			<div>
@@ -23,26 +21,21 @@ function testCompose() {
 			<input type=checkbox>
 		</form>
 	`;
-
-  const sieve = new Sieve();
-  // const sieve = new ClientSieve();
-  const coyoteTemplate = compose(sieve, templateStr);
-
-  if (expected !== coyoteTemplate) {
-    return `
+    const sieve = new Sieve();
+    // const sieve = new ClientSieve();
+    const coyoteTemplate = compose(sieve, templateStr);
+    if (expected !== coyoteTemplate) {
+        return `
 expected:
 ${expected}
 		
 found:
 ${coyoteTemplate}`;
-  }
-
-  return;
+    }
+    return;
 }
-
 export const tests = [testCompose];
-
 export const options = {
-  title: import.meta.url,
-  runAsynchronously: false,
+    title: import.meta.url,
+    runAsynchronously: false,
 };

@@ -12,6 +12,31 @@ interface SieveInterface {
   isInlineEl(tag: string): boolean;
 }
 
+let bannedElements = new Set([
+  "acronym",
+  "big",
+  "center",
+  "content",
+  "dir",
+  "font",
+  "frame",
+  "framset",
+  "image",
+  "marquee",
+  "menuitem",
+  "nobr",
+  "noembed",
+  "noframes",
+  "param",
+  "plaintext",
+  "rb",
+  "rtc",
+  "shadow",
+  "strike",
+  "tt",
+  "xmp",
+]);
+
 let inlineElements = new Set([
   "abbr",
   "b",
@@ -81,15 +106,15 @@ class Sieve implements SieveInterface {
   getCloseSequenceFromAltTextTag(tag: string): string {
     return getCloseSequenceFromAltTextTag(tag);
   }
-  getTagFromCloseSequence(): string {
-    return "";
+  getTagFromCloseSequence(tag: string): string {
+    return getTagFromCloseSequence(tag);
   }
   // html
   respectIndentation(): boolean {
     return true;
   }
-  isBannedEl(_tag: string): boolean {
-    return false;
+  isBannedEl(tag: string): boolean {
+    return bannedElements.has(tag);
   }
   isVoidEl(tag: string): boolean {
     return voidElements.has(tag);
@@ -121,7 +146,12 @@ class ClientSieve implements SieveInterface {
     return false;
   }
   isBannedEl(tag: string): boolean {
-    return "script" === tag || "style" === tag || "!--" === tag;
+    return (
+      "script" === tag ||
+      "style" === tag ||
+      "!--" === tag ||
+      bannedElements.has(tag)
+    );
   }
   isVoidEl(tag: string): boolean {
     return voidElements.has(tag);
