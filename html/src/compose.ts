@@ -52,6 +52,7 @@ function compose(sieve: SieveInterface, templateStr: string): string {
   return results.join("");
 }
 
+// review
 function pushElement(
   results: string[],
   stack: TagInfo[],
@@ -87,13 +88,14 @@ function pushElement(
     }
   }
 
+  // combine these too, both use prevTagInfo
   if (!sieve.respectIndentation() && tagInfo.inlineEl && !tagInfo.voidEl) {
     let prevTagInfo = stack[stack.length - 1];
     if (prevTagInfo && prevTagInfo.mostRecentDescendant === "Text") {
       results.push(" ");
     }
   }
-
+  // combine with above
   let prevTagInfo = stack[stack.length - 1];
   if (prevTagInfo) {
     prevTagInfo.mostRecentDescendant = sieve.isInlineEl(tag)
@@ -131,16 +133,16 @@ function closeEmptyElement(results: string[], stack: TagInfo[]) {
 
   if ("html" !== tagInfo.namespace) {
     results.push("/>");
+    stack.pop();
+    return;
   }
 
-  if (!tagInfo.voidEl && "html" == tagInfo.namespace) {
+  if (!tagInfo.voidEl) {
     results.push(">/<");
     results.push(tagInfo.tag);
   }
 
-  if ("html" === tagInfo.namespace) {
-    results.push(">");
-  }
+  results.push(">");
 
   stack.pop();
 }
@@ -267,6 +269,7 @@ function pushInjectionKind(
   results.push(glpyhs);
 }
 
+// vareful review
 function pushText(
   results: string[],
   stack: TagInfo[],
