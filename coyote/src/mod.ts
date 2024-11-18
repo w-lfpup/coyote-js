@@ -1,6 +1,18 @@
 class CoyoteComponent {}
 type Component = CoyoteComponent | string | undefined;
 
+class TextComponent extends CoyoteComponent {
+  #text: string;
+  constructor(text: string) {
+    super();
+    this.#text = text.replace("<", "&lt;").replace("&", "&amp;").replace("{", "&#123;");
+  }
+
+  get text() {
+    return this.#text;
+  }
+}
+
 class AttrComponent extends CoyoteComponent {
   #attr: string;
   constructor(attr: string) {
@@ -20,7 +32,7 @@ class AttrValComponent extends CoyoteComponent {
   constructor(attr: string, val: string) {
     super();
     this.#attr = attr;
-    this.#value = val;
+    this.#value = val.replace('"', "&quot;").replace("&", "&amp;");
   }
 
   get attr() {
@@ -71,18 +83,15 @@ class TaggedTmplComponent extends CoyoteComponent {
 }
 
 function tmpl(txt: string, injections: Component[]): TmplComponent {
-  // return Tmpl Component new Text(text);
   return new TmplComponent(txt, injections);
 }
 
-function draw(txt: TemplateStringsArray, injections: Component[]): TaggedTmplComponent {
-  // return Tmpl Component new Text(text);
+function draw(txt: TemplateStringsArray, ...injections: Component[]): TaggedTmplComponent {
   return new TaggedTmplComponent(txt, injections);
 }
 
-function text(txt: string): string {
-  return txt.replace("<", "&lt;").replace("&", "&amp;").replace("{", "&#123;");
-  // return Text Component new Text(text);
+function text(txt: string): TextComponent {
+  return new TextComponent(txt);
 }
 
 function attr(attrStr: string): AttrComponent {
@@ -90,10 +99,9 @@ function attr(attrStr: string): AttrComponent {
 }
 
 function attrVal(attr: string, val: string): AttrValComponent {
-  let escapedValue = val.replace('"', "&quot;").replace("&", "&amp;");
   return new AttrValComponent(attr, val);
 }
 
 export type { Component };
 
-export { CoyoteComponent, AttrComponent, AttrValComponent, TmplComponent, tmpl, text, attr, attrVal };
+export { CoyoteComponent, AttrComponent, AttrValComponent, TmplComponent, draw, tmpl, text, attr, attrVal };
