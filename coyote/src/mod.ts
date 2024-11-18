@@ -104,4 +104,4 @@ function attrVal(attr: string, val: string): AttrValComponent {
 
 export type { Component };
 
-export { CoyoteComponent, AttrComponent, AttrValComponent, TmplComponent, draw, tmpl, text, attr, attrVal };
+export { CoyoteComponent, AttrComponent, AttrValComponent, TextComponent, TmplComponent, TaggedTmplComponent, draw, tmpl, text, attr, attrVal };
