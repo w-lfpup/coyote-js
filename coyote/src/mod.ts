@@ -1,36 +1,125 @@
 class CoyoteComponent {}
-
 type Component = CoyoteComponent | string | undefined;
-// text component just string
-class AttrComponent extends CoyoteComponent {}
-class AttrValComponent extends CoyoteComponent {}
-class UnescapedTextComponent extends CoyoteComponent {}
+
+class TextComponent extends CoyoteComponent {
+	#text: string;
+	constructor(text: string) {
+		super();
+		this.#text = text
+			.replace("<", "&lt;")
+			.replace("&", "&amp;")
+			.replace("{", "&#123;");
+	}
+
+	get text() {
+		return this.#text;
+	}
+}
+
+class AttrComponent extends CoyoteComponent {
+	#attr: string;
+	constructor(attr: string) {
+		super();
+		this.#attr = attr;
+	}
+
+	get attr() {
+		return this.#attr;
+	}
+}
+
+class AttrValComponent extends CoyoteComponent {
+	#attr: string;
+	#value: string;
+
+	constructor(attr: string, val: string) {
+		super();
+		this.#attr = attr;
+		this.#value = val.replace('"', "&quot;").replace("&", "&amp;");
+	}
+
+	get attr() {
+		return this.#attr;
+	}
+
+	get value() {
+		return this.#value;
+	}
+}
+
 class TmplComponent extends CoyoteComponent {
-  templateStr: string;
-  injections: Component[];
+	#templateStr: string;
+	#injections: Component[];
+
+	constructor(txt: string, injections: Component[]) {
+		super();
+		this.#templateStr = txt;
+		this.#injections = injections;
+	}
+
+	get templateStr() {
+		return this.#templateStr;
+	}
+
+	get injections() {
+		return this.#injections;
+	}
+}
+
+class TaggedTmplComponent extends CoyoteComponent {
+	#templateArr: TemplateStringsArray;
+	#injections: Component[];
+
+	constructor(txts: TemplateStringsArray, injections: Component[]) {
+		super();
+		this.#templateArr = txts;
+		this.#injections = injections;
+	}
+
+	get templateArr() {
+		return this.#templateArr;
+	}
+
+	get injections() {
+		return this.#injections;
+	}
 }
 
 function tmpl(txt: string, injections: Component[]): TmplComponent {
-  // return Tmpl Component new Text(text);
-  return new TmplComponent();
+	return new TmplComponent(txt, injections);
 }
 
-function text(txt: string): string {
-  return txt.replace("<", "&lt;").replace("&", "&amp;").replace("{", "&#123;");
-  // return Text Component new Text(text);
+function draw(
+	txt: TemplateStringsArray,
+	...injections: Component[]
+): TaggedTmplComponent {
+	return new TaggedTmplComponent(txt, injections);
 }
 
-function attr(attrStr: string): Component {
-  // return new Attr(attrStr);
-  return new AttrComponent();
+function text(txt: string): TextComponent {
+	return new TextComponent(txt);
 }
 
-function attrVal(attr: string, val: string): Component {
-  let escapedValue = val.replace('"', "&quot;").replace("&", "&amp;");
-  // return new AttrVal(attr, escapedValue);
-  return new AttrValComponent();
+function attr(attrStr: string): AttrComponent {
+	return new AttrComponent(attrStr);
 }
 
-export type { Component, AttrValComponent };
+function attrVal(attr: string, val: string): AttrValComponent {
+	return new AttrValComponent(attr, val);
+}
 
-export { tmpl, text, attr, attrVal };
+export type { Component };
+
+export {
+	CoyoteComponent,
+	AttrComponent,
+	AttrValComponent,
+	TextComponent,
+	TmplComponent,
+	TaggedTmplComponent,
+	draw,
+	tmpl,
+	text,
+	attr,
+	attrVal,
+};

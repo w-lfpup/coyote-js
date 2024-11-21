@@ -3,140 +3,140 @@ import type { StepKind } from "./mod.js";
 type Router = (glyph: string) => StepKind;
 
 let glyphGraph = new Map<StepKind, Router>([
-  ["Attr", getKindFromAttribute],
-  ["AttrMapInjection", getKindFromInjection],
-  ["AttrQuote", getKindFromAttributeQuote],
-  ["AttrQuoteClosed", getKindFromAttributeQuoteClosed],
-  ["AttrSetter", getKindFromAttributeSetter],
-  ["AttrValue", getKindFromAttributeQuote],
-  ["AttrValueUnquoted", getKindFromAttributeValueUnquoted],
-  ["DescendantInjection", getKindFromInjection],
-  ["Element", getKindFromElement],
-  ["ElementSpace", getKindFromElementSpace],
-  ["EmptyElement", getKindFromEmptyElement],
-  ["InjectionSpace", getKindFromInjection],
-  ["Tag", getKindFromTag],
-  ["TailElementSolidus", getKindFromTailElementSolidus],
-  ["TailElementSpace", getKindFromTailElementSpace],
-  ["TailTag", getKindFromTailTag],
+	["Attr", getKindFromAttribute],
+	["AttrMapInjection", getKindFromInjection],
+	["AttrQuote", getKindFromAttributeQuote],
+	["AttrQuoteClosed", getKindFromAttributeQuoteClosed],
+	["AttrSetter", getKindFromAttributeSetter],
+	["AttrValue", getKindFromAttributeQuote],
+	["AttrValueUnquoted", getKindFromAttributeValueUnquoted],
+	["DescendantInjection", getKindFromInjection],
+	["Element", getKindFromElement],
+	["ElementSpace", getKindFromElementSpace],
+	["EmptyElement", getKindFromEmptyElement],
+	["InjectionSpace", getKindFromInjection],
+	["Tag", getKindFromTag],
+	["TailElementSolidus", getKindFromTailElementSolidus],
+	["TailElementSpace", getKindFromTailElementSpace],
+	["TailTag", getKindFromTailTag],
 ]);
 
 function route(glyph: string, prevKind: StepKind) {
-  let router = glyphGraph.get(prevKind) ?? getKindFromInitial;
-  return router(glyph);
+	let router = glyphGraph.get(prevKind) ?? getKindFromInitial;
+	return router(glyph);
 }
 
 function isSpace(glyph: string) {
-  return glyph.length !== glyph.trim().length;
+	return glyph.length !== glyph.trim().length;
 }
 
 function getKindFromAttribute(glyph: string): StepKind {
-  if ("=" === glyph) return "AttrSetter";
-  if (">" === glyph) return "ElementClosed";
-  if ("/" === glyph) return "EmptyElement";
-  if ("{" === glyph) return "AttrMapInjection";
+	if ("=" === glyph) return "AttrSetter";
+	if (">" === glyph) return "ElementClosed";
+	if ("/" === glyph) return "EmptyElement";
+	if ("{" === glyph) return "AttrMapInjection";
 
-  if (isSpace(glyph)) return "ElementSpace";
+	if (isSpace(glyph)) return "ElementSpace";
 
-  return "Attr";
+	return "Attr";
 }
 
 function getKindFromInjection(glyph: string): StepKind {
-  if ("}" === glyph) return "InjectionConfirmed";
+	if ("}" === glyph) return "InjectionConfirmed";
 
-  return "InjectionSpace";
+	return "InjectionSpace";
 }
 
 function getKindFromAttributeQuote(glyph: string): StepKind {
-  if ('"' === glyph) return "AttrQuoteClosed";
+	if ('"' === glyph) return "AttrQuoteClosed";
 
-  return "AttrValue";
+	return "AttrValue";
 }
 
 function getKindFromAttributeQuoteClosed(glyph: string): StepKind {
-  if (">" === glyph) return "ElementClosed";
-  if ("/" === glyph) return "EmptyElement";
+	if (">" === glyph) return "ElementClosed";
+	if ("/" === glyph) return "EmptyElement";
 
-  return "ElementSpace";
+	return "ElementSpace";
 }
 
 function getKindFromAttributeSetter(glyph: string): StepKind {
-  if ('"' === glyph) return "AttrQuote";
+	if ('"' === glyph) return "AttrQuote";
 
-  if (isSpace(glyph)) return "AttrSetter";
+	if (isSpace(glyph)) return "AttrSetter";
 
-  return "AttrValueUnquoted";
+	return "AttrValueUnquoted";
 }
 
 function getKindFromAttributeValueUnquoted(glyph: string): StepKind {
-  if (">" === glyph) return "ElementClosed";
+	if (">" === glyph) return "ElementClosed";
 
-  if (isSpace(glyph)) return "ElementSpace";
+	if (isSpace(glyph)) return "ElementSpace";
 
-  return "AttrValueUnquoted";
+	return "AttrValueUnquoted";
 }
 
 function getKindFromElement(glyph: string): StepKind {
-  if ("/" === glyph) return "TailElementSolidus";
-  if (">" === glyph) return "Fragment";
+	if ("/" === glyph) return "TailElementSolidus";
+	if (">" === glyph) return "Fragment";
 
-  if (isSpace(glyph)) return "Element";
+	if (isSpace(glyph)) return "Element";
 
-  return "Tag";
+	return "Tag";
 }
 
 function getKindFromElementSpace(glyph: string): StepKind {
-  if (">" === glyph) return "ElementClosed";
-  if ("/" === glyph) return "EmptyElement";
-  if ("{" === glyph) return "AttrMapInjection";
+	if (">" === glyph) return "ElementClosed";
+	if ("/" === glyph) return "EmptyElement";
+	if ("{" === glyph) return "AttrMapInjection";
 
-  if (isSpace(glyph)) return "ElementSpace";
+	if (isSpace(glyph)) return "ElementSpace";
 
-  return "Attr";
+	return "Attr";
 }
 
 function getKindFromEmptyElement(glyph: string): StepKind {
-  if (">" === glyph) return "EmptyElementClosed";
+	if (">" === glyph) return "EmptyElementClosed";
 
-  return "EmptyElement";
+	return "EmptyElement";
 }
 
 function getKindFromTag(glyph: string): StepKind {
-  if (">" === glyph) return "ElementClosed";
-  if ("/" === glyph) return "EmptyElement";
+	if (">" === glyph) return "ElementClosed";
+	if ("/" === glyph) return "EmptyElement";
 
-  if (isSpace(glyph)) return "ElementSpace";
+	if (isSpace(glyph)) return "ElementSpace";
 
-  return "Tag";
+	return "Tag";
 }
 
 function getKindFromTailElementSolidus(glyph: string): StepKind {
-  if (">" === glyph) return "FragmentClosed";
+	if (">" === glyph) return "FragmentClosed";
 
-  if (isSpace(glyph)) return "TailElementSolidus";
+	if (isSpace(glyph)) return "TailElementSolidus";
 
-  return "TailTag";
+	return "TailTag";
 }
 
 function getKindFromTailElementSpace(glyph: string): StepKind {
-  if (">" === glyph) return "TailElementClosed";
+	if (">" === glyph) return "TailElementClosed";
 
-  return "TailElementSpace";
+	return "TailElementSpace";
 }
 
 function getKindFromTailTag(glyph: string): StepKind {
-  if (">" === glyph) return "TailElementClosed";
+	if (">" === glyph) return "TailElementClosed";
 
-  if (isSpace(glyph)) return "TailElementSpace";
+	if (isSpace(glyph)) return "TailElementSpace";
 
-  return "TailTag";
+	return "TailTag";
 }
 
 function getKindFromInitial(glyph: string): StepKind {
-  if ("<" === glyph) return "Element";
-  if ("{" === glyph) return "DescendantInjection";
+	if ("<" === glyph) return "Element";
+	if ("{" === glyph) return "DescendantInjection";
 
-  return "Text";
+	return "Text";
 }
 
 export { route };
