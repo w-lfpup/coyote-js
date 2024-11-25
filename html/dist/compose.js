@@ -364,4 +364,4 @@ function getMostCommonIndexBetweenTwoStrings(source, target) {
     }
     return minLength - 1;
 }
-export { compose };
+export { compose, spaceCharCodes };

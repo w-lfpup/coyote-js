@@ -14,5 +14,6 @@ declare class Step implements StepInterface {
 type Results = Step[];
 declare function parseStr(sieve: RulesetInterface, templateStr: string, initialKind: StepKind): StepInterface[];
 declare function getTextFromStep(templateStr: string, step: StepInterface): string;
+declare function isInjectionKind(stepKind: StepKind): boolean;
 export type { StepKind, StepInterface, Results };
-export { parseStr, getTextFromStep };
+export { parseStr, getTextFromStep, isInjectionKind };

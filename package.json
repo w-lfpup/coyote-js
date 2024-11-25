@@ -3,6 +3,7 @@
 		"rulesets",
 		"parse_str",
 		"html",
+		"dom",
 		"coyote_html"
 	],
 	"scripts": {
