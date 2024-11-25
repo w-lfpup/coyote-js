@@ -1,6 +1,6 @@
 {
 	"workspaces": [
-		"sieve",
+		"rulesets",
 		"parse_str",
 		"html",
 		"coyote_html"
@@ -11,7 +11,6 @@
 		"format": "npx prettier --write ./"
 	},
 	"devDependencies": {
-		"@types/node": "^22.5.5",
 		"jackrabbit": "github:wolfpup-software/jackrabbit-js",
 		"prettier": "^3.3.3",
 		"typescript": "^5.6.3"

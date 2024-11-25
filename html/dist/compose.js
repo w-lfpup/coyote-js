@@ -1,28 +1,10 @@
 import { TagInfo, from } from "./tag_info.js";
 import { getTextFromStep, parseStr } from "../../parse_str/dist/mod.js";
 const spaceCharCodes = new Set([
-    0x0009,
-    0x000B,
-    0x000C,
-    0xFEFF,
+    0x0009, 0x000b, 0x000c, 0xfeff,
     // whitespace chars
-    0x0020,
-    0x00A0,
-    0x1680,
-    0x2000,
-    0x2001,
-    0x2002,
-    0x2003,
-    0x2004,
-    0x2005,
-    0x2006,
-    0x2007,
-    0x2008,
-    0x2009,
-    0x200A,
-    0x202F,
-    0x205F,
-    0x3000,
+    0x0020, 0x00a0, 0x1680, 0x2000, 0x2001, 0x2002, 0x2003, 0x2004, 0x2005,
+    0x2006, 0x2007, 0x2008, 0x2009, 0x200a, 0x202f, 0x205f, 0x3000,
 ]);
 const htmlRoutes = new Map([
     ["Tag", pushElement],
@@ -51,6 +33,7 @@ function compose(sieve, templateStr) {
     }
     return results.join("");
 }
+// review
 function pushElement(results, stack, sieve, templateStr, step) {
     let tag = getTextFromStep(templateStr, step);
     let tagInfo = stack[stack.length - 1];
@@ -76,12 +59,14 @@ function pushElement(results, stack, sieve, templateStr, step) {
             results.push("\t".repeat(tagInfo.indentCount));
         }
     }
+    // combine these too, both use prevTagInfo
     if (!sieve.respectIndentation() && tagInfo.inlineEl && !tagInfo.voidEl) {
         let prevTagInfo = stack[stack.length - 1];
         if (prevTagInfo && prevTagInfo.mostRecentDescendant === "Text") {
             results.push(" ");
         }
     }
+    // combine with above
     let prevTagInfo = stack[stack.length - 1];
     if (prevTagInfo) {
         prevTagInfo.mostRecentDescendant = sieve.isInlineEl(tag)
@@ -113,14 +98,14 @@ function closeEmptyElement(results, stack) {
     }
     if ("html" !== tagInfo.namespace) {
         results.push("/>");
+        stack.pop();
+        return;
     }
-    if (!tagInfo.voidEl && "html" == tagInfo.namespace) {
+    if (!tagInfo.voidEl) {
         results.push(">/<");
         results.push(tagInfo.tag);
     }
-    if ("html" === tagInfo.namespace) {
-        results.push(">");
-    }
+    results.push(">");
     stack.pop();
 }
 function popElement(results, stack, sieve, templateStr, step) {
@@ -201,6 +186,7 @@ function pushInjectionKind(results, stack, _sieve, templateStr, step) {
     let glpyhs = getTextFromStep(templateStr, step);
     results.push(glpyhs);
 }
+// vareful review
 function pushText(results, stack, sieve, templateStr, step) {
     let text = getTextFromStep(templateStr, step);
     let tagInfo = stack[stack.length - 1];

@@ -1,4 +1,4 @@
-import type { SieveInterface } from "../../sieve/dist/mod.ts";
+import type { RulesetInterface } from "../../rulesets/dist/mod.ts";
 import type { SlidingWindowInterface } from "./sliding_window.js";
 
 import { route } from "./routes.js";
@@ -54,7 +54,7 @@ class Step implements StepInterface {
 type Results = Step[];
 
 function parseStr(
-	sieve: SieveInterface,
+	sieve: RulesetInterface,
 	templateStr: string,
 	initialKind: StepKind,
 ): StepInterface[] {
@@ -134,7 +134,7 @@ function isInjectionKind(stepKind: StepKind): boolean {
 }
 
 function addReservedElementText(
-	sieve: SieveInterface,
+	sieve: RulesetInterface,
 	steps: Step[],
 	tag: string,
 	index: number,
