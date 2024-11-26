@@ -1,13 +1,13 @@
-import type { StepInterface, StepKind } from "../../parse_str/dist/mod.ts";
-import type { RulesetInterface } from "../../rulesets/dist/mod.ts";
-import type { TagInfoInterface } from "../../html/dist/mod.ts";
+import type { StepInterface, StepKind } from "../../parse_str/dist/mod.js";
+import type { RulesetInterface } from "../../rulesets/dist/mod.js";
+import type { TagInfoInterface } from "../../html/dist/mod.js";
 
 import { TagInfo, from } from "../../html/dist/mod.js";
 import { getTextFromStep, parseStr } from "../../parse_str/dist/mod.js";
 
 type Router = (
-	results: string[],
-	stack: TagInfoInterface[],
+	results: Node,
+	stack: StackBit[],
 	sieve: RulesetInterface,
 	templateStr: string,
 	step: StepInterface,
@@ -24,32 +24,45 @@ const spaceCharCodes = new Set([
 const htmlRoutes = new Map<StepKind, Router>([
 	// ["Tag", pushElement],
 	// ["ElementClosed", closeElement],
-	// ["EmptyElementClosed", closeEmptyElement],
+	// ["EmptyElementClosed", closeElement],
 	// ["TailTag", popElement],
 	// ["Text", pushText],
 	// ["Attr", addAttr],
 	// ["AttrValue", addAttrValue],
 	// ["AttrValueUnquoted", addAttrValUnquoted],
-	// ["DescendantInjection", pushInjectionKind],
-	// ["InjectionSpace", pushInjectionKind],
-	// ["InjectionConfirmed", pushInjectionKind],
+	// ["DescendantInjection", pushInjectionAddress],
 	// ["CommentText", pushText],
 	// ["AltText", pushText],
 	// ["AltTextCloseSequence", popClosingSquence],
 ]);
 
-function compose(sieve: RulesetInterface, templateStr: string): string {
-	let results = [];
-	let stack: TagInfo[] = [];
+// Need to create a document fragment to easily clone
+// Need to create an address array for injections in a document fragment
+// Need to copy document fragment
+
+//
+
+// This will be
+
+// stack [{tag_info, element}, ...]
+
+interface StackBit {
+	tagInfo: TagInfoInterface,
+	node: Node,
+}
+
+function compose(sieve: RulesetInterface, templateStr: string): DocumentFragment {
+	let fragment = document.createDocumentFragment();
+	let stack: StackBit[] = [];
 
 	for (const step of parseStr(sieve, templateStr, "Initial")) {
 		let route = htmlRoutes.get(step.kind);
 		if (route) {
-			route(results, stack, sieve, templateStr, step);
+			route(fragment, stack, sieve, templateStr, step);
 		}
 	}
 
-	return results.join("");
+	return fragment;
 }
 
 export { compose };
