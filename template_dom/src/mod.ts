@@ -47,11 +47,14 @@ const htmlRoutes = new Map<StepKind, Router>([
 // stack [{tag_info, element}, ...]
 
 interface StackBit {
-	tagInfo: TagInfoInterface,
-	node: Node,
+	tagInfo: TagInfoInterface;
+	node: Node;
 }
 
-function compose(sieve: RulesetInterface, templateStr: string): DocumentFragment {
+function compose(
+	sieve: RulesetInterface,
+	templateStr: string,
+): DocumentFragment {
 	let fragment = document.createDocumentFragment();
 	let stack: StackBit[] = [];
 

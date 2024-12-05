@@ -2,6 +2,7 @@
 	"workspaces": [
 		"rulesets",
 		"parse_str",
+		"template_str",
 		"html",
 		"dom",
 		"coyote_html"
