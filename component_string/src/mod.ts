@@ -12,13 +12,17 @@ import {
 } from "../../coyote/dist/mod.js";
 
 interface BuilderInterface {
-	build(ruleset: RulesetInterface, templateStr: string): Results;
+	buildStr(ruleset: RulesetInterface, templateStr: string): Results;
+	buildTemplateStrs(
+		ruleset: RulesetInterface,
+		templateArray: TemplateStringsArray,
+	): Results;
 }
 
 class TemplateBit {
 	component: Component;
 	results: Results;
-	injIndex = 0;
+	index = 0;
 
 	constructor(component: Component, results: Results) {
 		this.component = component;
@@ -56,8 +60,8 @@ function compose(
 
 		if (bit instanceof TemplateBit) {
 			// increase index
-			let index = bit.injIndex;
-			bit.injIndex += 1;
+			let index = bit.index;
+			bit.index += 1;
 
 			// add text chunk
 			let currChunk = bit.results.strs[index];
@@ -100,10 +104,14 @@ function getStackBitFromComponent(
 
 	if (component instanceof TmplComponent) {
 		// build template return tmplate_bit
+		let buildResults = builder.buildStr(rules, component.templateStr);
+		return new TemplateBit(component, buildResults);
 	}
 
 	if (component instanceof TaggedTmplComponent) {
 		// build template return tmplate_bit
+		let buildResults = builder.buildTemplateStrs(rules, component.templateArr);
+		return new TemplateBit(component, buildResults);
 	}
 }
 
