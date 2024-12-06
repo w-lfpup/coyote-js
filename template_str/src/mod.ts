@@ -62,4 +62,4 @@ function pushDescendantInjection(results: ResultsInterface) {
 }
 
 export type { ResultsInterface };
-export { compose };
+export { Results, compose };
