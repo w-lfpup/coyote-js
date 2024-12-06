@@ -1,5 +1,6 @@
 {
 	"workspaces": [
+		"coyote",
 		"rulesets",
 		"parse_str",
 		"template_str",
