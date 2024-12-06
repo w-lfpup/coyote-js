@@ -1,6 +1,7 @@
 import type { StepInterface, StepKind } from "../../parse_str/dist/mod.ts";
 import type { RulesetInterface } from "../../rulesets/dist/mod.ts";
 import type { Component } from "../../coyote/dist/mod.ts";
+import type { Results } from "../../template_str/dist/mod.js";
 
 import {
 	CoyoteComponent,
@@ -9,15 +10,23 @@ import {
 	AttrComponent,
 	AttrValComponent,
 } from "../../coyote/dist/mod.js";
-import { Results as ParseResults } from "../../parse_str/dist/mod.js";
 
 interface BuilderInterface {
-	build(ruleset: RulesetInterface, templateStr): ParseResults;
+	build(ruleset: RulesetInterface, templateStr: string): Results;
 }
 
 class TemplateBit {
+	component: Component;
+	results: Results;
 	injIndex = 0;
+
+	constructor(component: Component, results: Results) {
+		this.component = component;
+		this.results = results;
+	}
 }
+
+type StackBit = Component | TemplateBit;
 
 function compose(
 	builder: BuilderInterface,
@@ -45,8 +54,37 @@ function compose(
 			}
 		}
 
-		// do the thing
-		// stack bit with template component, parse results, injection index
+		if (bit instanceof TemplateBit) {
+			// increase index
+			let index = bit.injIndex;
+			bit.injIndex += 1;
+
+			// add text chunk
+			let currChunk = bit.results.strs[index];
+			if (currChunk) {
+				results.push(currChunk);
+			}
+
+			// handle injection
+			let injKind = bit.results.injs[index];
+			let inj = bit.results.injs[index];
+
+			if ("AttrMapInjection" === injKind && undefined !== inj) {
+				addAttrInj(results, component);
+			}
+			if ("DescendantInjection" === injKind && undefined !== inj) {
+				stack.push(bit);
+
+				let nuBit = getStackBitFromComponent(builder, ruleset, inj);
+				stack.push(nuBit);
+				continue;
+			}
+
+			// tail case
+			if (index < bit.results.strs.length) {
+				stack.push(bit);
+			}
+		}
 	}
 
 	return results.join("");
@@ -56,7 +94,7 @@ function getStackBitFromComponent(
 	builder: BuilderInterface,
 	rules: RulesetInterface,
 	component: CoyoteComponent,
-): Component {
+): StackBit {
 	if (typeof component === "string" || Array.isArray(component))
 		return component;
 
