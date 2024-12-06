@@ -4,6 +4,7 @@
 		"rulesets",
 		"parse_str",
 		"template_str",
+		"component_string",
 		"html",
 		"coyote_html"
 	],

@@ -103,13 +103,11 @@ function getStackBitFromComponent(
 		return component;
 
 	if (component instanceof TmplComponent) {
-		// build template return tmplate_bit
 		let buildResults = builder.buildStr(rules, component.templateStr);
 		return new TemplateBit(component, buildResults);
 	}
 
 	if (component instanceof TaggedTmplComponent) {
-		// build template return tmplate_bit
 		let buildResults = builder.buildTemplateStrs(rules, component.templateArr);
 		return new TemplateBit(component, buildResults);
 	}
@@ -132,16 +130,12 @@ function addAttrInj(results: string[], component: Component) {
 }
 
 function addAttr(results: string[], attr: string) {
-	results.push(" ");
-	results.push(attr);
+	results.push(" ", attr);
 }
 
 function addAttrVal(results: string[], attr: string, val: string) {
-	results.push(" ");
-	results.push(attr);
-	results.push('="');
-	results.push(val);
-	results.push('"');
+	results.push(" ", attr, '="', val, '"');
 }
 
+export type { BuilderInterface };
 export { compose };
