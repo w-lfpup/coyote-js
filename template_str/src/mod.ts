@@ -49,14 +49,13 @@ function composeTemplateArr(
 	let stepKind: StepKind = "Initial";
 
 	// every one except for the last
-	for (let index = 0; index < templateStrArr.length - 1; index++) {
-		let templateStr = templateStrArr[index];
+	for (let [index, templateStr] of templateStrArr.entries()) {
 		for (let step of parseStr(ruleset, templateStr, stepKind)) {
 			stepKind = step.kind;
 			pushText(results, templateStr, step);
 		}
 
-		// if it's the last part of the array
+		// if last template str stop
 		if (index > templateStrArr.length - 1) continue;
 
 		let injStepKind = route("{", stepKind);
@@ -79,10 +78,7 @@ function pushText(
 	step: StepInterface,
 ) {
 	const text = getTextFromStep(templateStr, step);
-	let last_str = results.strs[results.strs.length - 1];
-	if (last_str) {
-		last_str.push(text);
-	}
+	results.strs[results.strs.length - 1]?.push(text);
 }
 
 function pushAttrMapInjection(results: ResultsInterface) {
