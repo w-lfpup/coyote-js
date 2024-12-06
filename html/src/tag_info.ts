@@ -1,4 +1,4 @@
-import type { SieveInterface } from "../../sieve/dist/mod.ts";
+import type { RulesetInterface } from "../../rulesets/dist/mod.ts";
 
 type DescendantStatus =
 	| "Text"
@@ -29,7 +29,7 @@ class TagInfo implements TagInfoInterface {
 	preservedTextPath: boolean;
 	bannedPath: boolean;
 
-	constructor(sieve: SieveInterface, tag: string) {
+	constructor(sieve: RulesetInterface, tag: string) {
 		this.namespace = sieve.isNamespaceEl(tag) ? tag : "html";
 		this.tag = tag;
 		this.mostRecentDescendant = "Initial";
@@ -43,7 +43,7 @@ class TagInfo implements TagInfoInterface {
 }
 
 function from(
-	sieve: SieveInterface,
+	sieve: RulesetInterface,
 	prevTagInfo: TagInfoInterface,
 	tag: string,
 ): TagInfoInterface {

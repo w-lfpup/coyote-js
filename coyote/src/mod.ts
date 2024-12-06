@@ -90,10 +90,10 @@ function tmpl(txt: string, injections: Component[]): TmplComponent {
 }
 
 function draw(
-	txt: TemplateStringsArray,
+	txts: TemplateStringsArray,
 	...injections: Component[]
 ): TaggedTmplComponent {
-	return new TaggedTmplComponent(txt, injections);
+	return new TaggedTmplComponent(txts, injections);
 }
 
 function text(txt: string): TextComponent {

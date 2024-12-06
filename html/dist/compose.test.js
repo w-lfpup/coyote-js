@@ -1,5 +1,5 @@
 import { compose } from "./mod.js";
-import { Sieve } from "../../sieve/dist/mod.js";
+import { ServerRules } from "../../rulesets/dist/mod.js";
 function testCompose() {
     const expected = `<form>
 	<input>
@@ -21,8 +21,8 @@ function testCompose() {
 			<input type=checkbox>
 		</form>
 	`;
-    const sieve = new Sieve();
-    // const sieve = new ClientSieve();
+    const sieve = new ServerRules();
+    // const sieve = new ClientRules();
     const coyoteTemplate = compose(sieve, templateStr);
     if (expected !== coyoteTemplate) {
         return `

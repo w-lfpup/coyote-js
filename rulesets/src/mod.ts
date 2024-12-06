@@ -1,4 +1,4 @@
-interface SieveInterface {
+interface RulesetInterface {
 	// parse
 	isComment(tag: string): boolean;
 	getCloseSequenceFromAltTextTag(tag: string): string | undefined;
@@ -98,7 +98,7 @@ let voidElements = new Set([
 	"wbr",
 ]);
 
-class Sieve implements SieveInterface {
+class ServerRules implements RulesetInterface {
 	// parse
 	isComment(tag: string): boolean {
 		return isComment(tag);
@@ -130,7 +130,7 @@ class Sieve implements SieveInterface {
 	}
 }
 
-class ClientSieve implements SieveInterface {
+class ClientRules implements RulesetInterface {
 	// parse
 	isComment(tag: string): boolean {
 		return isComment(tag);
@@ -193,6 +193,6 @@ function isPreservedTextEl(tag: string): boolean {
 	return "pre" === tag;
 }
 
-export type { SieveInterface };
+export type { RulesetInterface };
 
-export { Sieve, ClientSieve };
+export { ServerRules, ClientRules };

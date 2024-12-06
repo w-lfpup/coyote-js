@@ -1,5 +1,5 @@
 import type { StepInterface, StepKind } from "../../parse_str/dist/mod.ts";
-import type { SieveInterface } from "../../sieve/dist/mod.ts";
+import type { RulesetInterface } from "../../rulesets/dist/mod.ts";
 import type { TagInfoInterface } from "./tag_info.ts";
 
 import { TagInfo, from } from "./tag_info.js";
@@ -8,7 +8,7 @@ import { getTextFromStep, parseStr } from "../../parse_str/dist/mod.js";
 type Router = (
 	results: string[],
 	stack: TagInfoInterface[],
-	sieve: SieveInterface,
+	sieve: RulesetInterface,
 	templateStr: string,
 	step: StepInterface,
 ) => void;
@@ -38,7 +38,7 @@ const htmlRoutes = new Map<StepKind, Router>([
 	["AltTextCloseSequence", popClosingSquence],
 ]);
 
-function compose(sieve: SieveInterface, templateStr: string): string {
+function compose(sieve: RulesetInterface, templateStr: string): string {
 	let results = [];
 	let stack: TagInfo[] = [];
 
@@ -56,7 +56,7 @@ function compose(sieve: SieveInterface, templateStr: string): string {
 function pushElement(
 	results: string[],
 	stack: TagInfo[],
-	sieve: SieveInterface,
+	sieve: RulesetInterface,
 	templateStr: string,
 	step: StepInterface,
 ) {
@@ -150,7 +150,7 @@ function closeEmptyElement(results: string[], stack: TagInfo[]) {
 function popElement(
 	results: string[],
 	stack: TagInfo[],
-	sieve: SieveInterface,
+	sieve: RulesetInterface,
 	templateStr: string,
 	step: StepInterface,
 ) {
@@ -204,7 +204,7 @@ function popElement(
 function addAttr(
 	results: string[],
 	stack: TagInfo[],
-	_sieve: SieveInterface,
+	_sieve: RulesetInterface,
 	templateStr: string,
 	step: StepInterface,
 ) {
@@ -221,7 +221,7 @@ function addAttr(
 function addAttrValue(
 	results: string[],
 	stack: TagInfo[],
-	_sieve: SieveInterface,
+	_sieve: RulesetInterface,
 	templateStr: string,
 	step: StepInterface,
 ) {
@@ -239,7 +239,7 @@ function addAttrValue(
 function addAttrValUnquoted(
 	results: string[],
 	stack: TagInfo[],
-	_sieve: SieveInterface,
+	_sieve: RulesetInterface,
 	templateStr: string,
 	step: StepInterface,
 ) {
@@ -256,7 +256,7 @@ function addAttrValUnquoted(
 function pushInjectionKind(
 	results: string[],
 	stack: TagInfo[],
-	_sieve: SieveInterface,
+	_sieve: RulesetInterface,
 	templateStr: string,
 	step: StepInterface,
 ) {
@@ -273,7 +273,7 @@ function pushInjectionKind(
 function pushText(
 	results: string[],
 	stack: TagInfo[],
-	sieve: SieveInterface,
+	sieve: RulesetInterface,
 	templateStr: string,
 	step: StepInterface,
 ) {
@@ -354,7 +354,7 @@ function pushText(
 function popClosingSquence(
 	results: string[],
 	stack: TagInfo[],
-	sieve: SieveInterface,
+	sieve: RulesetInterface,
 	templateStr: string,
 	step: StepInterface,
 ) {
@@ -491,4 +491,4 @@ function getMostCommonIndexBetweenTwoStrings(
 	return minLength - 1;
 }
 
-export { compose };
+export { compose, spaceCharCodes };
