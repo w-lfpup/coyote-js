@@ -29,6 +29,26 @@ function compose(
 	let bit = getStackBitFromComponent(builder, ruleset, component);
 	let stack = [bit];
 
+	while (0 < stack.length) {
+		const bit = stack.pop();
+
+		if (typeof bit === "string") {
+			results.push(bit);
+			continue;
+		}
+
+		if (Array.isArray(bit)) {
+			// reverse
+			for (let index = bit.length - 1; 0 < index; index--) {
+				const next_bit = getStackBitFromComponent(builder, ruleset, bit);
+				stack.push(next_bit);
+			}
+		}
+
+		// do the thing
+		// stack bit with template component, parse results, injection index
+	}
+
 	return results.join("");
 }
 
