@@ -2,6 +2,7 @@ import type { StepInterface, StepKind } from "../../parse_str/dist/mod.ts";
 import type { RulesetInterface } from "../../rulesets/dist/mod.js";
 
 import { getTextFromStep, parseStr } from "../../parse_str/dist/mod.js";
+import { route } from "../../parse_str/dist/routes.js";
 
 interface ResultsInterface {
 	strs: string[][];
@@ -39,6 +40,39 @@ function compose(
 	return results;
 }
 
+function composeTemplateArr(
+	ruleset: RulesetInterface,
+	templateStrArr: TemplateStringsArray,
+): ResultsInterface {
+	let results = new Results();
+
+	let stepKind: StepKind = "Initial";
+
+	// every one except for the last
+	for (let index = 0; index < templateStrArr.length - 1; index++) {
+		let templateStr = templateStrArr[index];
+		for (let step of parseStr(ruleset, templateStr, stepKind)) {
+			stepKind = step.kind;
+			pushText(results, templateStr, step);
+		}
+
+		// if it's the last part of the array
+		if (index > templateStrArr.length - 1) continue;
+
+		let injStepKind = route("{", stepKind);
+
+		if (injStepKind === "AttrMapInjection") {
+			pushAttrMapInjection(results);
+		}
+
+		if (injStepKind === "DescendantInjection") {
+			pushDescendantInjection(results);
+		}
+	}
+
+	return results;
+}
+
 function pushText(
 	results: ResultsInterface,
 	templateStr: string,
@@ -62,4 +96,4 @@ function pushDescendantInjection(results: ResultsInterface) {
 }
 
 export type { ResultsInterface };
-export { Results, compose };
+export { Results, compose, composeTemplateArr };
