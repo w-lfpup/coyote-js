@@ -14,7 +14,8 @@ type Router = (
 ) => void;
 
 const spaceCharCodes = new Set([
-	0x0009, 0x000b, 0x000c, 0xfeff,
+	32, 9, 10, 113, 160,
+	0x0009, 0x000b, 0x000c, 0x000d, 0xfeff,
 
 	// whitespace chars
 	0x0020, 0x00a0, 0x1680, 0x2000, 0x2001, 0x2002, 0x2003, 0x2004, 0x2005,
@@ -70,9 +71,6 @@ function pushElement(
 			prevTagInfo.mostRecentDescendant = sieve.isInlineEl(tag)
 				? "InlineElement"
 				: "Element";
-
-			stack.push(tagInfo);
-			return;
 		}
 
 		stack.push(tagInfo);
@@ -158,7 +156,7 @@ function popElement(
 	let tagInfo = stack[stack.length - 1];
 	if (tagInfo === undefined) return;
 
-	if (tag != tagInfo.tag) return;
+	if (tag !== tagInfo.tag) return;
 
 	if (tagInfo.bannedPath) {
 		stack.pop();
@@ -280,16 +278,14 @@ function pushText(
 	let text = getTextFromStep(templateStr, step);
 	let tagInfo = stack[stack.length - 1];
 	if (tagInfo === undefined) {
-		let splitText = text.split("\n");
-		for (let splitted of splitText) {
-			if (splitted.length === getIndexOfFirstChar(splitted)) continue;
+		for (let line of text.split("\n")) {
+			if (allSpaces(line)) continue;
 
 			results.push("\n");
-			results.push(splitted.trim());
+			results.push(line.trim());
 		}
 		return;
 	}
-	// if no stack?
 
 	if (tagInfo.bannedPath || tagInfo.voidEl) return;
 
@@ -304,7 +300,8 @@ function pushText(
 	if (altText) {
 		let commonIndex = getMostCommonSpaceIndex(text);
 		for (let line of text.split("\n")) {
-			if (line.length === getIndexOfFirstChar(line)) continue;
+			if (allSpaces(line)) continue;
+
 			results.push("\n");
 			results.push("\t".repeat(tagInfo.indentCount + 1));
 			results.push(line.slice(commonIndex).trimEnd());
@@ -391,7 +388,9 @@ function addUnprettyInlineElementClosedText(results: string[], text: string) {
 
 function addText(results: string[], text: string, tagInfo: TagInfo) {
 	for (let line of text.split("\n")) {
-		if (allSpaces(line)) continue;
+		if (allSpaces(line)) {
+			continue;
+		}
 
 		results.push("\n");
 		results.push("\t".repeat(tagInfo.indentCount + 1));

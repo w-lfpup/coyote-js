@@ -1,7 +1,8 @@
 import { TagInfo, from } from "./tag_info.js";
 import { getTextFromStep, parseStr } from "../../parse_str/dist/mod.js";
 const spaceCharCodes = new Set([
-    0x0009, 0x000b, 0x000c, 0xfeff,
+    32, 9, 10, 113, 160,
+    0x0009, 0x000b, 0x000c, 0x000d, 0xfeff,
     // whitespace chars
     0x0020, 0x00a0, 0x1680, 0x2000, 0x2001, 0x2002, 0x2003, 0x2004, 0x2005,
     0x2006, 0x2007, 0x2008, 0x2009, 0x200a, 0x202f, 0x205f, 0x3000,
@@ -44,8 +45,6 @@ function pushElement(results, stack, sieve, templateStr, step) {
             prevTagInfo.mostRecentDescendant = sieve.isInlineEl(tag)
                 ? "InlineElement"
                 : "Element";
-            stack.push(tagInfo);
-            return;
         }
         stack.push(tagInfo);
         return;
@@ -113,7 +112,7 @@ function popElement(results, stack, sieve, templateStr, step) {
     let tagInfo = stack[stack.length - 1];
     if (tagInfo === undefined)
         return;
-    if (tag != tagInfo.tag)
+    if (tag !== tagInfo.tag)
         return;
     if (tagInfo.bannedPath) {
         stack.pop();
@@ -191,16 +190,14 @@ function pushText(results, stack, sieve, templateStr, step) {
     let text = getTextFromStep(templateStr, step);
     let tagInfo = stack[stack.length - 1];
     if (tagInfo === undefined) {
-        let splitText = text.split("\n");
-        for (let splitted of splitText) {
-            if (splitted.length === getIndexOfFirstChar(splitted))
+        for (let line of text.split("\n")) {
+            if (allSpaces(line))
                 continue;
             results.push("\n");
-            results.push(splitted.trim());
+            results.push(line.trim());
         }
         return;
     }
-    // if no stack?
     if (tagInfo.bannedPath || tagInfo.voidEl)
         return;
     if (tagInfo.preservedTextPath) {
@@ -213,7 +210,7 @@ function pushText(results, stack, sieve, templateStr, step) {
     if (altText) {
         let commonIndex = getMostCommonSpaceIndex(text);
         for (let line of text.split("\n")) {
-            if (line.length === getIndexOfFirstChar(line))
+            if (allSpaces(line))
                 continue;
             results.push("\n");
             results.push("\t".repeat(tagInfo.indentCount + 1));
@@ -266,7 +263,7 @@ function addInlineElementText(results, text) {
         if (allSpaces(line))
             continue;
         if (found)
-            results.push(' ');
+            results.push(" ");
         results.push(line.trim());
         found = true;
     }
@@ -275,7 +272,7 @@ function addInlineElementClosedText(results, text, tagInfo) {
     const texts = text.split("\n");
     let first_text = texts[0];
     if (first_text && !allSpaces(first_text)) {
-        results.push(' ', first_text.trim());
+        results.push(" ", first_text.trim());
     }
     for (let index = 1; index < texts.length; index++) {
         let text = texts[index];
@@ -293,8 +290,9 @@ function addUnprettyInlineElementClosedText(results, text) {
 }
 function addText(results, text, tagInfo) {
     for (let line of text.split("\n")) {
-        if (allSpaces(line))
+        if (allSpaces(line)) {
             continue;
+        }
         results.push("\n");
         results.push("\t".repeat(tagInfo.indentCount + 1));
         results.push(line.trim());
