@@ -159,4 +159,4 @@ function addReservedElementText(
 
 export type { StepKind, StepInterface, Results };
 
-export { parseStr, getTextFromStep, isInjectionKind };
+export { route, parseStr, getTextFromStep, isInjectionKind };

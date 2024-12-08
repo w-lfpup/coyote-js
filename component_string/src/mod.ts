@@ -1,4 +1,3 @@
-import type { StepInterface, StepKind } from "../../parse_str/dist/mod.ts";
 import type { RulesetInterface } from "../../rulesets/dist/mod.ts";
 import type { Component } from "../../coyote/dist/mod.ts";
 import type { Results } from "../../template_str/dist/mod.js";
@@ -36,7 +35,7 @@ function compose(
 	builder: BuilderInterface,
 	ruleset: RulesetInterface,
 	component: CoyoteComponent,
-) {
+): string {
 	let results = [];
 
 	let bit = getStackBitFromComponent(builder, ruleset, component);
@@ -47,7 +46,6 @@ function compose(
 
 		if (typeof bit === "string") {
 			results.push(bit);
-			continue;
 		}
 
 		if (Array.isArray(bit)) {

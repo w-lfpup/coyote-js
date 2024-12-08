@@ -1,4 +1,5 @@
 import type { RulesetInterface } from "../../rulesets/dist/mod.ts";
+import { route } from "./routes.js";
 type StepKind = "AttrQuoteClosed" | "AttrQuote" | "AttrMapInjection" | "AttrSetter" | "AttrValue" | "AttrValueUnquoted" | "Attr" | "TailElementClosed" | "TailElementSolidus" | "TailElementSpace" | "TailTag" | "DescendantInjection" | "FragmentClosed" | "Fragment" | "EmptyElementClosed" | "EmptyElement" | "Initial" | "InjectionConfirmed" | "InjectionSpace" | "ElementClosed" | "ElementSpace" | "Element" | "Tag" | "Text" | "AltText" | "AltTextCloseSequence" | "CommentText";
 interface StepInterface {
     kind: StepKind;
@@ -16,4 +17,4 @@ declare function parseStr(sieve: RulesetInterface, templateStr: string, initialK
 declare function getTextFromStep(templateStr: string, step: StepInterface): string;
 declare function isInjectionKind(stepKind: StepKind): boolean;
 export type { StepKind, StepInterface, Results };
-export { parseStr, getTextFromStep, isInjectionKind };
+export { route, parseStr, getTextFromStep, isInjectionKind };
