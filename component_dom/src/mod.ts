@@ -1,4 +1,5 @@
 // take builder for template strings
+import type { Component } from "../../coyote/dist/mod.js";
 
 import { Results as TemplateResults } from "../../template_str/dist/mod.js";
 
@@ -20,9 +21,11 @@ interface StackBit {
 	injections: number[];
 }
 
-function compose(): Node {
+function compose(builder: BuilderInterface, component: Component): Node {
 	// create and return a document fragment
 	let fragment = new DocumentFragment();
+
+	// iterate through tree
 
 	return fragment;
 }

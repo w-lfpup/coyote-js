@@ -26,7 +26,8 @@ class Dom {
 	}
 
 	build(component: Component): Node {
-		return compose();
+		// take builder, take component
+		return compose(this.builder, component);
 	}
 }
 
