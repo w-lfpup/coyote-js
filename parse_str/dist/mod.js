@@ -84,4 +84,4 @@ function addReservedElementText(sieve, steps, tag, index) {
     steps.push(new Step("AltTextCloseSequence", index - (closingSequence.length - 1), index - closingSequence.length));
     return true;
 }
-export { parseStr, getTextFromStep, isInjectionKind };
+export { route, parseStr, getTextFromStep, isInjectionKind };

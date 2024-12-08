@@ -1,8 +1,7 @@
 import type { StepInterface, StepKind } from "../../parse_str/dist/mod.ts";
-import type { RulesetInterface } from "../../rulesets/dist/mod.js";
+import type { RulesetInterface } from "../../rulesets/dist/mod.ts";
 
-import { getTextFromStep, parseStr } from "../../parse_str/dist/mod.js";
-import { route } from "../../parse_str/dist/routes.js";
+import { getTextFromStep, parseStr, route } from "../../parse_str/dist/mod.js";
 
 interface ResultsInterface {
 	strs: string[][];
