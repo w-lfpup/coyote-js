@@ -5,6 +5,8 @@ import type {
 	BuilderInterface,
 } from "../../component_dom/dist/mod.ts";
 
+import type { BuilderInterface as ResultsBuilderInterface } from "../../component_string/dist/mod.ts";
+
 import { compose } from "../../component_dom/dist/mod.js";
 
 class Builder implements BuilderInterface {
@@ -19,15 +21,20 @@ class Builder implements BuilderInterface {
 }
 
 class Dom {
+	resultsBuilder: ResultsBuilderInterface;
 	builder: BuilderInterface;
 
-	constructor(builder: BuilderInterface) {
+	constructor(
+		resultsBuilder: ResultsBuilderInterface,
+		builder: BuilderInterface,
+	) {
+		this.resultsBuilder = resultsBuilder;
 		this.builder = builder;
 	}
 
 	build(component: Component): Node {
 		// take builder, take component
-		return compose(this.builder, component);
+		return compose(this.resultsBuilder, this.builder, component);
 	}
 }
 
