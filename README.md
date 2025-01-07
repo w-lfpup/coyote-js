@@ -1,8 +1,6 @@
 # Coyote-js
 
-Create templates with function components in Typescript / Javascript.
-
-Use the same code to deliver SSG, SSR, web components, and CSR!
+Create html with function components in Typescript / Javascript.
 
 ## License
 
