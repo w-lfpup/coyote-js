@@ -34,9 +34,9 @@ class Html {
 	rules = new ServerRules();
 	builder: BuilderInterface;
 
-	build(ruleset: RulesetInterface, component: Component): string {
-		let templateStr = buildComponent(this.builder, ruleset, component);
-		return prettyHtml(ruleset, templateStr);
+	build(component: Component): string {
+		let templateStr = buildComponent(this.builder, this.rules, component);
+		return prettyHtml(this.rules, templateStr);
 	}
 }
 
@@ -45,9 +45,9 @@ class ClientHtml {
 	rules = new ClientRules();
 	builder = new Builder();
 
-	build(ruleset: RulesetInterface, component: Component): string {
-		let templateStr = buildComponent(this.builder, ruleset, component);
-		return prettyHtml(ruleset, templateStr);
+	build(component: Component): string {
+		let templateStr = buildComponent(this.builder, this.rules, component);
+		return prettyHtml(this.rules, templateStr);
 	}
 }
 
