@@ -17,9 +17,8 @@ import type { Component } from "coyote/coyote/mod.ts";
 
 import { tmpl } from "coyote/coyote/mod.js";
 
-
 function hai(): Component {
-    return tmpl("<p>hai :3</p>", [])
+    return tmpl`<p>hai :3</p>`;
 }
 ```
 
@@ -32,13 +31,13 @@ import { tmpl } from "coyote/coyote/mod.js";
 import { Html } from "coyote/coyote_html/mod.js";
 
 function hai(): Component {
-    return tmpl("<p>hai :3</p>", [])
+    return tmpl`<p>hai :3</p>`;
 }
 
 let hello_world = hai();
 
 let html = new Html();
-let document = html.compose(&rules, &hello_world);
+let document = html.build(hello_world);
 
 console.log(document);
 ```
