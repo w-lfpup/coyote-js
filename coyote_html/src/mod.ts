@@ -31,7 +31,7 @@ class Builder implements BuilderInterface {
 class Html {
 	builder: BuilderInterface;
 
-	constructor(builder: BuilderInterface) {
+	constructor(builder: BuilderInterface = new Builder()) {
 		this.builder = builder;
 	}
 
