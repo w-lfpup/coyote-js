@@ -20,18 +20,18 @@ function compose(
 	let results = new Results();
 
 	for (let step of parseStr(ruleset, templateStr, "Initial")) {
-		if (step.kind === "AttrMapInjection") {
+		if ("AttrMapInjection" === step.kind) {
 			pushAttrMapInjection(results);
 			continue;
 		}
 
-		if (step.kind === "DescendantInjection") {
+		if ("DescendantInjection" === step.kind) {
 			pushDescendantInjection(results);
 			continue;
 		}
 
-		if (step.kind === "InjectionSpace") continue;
-		if (step.kind === "InjectionConfirmed") continue;
+		if ("InjectionSpace" === step.kind) continue;
+		if ("InjectionConfirmed" === step.kind) continue;
 
 		pushText(results, templateStr, step);
 	}
@@ -59,11 +59,11 @@ function composeTemplateArr(
 
 		let injStepKind = route("{", stepKind);
 
-		if (injStepKind === "AttrMapInjection") {
+		if ("AttrMapInjection" === injStepKind) {
 			pushAttrMapInjection(results);
 		}
 
-		if (injStepKind === "DescendantInjection") {
+		if ("DescendantInjection" === injStepKind) {
 			pushDescendantInjection(results);
 		}
 	}

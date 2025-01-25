@@ -85,11 +85,11 @@ class TaggedTmplComponent extends CoyoteComponent {
 	}
 }
 
-function tmpl(txt: string, injections: Component[]): TmplComponent {
+function tmplStr(txt: string, injections: Component[]): TmplComponent {
 	return new TmplComponent(txt, injections);
 }
 
-function draw(
+function tmpl(
 	txts: TemplateStringsArray,
 	...injections: Component[]
 ): TaggedTmplComponent {
@@ -117,7 +117,7 @@ export {
 	TextComponent,
 	TmplComponent,
 	TaggedTmplComponent,
-	draw,
+	tmplStr,
 	tmpl,
 	text,
 	attr,

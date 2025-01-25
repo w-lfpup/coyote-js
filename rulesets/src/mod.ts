@@ -147,9 +147,10 @@ class ClientRules implements RulesetInterface {
 	}
 	isBannedEl(tag: string): boolean {
 		return (
+			"!--" === tag ||
+			"link" === tag ||
 			"script" === tag ||
 			"style" === tag ||
-			"!--" === tag ||
 			bannedElements.has(tag)
 		);
 	}
