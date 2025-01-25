@@ -10,6 +10,7 @@ import {
 } from "../../template_str/dist/mod.js";
 import { RulesetInterface } from "./mod.js";
 import { compose as prettyHtml } from "../../html/dist/mod.js";
+import { ClientRules, ServerRules } from "../../rulesets/dist/mod.js";
 
 class Builder implements BuilderInterface {
 	// place to add cache for:
@@ -29,11 +30,20 @@ class Builder implements BuilderInterface {
 }
 
 class Html {
+	// rules
+	rules = new ServerRules();
 	builder: BuilderInterface;
 
-	constructor(builder: BuilderInterface = new Builder()) {
-		this.builder = builder;
+	build(ruleset: RulesetInterface, component: Component): string {
+		let templateStr = buildComponent(this.builder, ruleset, component);
+		return prettyHtml(ruleset, templateStr);
 	}
+}
+
+class ClientHtml {
+	// rules
+	rules = new ClientRules();
+	builder = new Builder();
 
 	build(ruleset: RulesetInterface, component: Component): string {
 		let templateStr = buildComponent(this.builder, ruleset, component);
@@ -44,5 +54,4 @@ class Html {
 export type { RulesetInterface } from "../../rulesets/dist/mod.ts";
 
 export { compose as prettyHtml } from "../../html/dist/mod.js";
-export { ClientRules, ServerRules } from "../../rulesets/dist/mod.js";
-export { Builder, Html };
+export { Html, ClientHtml };
