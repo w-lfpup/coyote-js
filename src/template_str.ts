@@ -68,10 +68,7 @@ function composeTemplateArr(
 	return results;
 }
 
-function pushStep(
-	results: ResultsInterface,
-	step: StepInterface,
-) {
+function pushStep(results: ResultsInterface, step: StepInterface) {
 	results.steps[results.steps.length - 1]?.push(step);
 }
 
@@ -81,6 +78,4 @@ function pushInjection(results: ResultsInterface, stepKind: StepKind) {
 }
 
 export type { ResultsInterface };
-export { Results, compose };
-
-// export { Results, compose, composeTemplateArr };
+export { Results, compose, composeTemplateArr };
