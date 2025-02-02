@@ -107,10 +107,10 @@ class ServerRules implements RulesetInterface {
 	isComment(tag: string): boolean {
 		return isComment(tag);
 	}
-	getCloseSequenceFromAltTextTag(tag: string): string {
+	getCloseSequenceFromAltTextTag(tag: string): string | undefined {
 		return getCloseSequenceFromAltTextTag(tag);
 	}
-	getTagFromCloseSequence(tag: string): string {
+	getTagFromCloseSequence(tag: string): string | undefined {
 		return getTagFromCloseSequence(tag);
 	}
 	// html
@@ -174,6 +174,43 @@ class ClientRules implements RulesetInterface {
 		if ("a" === tag) return true;
 
 		return inlineElements.has(tag);
+	}
+}
+
+class XmlRules implements RulesetInterface {
+	// parse
+	getInitialNamespace(): string {
+		return "xml";
+	}
+	isComment(tag: string): boolean {
+		return isComment(tag);
+	}
+	getCloseSequenceFromAltTextTag(tag: string): string | undefined {
+		if ("!--" === tag) return "-->";
+		if ("![CDATA[" === tag) return "]]>";
+	}
+	getTagFromCloseSequence(tag: string): string | undefined {
+		if ("-->" === tag) return "!--";
+		if ("]]>" === tag) return "![CDATA[";
+	}
+	// html
+	respectIndentation(): boolean {
+		return true;
+	}
+	isBannedEl(tag: string): boolean {
+		return false;
+	}
+	isVoidEl(tag: string): boolean {
+		return false;
+	}
+	isNamespaceEl(tag: string): boolean {
+		return false;
+	}
+	isPreservedTextEl(tag: string): boolean {
+		return false;
+	}
+	isInlineEl(tag: string): boolean {
+		return false;
 	}
 }
 
