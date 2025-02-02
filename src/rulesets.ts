@@ -1,5 +1,6 @@
 interface RulesetInterface {
 	// parse
+	getInitialNamespace(): string;
 	isComment(tag: string): boolean;
 	getCloseSequenceFromAltTextTag(tag: string): string | undefined;
 	getTagFromCloseSequence(close_sequence: string): string | undefined;
@@ -100,6 +101,9 @@ let voidElements = new Set([
 
 class ServerRules implements RulesetInterface {
 	// parse
+	getInitialNamespace(): string {
+		return "html";
+	}
 	isComment(tag: string): boolean {
 		return isComment(tag);
 	}
@@ -132,6 +136,9 @@ class ServerRules implements RulesetInterface {
 
 class ClientRules implements RulesetInterface {
 	// parse
+	getInitialNamespace(): string {
+		return "html";
+	}
 	isComment(tag: string): boolean {
 		return isComment(tag);
 	}
