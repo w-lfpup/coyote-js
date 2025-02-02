@@ -1,4 +1,4 @@
-import type { RulesetInterface } from "../../rulesets/dist/mod.ts";
+import type { RulesetInterface } from "./rulesets.ts";
 
 type DescendantStatus =
 	| "Text"
