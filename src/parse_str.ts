@@ -23,7 +23,7 @@ class Step implements StepInterface {
 	}
 }
 
-type Results = Step[];
+type Results = StepInterface[];
 
 function parseStr(
 	sieve: RulesetInterface,

@@ -240,4 +240,4 @@ function isPreservedTextEl(tag: string): boolean {
 
 export type { RulesetInterface };
 
-export { ServerRules, ClientRules };
+export { ClientRules, ServerRules, XmlRules};
