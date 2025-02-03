@@ -1,139 +1,164 @@
-// import type { RulesetInterface } from "./rulesets.ts";
-// import type { Component } from "./coyote.ts";
-// import type { Results } from "./template_str.js";
+import type { RulesetInterface } from "./rulesets.ts";
+import type { Component } from "./coyote.ts";
+import type { Results } from "./template_steps.js";
+import type { TagInfo } from "./tag_info.js";
 
-// import {
-// 	CoyoteComponent,
-// 	TmplComponent,
-// 	TaggedTmplComponent,
-// 	AttrComponent,
-// 	AttrValComponent,
-// } from "./coyote.js";
+import {
+	CoyoteComponent,
+	TmplComponent,
+	TaggedTmplComponent,
+	AttrComponent,
+	AttrValComponent,
+} from "./coyote.js";
 
-// interface BuilderInterface {
-// 	buildStr(ruleset: RulesetInterface, templateStr: string): Results;
-// 	buildTemplateStrs(
-// 		ruleset: RulesetInterface,
-// 		templateArray: TemplateStringsArray,
-// 	): Results;
-// }
+import {
+	composeSteps,
+	pushText
+} from "./compose_steps.js";
 
-// class TemplateBit {
-// 	component: Component;
-// 	results: Results;
-// 	index = 0;
+interface BuilderInterface {
+	build(rules: RulesetInterface, templateStr: string): Results;
+	buildTemplate(
+		rules: RulesetInterface,
+		templateArray: TemplateStringsArray,
+	): Results;
+}
 
-// 	constructor(component: Component, results: Results) {
-// 		this.component = component;
-// 		this.results = results;
-// 	}
-// }
+class TemplateBit {
+	component: Component;
+	results: Results;
+	index = 0;
 
-// type StackBit = Component | TemplateBit;
+	constructor(component: Component, results: Results) {
+		this.component = component;
+		this.results = results;
+	}
+}
 
-// function compose(
-// 	builder: BuilderInterface,
-// 	ruleset: RulesetInterface,
-// 	component: CoyoteComponent,
-// ): string {
-// 	let results = [];
+type StackBit = Component | TemplateBit;
 
-// 	let bit = getStackBitFromComponent(builder, ruleset, component);
-// 	let stack = [bit];
+function compose(
+	builder: BuilderInterface,
+	rules: RulesetInterface,
+	component: CoyoteComponent,
+): string {
+	let results: string[] = [];
 
-// 	while (0 < stack.length) {
-// 		const bit = stack.pop();
+	let bit = getStackBitFromComponent(builder, rules, component);
 
-// 		if (typeof bit === "string") {
-// 			results.push(bit);
-// 		}
+    let tagInfoStack: TagInfo[] = [];
+	let stack = [bit];
 
-// 		if (Array.isArray(bit)) {
-// 			// reverse
-// 			for (let index = bit.length - 1; 0 < index; index--) {
-// 				const next_bit = getStackBitFromComponent(builder, ruleset, bit);
-// 				stack.push(next_bit);
-// 			}
-// 		}
+	while (0 < stack.length) {
+		const bit = stack.pop();
 
-// 		if (bit instanceof TemplateBit) {
-// 			// increase index
-// 			let index = bit.index;
-// 			bit.index += 1;
+		if (typeof bit === "string") {
+			pushText(results, tagInfoStack, rules, bit);
+		}
 
-// 			// add text chunk
-// 			let currChunk = bit.results.strs[index];
-// 			if (currChunk) {
-// 				results.push(currChunk);
-// 			}
+		if (Array.isArray(bit)) {
+			// reverse
+			for (let index = bit.length - 1; 0 < index; index--) {
+				const next_bit = getStackBitFromComponent(builder, rules, bit);
+				stack.push(next_bit);
+			}
+		}
 
-// 			// handle injection
-// 			let injKind = bit.results.injs[index];
-// 			let inj = bit.results.injs[index];
+		if (bit instanceof TemplateBit) {
+			// increase index
+			let index = bit.index;
+			bit.index += 1;
 
-// 			if ("AttrMapInjection" === injKind && undefined !== inj) {
-// 				addAttrInj(results, component);
-// 			}
-// 			if ("DescendantInjection" === injKind && undefined !== inj) {
-// 				stack.push(bit);
+			// add text chunk
+			let currChunk = bit.results.steps[index];
+			if (currChunk) {
+				let templateStr;
+				if (component instanceof TaggedTmplComponent) {
+					templateStr = component.templateArr[index]
+				}
+				if (component instanceof TmplComponent) {
+					templateStr = component.templateStr;
+				}
+				if (templateStr) {
+					composeSteps(
+						rules,
+						results,
+						tagInfoStack,
+						templateStr,
+						currChunk,
+					)	
+				}
 
-// 				let nuBit = getStackBitFromComponent(builder, ruleset, inj);
-// 				stack.push(nuBit);
-// 				continue;
-// 			}
+				// results.push(currChunk);
+			}
 
-// 			// tail case
-// 			if (index < bit.results.strs.length) {
-// 				stack.push(bit);
-// 			}
-// 		}
-// 	}
+			// handle injection
+			let injKind = bit.results.injs[index];
+			let inj = bit.results.injs[index];
 
-// 	return results.join("");
-// }
+			if ("AttrMapInjection" === injKind && undefined !== inj) {
+				addAttrInj(results, component);
+			}
+			if ("DescendantInjection" === injKind && undefined !== inj) {
+				stack.push(bit);
 
-// function getStackBitFromComponent(
-// 	builder: BuilderInterface,
-// 	rules: RulesetInterface,
-// 	component: CoyoteComponent,
-// ): StackBit {
-// 	if (typeof component === "string" || Array.isArray(component))
-// 		return component;
+				let nuBit = getStackBitFromComponent(builder, rules, inj);
+				stack.push(nuBit);
+				continue;
+			}
 
-// 	if (component instanceof TmplComponent) {
-// 		let buildResults = builder.buildStr(rules, component.templateStr);
-// 		return new TemplateBit(component, buildResults);
-// 	}
+			// tail case
+			if (index < bit.results.steps.length) {
+				stack.push(bit);
+			}
+		}
+	}
 
-// 	if (component instanceof TaggedTmplComponent) {
-// 		let buildResults = builder.buildTemplateStrs(rules, component.templateArr);
-// 		return new TemplateBit(component, buildResults);
-// 	}
-// }
+	return results.join("");
+}
 
-// function addAttrInj(results: string[], component: Component) {
-// 	if (component instanceof AttrComponent)
-// 		return addAttr(results, component.attr);
-// 	if (component instanceof AttrValComponent)
-// 		return addAttrVal(results, component.attr, component.value);
+function getStackBitFromComponent(
+	builder: BuilderInterface,
+	rules: RulesetInterface,
+	component: CoyoteComponent,
+): StackBit {
+	if (typeof component === "string" || Array.isArray(component))
+		return component;
 
-// 	if (Array.isArray(component)) {
-// 		for (const cmpnt of component) {
-// 			if (component instanceof AttrComponent)
-// 				return addAttr(results, component.attr);
-// 			if (component instanceof AttrValComponent)
-// 				return addAttrVal(results, component.attr, component.value);
-// 		}
-// 	}
-// }
+	if (component instanceof TmplComponent) {
+		let buildResults = builder.build(rules, component.templateStr);
+		return new TemplateBit(component, buildResults);
+	}
 
-// function addAttr(results: string[], attr: string) {
-// 	results.push(" ", attr);
-// }
+	if (component instanceof TaggedTmplComponent) {
+		let buildResults = builder.buildTemplate(rules, component.templateArr);
+		return new TemplateBit(component, buildResults);
+	}
+}
 
-// function addAttrVal(results: string[], attr: string, val: string) {
-// 	results.push(" ", attr, '="', val, '"');
-// }
+function addAttrInj(results: string[], component: Component) {
+	if (component instanceof AttrComponent)
+		return addAttr(results, component.attr);
+	if (component instanceof AttrValComponent)
+		return addAttrVal(results, component.attr, component.value);
 
-// export type { BuilderInterface };
-// export { compose };
+	if (Array.isArray(component)) {
+		for (const cmpnt of component) {
+			if (component instanceof AttrComponent)
+				return addAttr(results, component.attr);
+			if (component instanceof AttrValComponent)
+				return addAttrVal(results, component.attr, component.value);
+		}
+	}
+}
+
+function addAttr(results: string[], attr: string) {
+	results.push(" ", attr);
+}
+
+function addAttrVal(results: string[], attr: string, val: string) {
+	results.push(" ", attr, '="', val, '"');
+}
+
+export type { BuilderInterface };
+export { compose };

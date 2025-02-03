@@ -12,34 +12,42 @@ npm install --save-dev https://github.com/wolfpup-software/coyote-js
 
 ## Components
 
-```TS
-import type { Component } from "coyote/coyote/mod.ts";
+Create documents with coyote [components](./components.md).
 
-import { tmpl } from "coyote/coyote/mod.js";
+```TS
+import type { Component } from "coyote";
+
+import { tmpl } from "coyote";
 
 function hai(): Component {
     return tmpl`<p>hai :3</p>`;
 }
 ```
 
-## Html
+## Document Builders
+
+Render components as `html` with [document builders](./document_builders.md).
 
 ```TS
-import type { Component } from "coyote/coyote/mod.ts";
+import type { Component } from "coyote";
 
-import { tmpl } from "coyote/coyote/mod.js";
-import { Html } from "coyote/coyote_html/mod.js";
+import { Html, tmpl } from "coyote";
 
 function hai(): Component {
     return tmpl`<p>hai :3</p>`;
 }
 
-let hello_world = hai();
+let helloWorld = hai();
 
 let html = new Html();
-let document = html.build(hello_world);
+let document = html.build(helloWorld);
 
 console.log(document);
+```
+
+The output will be:
+```html
+<p>hai :3</p>
 ```
 
 ## License

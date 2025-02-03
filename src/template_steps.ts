@@ -1,5 +1,5 @@
-import type { StepInterface, StepKind } from "./parse_str.ts";
-import type { RulesetInterface } from "./rulesets.ts";
+import type { StepInterface, StepKind } from "./parse_str.js";
+import type { RulesetInterface } from "./rulesets.js";
 
 import { parseStr, route } from "./parse_str.js";
 
