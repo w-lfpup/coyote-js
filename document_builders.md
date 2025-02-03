@@ -13,10 +13,10 @@ function hai(): Component {
 	tmpl`<p>omgawsh hai :3</p>`;
 }
 
-let hello_world = hai();
+let helloWorld = hai();
 
 let html = new Html();
-let document = html.build(hello_world);
+let document = html.build(helloWorld);
 
 console.log(document);
 ```
@@ -36,8 +36,8 @@ import type { Component } from "coyote";
 
 import { ClientHtml, tmpl } from "coyote";
 
-function maliciousComponent(): Component {
-    return tmpl`
+function malicious(): Component {
+	return tmpl`
         <link rel=stylesheet href=a_dangerous_stylesheet.css>
         <style>
             * { color: malicious-blue; }
@@ -49,16 +49,16 @@ function maliciousComponent(): Component {
 }
 
 function hai(): Component {
-    return tmpl`
-		${maliciousComponent()}
+	return tmpl`
+		${malicious()}
 		<p>omgawsh hai >:3</p>
 	`;
 }
 
 let hello_world = hai();
 
-let safer_html = ClientHtml::new();
-let document = safer_html.build(hello_world);
+let saferHtml = new ClientHtml();
+let document = saferHtml.build(hello_world);
 
 console.log(document);
 ```
