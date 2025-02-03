@@ -46,6 +46,7 @@ console.log(document);
 ```
 
 The output will be:
+
 ```html
 <p>hai :3</p>
 ```

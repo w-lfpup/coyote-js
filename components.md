@@ -20,15 +20,16 @@ function hai(): Component {
 
 `Components` are used to build documents:
 
-| Component | Description | Type |
-| --------- | ---- | ----------- |
-| Attribute | an element attribute | `attr(name: string): Component` |
-| Attribute with value | an element and attribute and value pair | `attrVal(name: string, value: string): Component` | 
-| Text | text with escaped HTML glyphs like `<` of `{`| `text(words: string): Component` |
-| Template | a document fragment described by a tagged template literal | `tmpl(template: string, injections: ...Component): Component` |
-| TemplateString | a document fragment described by a string template and a list injections | `tmplStr(template: string, injections: Component[]): Component` |
+| Component            | Description                                                              | Type                                                            |
+| -------------------- | ------------------------------------------------------------------------ | --------------------------------------------------------------- |
+| Attribute            | an element attribute                                                     | `attr(name: string): Component`                                 |
+| Attribute with value | an element and attribute and value pair                                  | `attrVal(name: string, value: string): Component`               |
+| Text                 | text with escaped HTML glyphs like `<` of `{`                            | `text(words: string): Component`                                |
+| Template             | a document fragment described by a tagged template literal               | `tmpl(template: string, injections: ...Component): Component`   |
+| TemplateString       | a document fragment described by a string template and a list injections | `tmplStr(template: string, injections: Component[]): Component` |
 
 Coyote also supports:
+
 - vanilla text for unescaped text purposes
 - arrays for lists of components
 
@@ -40,7 +41,7 @@ Coyote also supports:
 
 ```ts
 function syntaxStory(): Component {
-    return tmpl`
+	return tmpl`
         <article>
             <header>cool story!</header>
             <>
@@ -58,6 +59,7 @@ function syntaxStory(): Component {
 `Injections` create nested templates and attribute assignments.
 
 There are only two valid _injections_ in a `tmpl` component:
+
 - attributes
 - descendants
 
@@ -71,14 +73,14 @@ The following examples show how to create a template component from a tagged tem
 
 ```ts
 function injectionStory(): Component {
-    let attribute = attr("uwu");
-    let descendant = text("hai! :3")
+	let attribute = attr("uwu");
+	let descendant = text("hai! :3");
 
-    return tmpl`
+	return tmpl`
         <article ${attribute}>
             ${descendant}
         </article>
-    `
+    `;
 }
 ```
 
@@ -114,23 +116,16 @@ import type { Component } from "coyote";
 
 import { tmpl, text, attrVal } from "coyote";
 
-
 function woof(): Component {
-    return tmpl("<input type=submit value=\"yus -_-\">", [])
+	return tmpl('<input type=submit value="yus -_-">', []);
 }
 
 function woofForm(): Component {
-    let attributes = [
-        attrVal("action", "/uwu"),
-        attrVal("method", "post"),
-    ];
+	let attributes = [attrVal("action", "/uwu"), attrVal("method", "post")];
 
-    let descendants = [
-        text("you're a boy kisser aren't you >:3"),
-        woof(),
-    ];
+	let descendants = [text("you're a boy kisser aren't you >:3"), woof()];
 
-    return tmpl`<form ${attributes}>${descendants}</form>`;
+	return tmpl`<form ${attributes}>${descendants}</form>`;
 }
 ```
 

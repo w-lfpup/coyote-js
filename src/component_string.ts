@@ -11,10 +11,7 @@ import {
 	AttrValComponent,
 } from "./coyote.js";
 
-import {
-	composeSteps,
-	pushText
-} from "./compose_steps.js";
+import { composeSteps, pushText } from "./compose_steps.js";
 
 interface BuilderInterface {
 	build(rules: RulesetInterface, templateStr: string): Results;
@@ -46,7 +43,7 @@ function compose(
 
 	let bit = getStackBitFromComponent(builder, rules, component);
 
-    let tagInfoStack: TagInfo[] = [];
+	let tagInfoStack: TagInfo[] = [];
 	let stack = [bit];
 
 	while (0 < stack.length) {
@@ -74,19 +71,13 @@ function compose(
 			if (currChunk) {
 				let templateStr;
 				if (component instanceof TaggedTmplComponent) {
-					templateStr = component.templateArr[index]
+					templateStr = component.templateArr[index];
 				}
 				if (component instanceof TmplComponent) {
 					templateStr = component.templateStr;
 				}
 				if (templateStr) {
-					composeSteps(
-						rules,
-						results,
-						tagInfoStack,
-						templateStr,
-						currChunk,
-					)	
+					composeSteps(rules, results, tagInfoStack, templateStr, currChunk);
 				}
 
 				// results.push(currChunk);

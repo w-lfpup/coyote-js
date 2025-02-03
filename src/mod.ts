@@ -5,5 +5,5 @@
 // Thanks.
 //
 
-export {attr, attrVal, text, tmpl, tmplStr} from "./coyote.js";
-export { ClientHtml, Html, Xml} from "./document_builders.js";
+export { attr, attrVal, text, tmpl, tmplStr } from "./coyote.js";
+export { ClientHtml, Html, Xml } from "./document_builders.js";

@@ -3,11 +3,7 @@ import {
 	compose as buildComponent,
 } from "./component_string.js";
 import { Component } from "./coyote.js";
-import {
-	compose,
-	composeTemplateArr,
-	Results,
-} from "./template_steps.js";
+import { compose, composeTemplateArr, Results } from "./template_steps.js";
 import { RulesetInterface } from "./rulesets.js";
 import { ClientRules, ServerRules, XmlRules } from "./rulesets.js";
 
