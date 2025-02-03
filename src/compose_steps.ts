@@ -1,14 +1,14 @@
-import type { StepInterface, StepKind } from "../../parse_str/dist/mod.ts";
-import type { RulesetInterface } from "../../rulesets/dist/mod.ts";
+import type { StepInterface, StepKind } from "./parse_str.ts";
+import type { RulesetInterface } from "./rulesets.ts";
 import type { TagInfoInterface } from "./tag_info.ts";
 
 import { TagInfo, from } from "./tag_info.js";
-import { getTextFromStep, parseStr } from "../../parse_str/dist/mod.js";
+import { getTextFromStep, parseStr } from "./parse_str.js";
 
 type Router = (
 	results: string[],
 	stack: TagInfoInterface[],
-	sieve: RulesetInterface,
+	rules: RulesetInterface,
 	templateStr: string,
 	step: StepInterface,
 ) => void;
@@ -26,26 +26,29 @@ const htmlRoutes = new Map<StepKind, Router>([
 	["ElementClosed", closeElement],
 	["EmptyElementClosed", closeEmptyElement],
 	["TailTag", popElement],
-	["Text", pushText],
+	["Text", pushTextStep],
 	["Attr", addAttr],
 	["AttrValue", addAttrValue],
 	["AttrValueUnquoted", addAttrValUnquoted],
 	["DescendantInjection", pushInjectionKind],
 	["InjectionSpace", pushInjectionKind],
 	["InjectionConfirmed", pushInjectionKind],
-	["CommentText", pushText],
-	["AltText", pushText],
+	["CommentText", pushTextStep],
+	["AltText", pushTextStep],
 	["AltTextCloseSequence", popClosingSquence],
 ]);
 
-function compose(sieve: RulesetInterface, templateStr: string): string {
-	let results = [];
-	let stack: TagInfo[] = [];
-
-	for (const step of parseStr(sieve, templateStr, "Initial")) {
+function composeSteps(
+	rules: RulesetInterface,
+	results: string[],
+	tagInfoStack: TagInfo[],
+	templateStr: string,
+	steps: StepInterface[],
+): string {
+	for (const step of steps) {
 		let route = htmlRoutes.get(step.kind);
 		if (route) {
-			route(results, stack, sieve, templateStr, step);
+			route(results, tagInfoStack, rules, templateStr, step);
 		}
 	}
 
@@ -56,18 +59,18 @@ function compose(sieve: RulesetInterface, templateStr: string): string {
 function pushElement(
 	results: string[],
 	stack: TagInfo[],
-	sieve: RulesetInterface,
+	rules: RulesetInterface,
 	templateStr: string,
 	step: StepInterface,
 ) {
 	let tag = getTextFromStep(templateStr, step);
 	let tagInfo = stack[stack.length - 1];
-	tagInfo = tagInfo ? from(sieve, tagInfo, tag) : new TagInfo(sieve, tag);
+	tagInfo = tagInfo ? from(rules, tagInfo, tag) : new TagInfo(rules, tag);
 
 	if (tagInfo.bannedPath) {
 		let prevTagInfo = stack[stack.length - 1];
 		if (prevTagInfo) {
-			prevTagInfo.mostRecentDescendant = sieve.isInlineEl(tag)
+			prevTagInfo.mostRecentDescendant = rules.isInlineEl(tag)
 				? "InlineElement"
 				: "Element";
 		}
@@ -76,7 +79,7 @@ function pushElement(
 		return;
 	}
 
-	if (sieve.respectIndentation() && results.length > 0) {
+	if (rules.respectIndentation() && results.length > 0) {
 		if (tagInfo.inlineEl) {
 			results.push(" ");
 		} else {
@@ -86,7 +89,7 @@ function pushElement(
 	}
 
 	// combine these too, both use prevTagInfo
-	if (!sieve.respectIndentation() && tagInfo.inlineEl && !tagInfo.voidEl) {
+	if (!rules.respectIndentation() && tagInfo.inlineEl && !tagInfo.voidEl) {
 		let prevTagInfo = stack[stack.length - 1];
 		if (prevTagInfo && prevTagInfo.mostRecentDescendant === "Text") {
 			results.push(" ");
@@ -95,7 +98,7 @@ function pushElement(
 	// combine with above
 	let prevTagInfo = stack[stack.length - 1];
 	if (prevTagInfo) {
-		prevTagInfo.mostRecentDescendant = sieve.isInlineEl(tag)
+		prevTagInfo.mostRecentDescendant = rules.isInlineEl(tag)
 			? "InlineElement"
 			: "Element";
 	}
@@ -147,7 +150,7 @@ function closeEmptyElement(results: string[], stack: TagInfo[]) {
 function popElement(
 	results: string[],
 	stack: TagInfo[],
-	sieve: RulesetInterface,
+	rules: RulesetInterface,
 	templateStr: string,
 	step: StepInterface,
 ) {
@@ -175,7 +178,7 @@ function popElement(
 	}
 
 	if (
-		sieve.respectIndentation() &&
+		rules.respectIndentation() &&
 		!tagInfo.inlineEl &&
 		!tagInfo.preservedTextPath &&
 		"Initial" !== tagInfo.mostRecentDescendant
@@ -192,7 +195,7 @@ function popElement(
 
 	let prevTagInfo = stack[stack.length - 1];
 	if (prevTagInfo) {
-		prevTagInfo.mostRecentDescendant = sieve.isInlineEl(tag)
+		prevTagInfo.mostRecentDescendant = rules.isInlineEl(tag)
 			? "InlineElementClosed"
 			: "ElementClosed";
 	}
@@ -201,7 +204,7 @@ function popElement(
 function addAttr(
 	results: string[],
 	stack: TagInfo[],
-	_sieve: RulesetInterface,
+	_rules: RulesetInterface,
 	templateStr: string,
 	step: StepInterface,
 ) {
@@ -218,7 +221,7 @@ function addAttr(
 function addAttrValue(
 	results: string[],
 	stack: TagInfo[],
-	_sieve: RulesetInterface,
+	_rules: RulesetInterface,
 	templateStr: string,
 	step: StepInterface,
 ) {
@@ -236,7 +239,7 @@ function addAttrValue(
 function addAttrValUnquoted(
 	results: string[],
 	stack: TagInfo[],
-	_sieve: RulesetInterface,
+	_rules: RulesetInterface,
 	templateStr: string,
 	step: StepInterface,
 ) {
@@ -253,7 +256,7 @@ function addAttrValUnquoted(
 function pushInjectionKind(
 	results: string[],
 	stack: TagInfo[],
-	_sieve: RulesetInterface,
+	_rules: RulesetInterface,
 	templateStr: string,
 	step: StepInterface,
 ) {
@@ -266,15 +269,23 @@ function pushInjectionKind(
 	results.push(glpyhs);
 }
 
-// vareful review
-function pushText(
+function pushTextStep(
 	results: string[],
 	stack: TagInfo[],
-	sieve: RulesetInterface,
+	rules: RulesetInterface,
 	templateStr: string,
 	step: StepInterface,
 ) {
 	let text = getTextFromStep(templateStr, step);
+	pushText(results, stack, rules, text);
+}
+
+function pushText(
+	results: string[],
+	stack: TagInfo[],
+	rules: RulesetInterface,
+	text: string,
+) {
 	let tagInfo = stack[stack.length - 1];
 	if (tagInfo === undefined) {
 		for (let line of text.split("\n")) {
@@ -295,7 +306,7 @@ function pushText(
 	}
 
 	// alt text
-	let altText = sieve.getCloseSequenceFromAltTextTag(tagInfo.tag);
+	let altText = rules.getCloseSequenceFromAltTextTag(tagInfo.tag);
 	if (altText) {
 		let commonIndex = getMostCommonSpaceIndex(text);
 		for (let line of text.split("\n")) {
@@ -312,7 +323,7 @@ function pushText(
 
 	if (allSpaces(text)) return;
 
-	if (sieve.respectIndentation()) {
+	if (rules.respectIndentation()) {
 		if ("InlineElement" === tagInfo.mostRecentDescendant) {
 			addInlineElementText(results, text);
 		} else if ("InlineElementClosed" === tagInfo.mostRecentDescendant) {
@@ -339,11 +350,11 @@ function pushText(
 	tagInfo.mostRecentDescendant = "Text";
 }
 
+// helpers
 function allSpaces(text: string): boolean {
 	return text.length === getIndexOfFirstChar(text);
 }
 
-// helpers
 function addInlineElementText(results: string[], text: string) {
 	let found = false;
 
@@ -400,12 +411,12 @@ function addText(results: string[], text: string, tagInfo: TagInfo) {
 function popClosingSquence(
 	results: string[],
 	stack: TagInfo[],
-	sieve: RulesetInterface,
+	rules: RulesetInterface,
 	templateStr: string,
 	step: StepInterface,
 ) {
 	let closingSequence = getTextFromStep(templateStr, step);
-	let tag = sieve.getTagFromCloseSequence(closingSequence);
+	let tag = rules.getTagFromCloseSequence(closingSequence);
 	if (tag === undefined) return;
 
 	let tagInfo = stack[stack.length - 1];
@@ -419,7 +430,7 @@ function popClosingSquence(
 	}
 
 	if (
-		sieve.respectIndentation() &&
+		rules.respectIndentation() &&
 		!tagInfo.inlineEl &&
 		!tagInfo.preservedTextPath &&
 		"Initial" != tagInfo.mostRecentDescendant
@@ -482,4 +493,4 @@ function getMostCommonIndexBetweenTwoStrings(
 	return minLength - 1;
 }
 
-export { compose, spaceCharCodes };
+export { composeSteps, pushText };

@@ -1,6 +1,7 @@
-import type { RulesetInterface } from "../../rulesets/dist/mod.ts";
-import type { Component } from "../../coyote/dist/mod.ts";
-import type { Results } from "../../template_str/dist/mod.js";
+import type { RulesetInterface } from "./rulesets.ts";
+import type { Component } from "./coyote.ts";
+import type { Results } from "./template_steps.js";
+import type { TagInfo } from "./tag_info.js";
 
 import {
 	CoyoteComponent,
@@ -8,12 +9,14 @@ import {
 	TaggedTmplComponent,
 	AttrComponent,
 	AttrValComponent,
-} from "../../coyote/dist/mod.js";
+} from "./coyote.js";
+
+import { composeSteps, pushText } from "./compose_steps.js";
 
 interface BuilderInterface {
-	buildStr(ruleset: RulesetInterface, templateStr: string): Results;
-	buildTemplateStrs(
-		ruleset: RulesetInterface,
+	build(rules: RulesetInterface, templateStr: string): Results;
+	buildTemplate(
+		rules: RulesetInterface,
 		templateArray: TemplateStringsArray,
 	): Results;
 }
@@ -33,25 +36,27 @@ type StackBit = Component | TemplateBit;
 
 function compose(
 	builder: BuilderInterface,
-	ruleset: RulesetInterface,
+	rules: RulesetInterface,
 	component: CoyoteComponent,
 ): string {
-	let results = [];
+	let results: string[] = [];
 
-	let bit = getStackBitFromComponent(builder, ruleset, component);
+	let bit = getStackBitFromComponent(builder, rules, component);
+
+	let tagInfoStack: TagInfo[] = [];
 	let stack = [bit];
 
 	while (0 < stack.length) {
 		const bit = stack.pop();
 
 		if (typeof bit === "string") {
-			results.push(bit);
+			pushText(results, tagInfoStack, rules, bit);
 		}
 
 		if (Array.isArray(bit)) {
 			// reverse
 			for (let index = bit.length - 1; 0 < index; index--) {
-				const next_bit = getStackBitFromComponent(builder, ruleset, bit);
+				const next_bit = getStackBitFromComponent(builder, rules, bit);
 				stack.push(next_bit);
 			}
 		}
@@ -62,9 +67,20 @@ function compose(
 			bit.index += 1;
 
 			// add text chunk
-			let currChunk = bit.results.strs[index];
+			let currChunk = bit.results.steps[index];
 			if (currChunk) {
-				results.push(currChunk);
+				let templateStr;
+				if (component instanceof TaggedTmplComponent) {
+					templateStr = component.templateArr[index];
+				}
+				if (component instanceof TmplComponent) {
+					templateStr = component.templateStr;
+				}
+				if (templateStr) {
+					composeSteps(rules, results, tagInfoStack, templateStr, currChunk);
+				}
+
+				// results.push(currChunk);
 			}
 
 			// handle injection
@@ -77,13 +93,13 @@ function compose(
 			if ("DescendantInjection" === injKind && undefined !== inj) {
 				stack.push(bit);
 
-				let nuBit = getStackBitFromComponent(builder, ruleset, inj);
+				let nuBit = getStackBitFromComponent(builder, rules, inj);
 				stack.push(nuBit);
 				continue;
 			}
 
 			// tail case
-			if (index < bit.results.strs.length) {
+			if (index < bit.results.steps.length) {
 				stack.push(bit);
 			}
 		}
@@ -101,12 +117,12 @@ function getStackBitFromComponent(
 		return component;
 
 	if (component instanceof TmplComponent) {
-		let buildResults = builder.buildStr(rules, component.templateStr);
+		let buildResults = builder.build(rules, component.templateStr);
 		return new TemplateBit(component, buildResults);
 	}
 
 	if (component instanceof TaggedTmplComponent) {
-		let buildResults = builder.buildTemplateStrs(rules, component.templateArr);
+		let buildResults = builder.buildTemplate(rules, component.templateArr);
 		return new TemplateBit(component, buildResults);
 	}
 }
