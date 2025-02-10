@@ -10,20 +10,25 @@ function testPrettyHtmlNoEmptySpace() {
 	return expected !== results;
 }
 
-export const tests = [testPrettyHtmlNoEmptySpace];
+function testPrettyHtmlVoidEl() {
+	const template = tmpl`
+         "<input>   <input>
+             <input><input> `;
+	const expected = "<input>\n<input>\n<input>\n<input>";
 
-// use coyote::{tmpl, ClientHtml, Html};
+	const html = new Html();
+	let results = html.build(template);
 
-// #[test]
-// fn test_pretty_html_no_empty_space() {
-//     let template = tmpl("<html></html>", []);
-//     let expected = "<html></html>";
+	console.log("expected:");
+	console.log(expected);
+	console.log("results:\n");
+	console.log(results);
+	
+	return expected !== results;
+}
 
-//     let mut html = Html::new();
-//     let results = html.build(&template);
+export const tests = [testPrettyHtmlNoEmptySpace, testPrettyHtmlVoidEl];
 
-//     assert_eq!(expected, results);
-// }
 
 // #[test]
 // fn test_pretty_html_void_el() {

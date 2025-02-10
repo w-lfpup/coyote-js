@@ -30,9 +30,6 @@ const htmlRoutes = new Map<StepKind, Router>([
 	["Attr", addAttr],
 	["AttrValue", addAttrValue],
 	["AttrValueUnquoted", addAttrValUnquoted],
-	["DescendantInjection", pushInjectionKind],
-	["InjectionSpace", pushInjectionKind],
-	["InjectionConfirmed", pushInjectionKind],
 	["CommentText", pushTextStep],
 	["AltText", pushTextStep],
 	["AltTextCloseSequence", popClosingSquence],
@@ -55,7 +52,6 @@ function composeSteps(
 	return results.join("");
 }
 
-// review
 function pushElement(
 	results: string[],
 	stack: TagInfo[],
@@ -253,21 +249,21 @@ function addAttrValUnquoted(
 	results.push(val);
 }
 
-function pushInjectionKind(
-	results: string[],
-	stack: TagInfo[],
-	_rules: RulesetInterface,
-	templateStr: string,
-	step: StepInterface,
-) {
-	let tagInfo = stack[stack.length - 1];
-	if (tagInfo === undefined) return;
+// function pushInjectionKind(
+// 	results: string[],
+// 	stack: TagInfo[],
+// 	_rules: RulesetInterface,
+// 	templateStr: string,
+// 	step: StepInterface,
+// ) {
+// 	let tagInfo = stack[stack.length - 1];
+// 	if (tagInfo === undefined) return;
 
-	if (tagInfo.bannedPath) return;
+// 	if (tagInfo.bannedPath) return;
 
-	let glpyhs = getTextFromStep(templateStr, step);
-	results.push(glpyhs);
-}
+// 	let glpyhs = getTextFromStep(templateStr, step);
+// 	results.push(glpyhs);
+// }
 
 function pushTextStep(
 	results: string[],
