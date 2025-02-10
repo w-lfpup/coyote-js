@@ -111,6 +111,7 @@ function compose(
 		}
 	}
 
+	console.log("compose_string\n", results);
 	return results.join("");
 }
 

@@ -12,22 +12,25 @@ function testPrettyHtmlNoEmptySpace() {
 
 function testPrettyHtmlVoidEl() {
 	const template = tmpl`
-         "<input>   <input>
+         <input>   <input>
              <input><input> `;
 	const expected = "<input>\n<input>\n<input>\n<input>";
 
 	const html = new Html();
 	let results = html.build(template);
-
-	console.log("expected:");
-	console.log(expected);
-	console.log("results:\n");
-	console.log(results);
+	
+	// console.log("expected:");
+	// console.log(expected);
+	// console.log("results:\n");
+	// console.log(results);
 	
 	return expected !== results;
 }
 
-export const tests = [testPrettyHtmlNoEmptySpace, testPrettyHtmlVoidEl];
+export const tests = [
+	testPrettyHtmlNoEmptySpace,
+	testPrettyHtmlVoidEl,
+];
 
 
 // #[test]

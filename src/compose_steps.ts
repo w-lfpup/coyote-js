@@ -49,6 +49,7 @@ function composeSteps(
 		}
 	}
 
+	console.log("compose_steps!\n", results);
 	return results.join("");
 }
 
