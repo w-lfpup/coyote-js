@@ -30,16 +30,16 @@ class TagInfo implements TagInfoInterface {
 	bannedPath: boolean;
 
 	constructor(rules: RulesetInterface, tag: string) {
-		this.namespace = rules.isNamespaceEl(tag)
-			? tag
-			: rules.getInitialNamespace();
+		this.namespace = !rules.isNamespaceEl(tag)
+			? rules.getInitialNamespace()
+			: tag;
+
 		this.tag = tag;
 		this.mostRecentDescendant = "Initial";
 		this.indentCount = 0;
 		this.voidEl = rules.isVoidEl(tag);
 		this.inlineEl = rules.isInlineEl(tag);
-		// is preserved text element?
-		this.preservedTextPath = false;
+		this.preservedTextPath = rules.isPreservedTextEl(tag);
 		this.bannedPath = rules.isBannedEl(tag);
 	}
 }

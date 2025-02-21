@@ -304,6 +304,7 @@ function pushText(
 	// alt text
 	let altText = rules.getCloseSequenceFromAltTextTag(tagInfo.tag);
 	if (altText) {
+		console.log("alt text FOUND!");
 		let commonIndex = getMostCommonSpaceIndex(text);
 		for (let line of text.split("\n")) {
 			if (allSpaces(line)) continue;

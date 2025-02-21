@@ -24,6 +24,7 @@ class Builder implements BuilderInterface {
 	}
 }
 
+// return [string, Error | undefined];
 class Html {
 	// rules
 	rules = new ServerRules();

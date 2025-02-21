@@ -217,16 +217,3 @@ export const tests = [
 	testPrettyHtmlWithoutIndentsClient,
 	testPrettyHtmWithoutIndentsAndText,
 ];
-
-// /* complicated inline cases */
-// #[test]
-// fn test_pretty_html_without_indents_and_text() {
-//     let template = tmpl("<a><label><input type=woofer>bark!</label><img></a>", []);
-
-//     let expected = "<a><label><input type=woofer>bark!</label><img></a>";
-
-//     let mut html = ClientHtml::new();
-//     let results = html.build(&template);
-
-//     assert_eq!(expected, results);
-// }
