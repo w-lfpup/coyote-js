@@ -225,7 +225,7 @@ function getCloseSequenceFromAltTextTag(tag: string): string | undefined {
 }
 
 function getTagFromCloseSequence(tag: string): string | undefined {
-	if ("</script" === tag) return "script";
+	if ("</script>" === tag) return "script";
 	if ("</style>" === tag) return "style";
 	if ("-->" === tag) return "!--";
 }

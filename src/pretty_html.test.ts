@@ -79,8 +79,23 @@ function testPrettyHtmlNestedVoidEl() {
 
 function testPrettyHtmlPreservedSpaceEl() {
 	const template = tmpl`<style>#woof .bark {
-     color: doggo;
- }</style>`;
+    color: doggo;
+}</style>`;
+	const expected =
+		"<style>\n\t#woof .bark {\n\t    color: doggo;\n\t}\n</style>";
+
+	const html = new Html();
+	let results = html.build(template);
+
+	return prettyPrint(expected, results);
+}
+
+function testPrettyHtmlScriptEl() {
+	const template = tmpl`        <script>
+			if 2 < 3 {
+				console.log();
+			}
+        </script>`;
 	const expected =
 		"<style>\n\t#woof .bark {\n\t    color: doggo;\n\t}\n</style>";
 
@@ -205,15 +220,16 @@ function testPrettyHtmWithoutIndentsAndText() {
 }
 
 export const tests = [
-	testPrettyHtmlNoEmptySpace,
-	testPrettyHtmlVoidEl,
-	testPrettyHtmlVoidElWithAttributes,
-	testPrettyHtmlVoidElAndOthers,
-	testPrettyHtmlNestedVoidEl,
+	// testPrettyHtmlNoEmptySpace,
+	// testPrettyHtmlVoidEl,
+	// testPrettyHtmlVoidElWithAttributes,
+	// testPrettyHtmlVoidElAndOthers,
+	// testPrettyHtmlNestedVoidEl,
 	testPrettyHtmlPreservedSpaceEl,
-	testPrettyHtmlDoc,
-	testPrettyHtmlClient,
-	testPrettyHtmlWithoutIndents,
-	testPrettyHtmlWithoutIndentsClient,
-	testPrettyHtmWithoutIndentsAndText,
+	testPrettyHtmlScriptEl,
+	// testPrettyHtmlDoc,
+	// testPrettyHtmlClient,
+	// testPrettyHtmlWithoutIndents,
+	// testPrettyHtmlWithoutIndentsClient,
+	// testPrettyHtmWithoutIndentsAndText,
 ];

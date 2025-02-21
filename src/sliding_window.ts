@@ -3,7 +3,7 @@ interface SlidingWindowInterface {
 }
 
 class SlidingWindow implements SlidingWindow {
-	#index: number = 0;
+	#index: number = 1;
 	#target: string;
 
 	constructor(target: string) {
@@ -16,7 +16,7 @@ class SlidingWindow implements SlidingWindow {
 		}
 
 		if (this.#target.charAt(this.#index - 1) !== glyph) {
-			this.#index == 0;
+			this.#index = 0;
 		}
 
 		this.#index += 1;

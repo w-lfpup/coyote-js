@@ -273,6 +273,7 @@ function pushTextStep(
 	step: StepInterface,
 ) {
 	let text = getTextFromStep(templateStr, step);
+	console.log(text);
 	pushText(results, stack, rules, text);
 }
 
@@ -305,9 +306,13 @@ function pushText(
 	let altText = rules.getCloseSequenceFromAltTextTag(tagInfo.tag);
 	if (altText) {
 		console.log("alt text FOUND!");
+		console.log(text);
 		let commonIndex = getMostCommonSpaceIndex(text);
+		// console.log("common index: ", commonIndex);
+
 		for (let line of text.split("\n")) {
 			if (allSpaces(line)) continue;
+			console.log(line.slice(commonIndex).trimEnd());
 
 			results.push("\n");
 			results.push("\t".repeat(tagInfo.indentCount + 1));
@@ -449,27 +454,40 @@ function getIndexOfFirstChar(text: string): number {
 	return text.length;
 }
 
+// this is probably wrong
 function getMostCommonSpaceIndex(text: string): number {
-	let spaceIndex = 0;
+	// console.log("get most common index!");
+	// console.log(text);
+	let prevSpaceIndex = text.length;
+	let spaceIndex = text.length;
 
-	let prevSpace = "";
-	let currSpace = "";
+	let prevLine = "";
 
-	for (let line of text.split("\n")) {
-		prevSpace = currSpace;
+	let texts = text.split("\n");
+	let firstLine = texts[0];
+	if (firstLine) {
+		prevLine = firstLine;
+	}
 
-		let currIndex = getIndexOfFirstChar(line);
-		if (line.length === currIndex) continue;
+	for (let index = 1; index < texts.length; index++) {
+		const line = texts[index];
+		if (line === undefined) break;
+		
+		let firstChar = getIndexOfFirstChar(line);
+		if (line.length === firstChar) continue;
 
-		currSpace = line;
-		if (spaceIndex === currIndex) continue;
+		spaceIndex = getMostCommonIndexBetweenTwoStrings(prevLine, line);
+		if (spaceIndex < prevSpaceIndex) {
+			prevSpaceIndex = spaceIndex;
+		}
 
-		spaceIndex = getMostCommonIndexBetweenTwoStrings(prevSpace, currSpace);
+		prevLine = line;
 	}
 
 	return spaceIndex;
 }
 
+// this is probably wrong
 function getMostCommonIndexBetweenTwoStrings(
 	source: string,
 	target: string,
@@ -479,12 +497,11 @@ function getMostCommonIndexBetweenTwoStrings(
 		let sourceChar = source.charCodeAt(index);
 		let targetChar = target.charCodeAt(index);
 
-		if (
-			sourceChar !== targetChar ||
-			!spaceCharCodes.has(sourceChar) ||
-			!spaceCharCodes.has(targetChar)
-		)
-			return index;
+		if (sourceChar === targetChar && spaceCharCodes.has(sourceChar)) {
+			continue;
+		}
+
+		return index;
 	}
 
 	return minLength - 1;
