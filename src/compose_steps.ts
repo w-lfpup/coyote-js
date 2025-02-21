@@ -5,7 +5,7 @@ import type { DescendantStatus, TagInfoInterface } from "./tag_info.ts";
 import { TagInfo, from } from "./tag_info.js";
 import { getTextFromStep } from "./parse_str.js";
 
-export { composeSteps, pushText };
+export { composeSteps, pushText, pushAttrValueComponent, pushAttrComponent };
 
 type Router = (
 	results: string[],
@@ -27,9 +27,9 @@ const htmlRoutes = new Map<StepKind, Router>([
 	["EmptyElementClosed", closeEmptyElement],
 	["TailTag", popElement],
 	["Text", pushTextStep],
-	["Attr", addAttr],
-	["AttrValue", addAttrValue],
-	["AttrValueUnquoted", addAttrValUnquoted],
+	["Attr", pushAttr],
+	["AttrValue", pushAttrValue],
+	["AttrValueUnquoted", pushAttrValueUnquoted],
 	["CommentText", pushTextStep],
 	["AltText", pushTextStep],
 	["AltTextCloseSequence", popClosingSquence],
@@ -119,16 +119,6 @@ function closeElement(results: string[], stack: TagInfo[]) {
 	}
 }
 
-function updateMostRecentDescendant(
-	stack: TagInfo[],
-	descdantStatus: DescendantStatus,
-) {
-	let tag_info = stack[stack.length - 1];
-	if (tag_info) {
-		tag_info.mostRecentDescendant = descdantStatus;
-	}
-}
-
 // tried close, should update RUST version
 function closeEmptyElement(results: string[], stack: TagInfo[]) {
 	let tagInfo = stack[stack.length - 1];
@@ -215,42 +205,54 @@ function popElement(
 	}
 }
 
-function addAttr(
+function pushAttr(
 	results: string[],
 	stack: TagInfo[],
 	_rules: RulesetInterface,
 	templateStr: string,
 	step: StepInterface,
 ) {
+	let attr = getTextFromStep(templateStr, step);
+	pushAttrComponent(results, stack, attr);
+}
+
+function pushAttrComponent(results: string[], stack: TagInfo[], attr: string) {
 	let tagInfo = stack[stack.length - 1];
 	if (tagInfo === undefined) return;
 
 	if (tagInfo.bannedPath) return;
 
-	let attr = getTextFromStep(templateStr, step);
 	results.push(" ");
 	results.push(attr);
 }
 
-function addAttrValue(
+function pushAttrValue(
 	results: string[],
 	stack: TagInfo[],
 	_rules: RulesetInterface,
 	templateStr: string,
 	step: StepInterface,
 ) {
+	let val = getTextFromStep(templateStr, step);
+	pushAttrValueComponent(results, stack, val);
+}
+
+function pushAttrValueComponent(
+	results: string[],
+	stack: TagInfo[],
+	val: string,
+) {
 	let tagInfo = stack[stack.length - 1];
 	if (tagInfo === undefined) return;
 
 	if (tagInfo.bannedPath) return;
 
-	let val = getTextFromStep(templateStr, step);
 	results.push('="');
 	results.push(val);
 	results.push('"');
 }
 
-function addAttrValUnquoted(
+function pushAttrValueUnquoted(
 	results: string[],
 	stack: TagInfo[],
 	_rules: RulesetInterface,
@@ -475,6 +477,16 @@ function popClosingSquence(
 	}
 
 	results.push(closingSequence);
+}
+
+function updateMostRecentDescendant(
+	stack: TagInfo[],
+	descdantStatus: DescendantStatus,
+) {
+	let tag_info = stack[stack.length - 1];
+	if (tag_info) {
+		tag_info.mostRecentDescendant = descdantStatus;
+	}
 }
 
 function getIndexOfFirstChar(text: string): number {

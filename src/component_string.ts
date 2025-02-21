@@ -9,7 +9,12 @@ import {
 	AttrValComponent,
 } from "./components.js";
 import { TagInfo } from "./tag_info.js";
-import { composeSteps, pushText } from "./compose_steps.js";
+import {
+	composeSteps,
+	pushText,
+	pushAttrComponent,
+	pushAttrValueComponent,
+} from "./compose_steps.js";
 
 export type { BuilderInterface, Results };
 export { composeString };
@@ -90,7 +95,7 @@ function composeString(
 			// handle injection
 			let injKind = bit.results.injs[index];
 			if ("AttrMapInjection" === injKind) {
-				addAttrInj(results, bit.component[index]);
+				addAttrInj(tagInfoStack, results, bit.component[index]);
 			}
 
 			if ("DescendantInjection" === injKind) {
@@ -154,26 +159,22 @@ function getStackBitFromComponent(
 	}
 }
 
-function addAttrInj(results: string[], component: Component) {
+function addAttrInj(stack: TagInfo[], results: string[], component: Component) {
 	if (component instanceof AttrComponent)
-		return addAttr(results, component.attr);
-	if (component instanceof AttrValComponent)
-		return addAttrVal(results, component.attr, component.value);
+		return pushAttrComponent(results, stack, component.attr);
+	if (component instanceof AttrValComponent) {
+		pushAttrComponent(results, stack, component.attr);
+		return pushAttrValueComponent(results, stack, component.value);
+	}
 
 	if (Array.isArray(component)) {
 		for (const cmpnt of component) {
 			if (component instanceof AttrComponent)
-				return addAttr(results, component.attr);
-			if (component instanceof AttrValComponent)
-				return addAttrVal(results, component.attr, component.value);
+				return pushAttrComponent(results, stack, component.attr);
+			if (component instanceof AttrValComponent) {
+				pushAttrComponent(results, stack, component.attr);
+				return pushAttrValueComponent(results, stack, component.value);
+			}
 		}
 	}
-}
-
-function addAttr(results: string[], attr: string) {
-	results.push(" ", attr);
-}
-
-function addAttrVal(results: string[], attr: string, val: string) {
-	results.push(" ", attr, '="', val, '"');
 }
