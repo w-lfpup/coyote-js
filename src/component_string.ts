@@ -11,6 +11,9 @@ import {
 import { TagInfo } from "./tag_info.js";
 import { composeSteps, pushText } from "./compose_steps.js";
 
+export type { BuilderInterface, Results };
+export { composeString };
+
 interface BuilderInterface {
 	build(rules: RulesetInterface, templateStr: string): TemplateSteps;
 	buildTemplate(
@@ -87,17 +90,9 @@ function composeString(
 			// handle injection
 			let injKind = bit.results.injs[index];
 			if ("AttrMapInjection" === injKind) {
-				addAttrInj(results, component);
+				addAttrInj(results, bit.component[index]);
 			}
 
-			// let inj: Component;
-			// if (bit.component instanceof TaggedTmplComponent) {
-			// 	inj = bit.component.injections[index];
-			// }
-			// if (bit.component instanceof TmplComponent) {
-			// 	inj = bit.component.injections[index];
-			// }
-			// if (inj) {
 			if ("DescendantInjection" === injKind) {
 				stack.push(bit);
 
@@ -110,20 +105,27 @@ function composeString(
 				stack.push(nuBit);
 				continue;
 			}
-			// }
 
 			// tail case
 			if (index < bit.results.steps.length) {
 				// check for imbalance error
+				let template: string;
+				if (component instanceof TaggedTmplComponent) {
+					template = component.templateArr.raw.toString();
+				}
+				if (component instanceof TmplComponent) {
+					template = component.templateStr;
+				}
 				if (bit.stackDepth !== tagInfoStack.length) {
 					return [
 						undefined,
 						new Error(`
 Coyote Err: the following template component is imbalanced:
-${"woah!"}
+${template}
 					`),
 					];
 				}
+
 				stack.push(bit);
 			}
 		}
@@ -175,6 +177,3 @@ function addAttr(results: string[], attr: string) {
 function addAttrVal(results: string[], attr: string, val: string) {
 	results.push(" ", attr, '="', val, '"');
 }
-
-export type { BuilderInterface, Results };
-export { composeString };

@@ -1,12 +1,16 @@
 import type { RulesetInterface } from "./rulesets.ts";
 
+export type { TagInfoInterface, DescendantStatus };
+
+export { TagInfo, from };
+
 type DescendantStatus =
-	| "Text"
 	| "Element"
 	| "ElementClosed"
+	| "Initial"
 	| "InlineElement"
 	| "InlineElementClosed"
-	| "Initial";
+	| "Text";
 
 interface TagInfoInterface {
 	namespace: string;
@@ -72,6 +76,3 @@ function from(
 
 	return tagInfo;
 }
-
-export type { TagInfoInterface, DescendantStatus };
-export { TagInfo, from };

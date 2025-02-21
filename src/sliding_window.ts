@@ -1,3 +1,7 @@
+export type { SlidingWindowInterface };
+
+export { SlidingWindow };
+
 interface SlidingWindowInterface {
 	slide(glyph: string): boolean;
 }
@@ -24,7 +28,3 @@ class SlidingWindow implements SlidingWindow {
 		return this.#index > this.#target.length;
 	}
 }
-
-export type { SlidingWindowInterface };
-
-export { SlidingWindow };

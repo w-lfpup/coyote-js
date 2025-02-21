@@ -1,3 +1,19 @@
+export type { Component };
+
+export {
+	CoyoteComponent,
+	AttrComponent,
+	AttrValComponent,
+	TextComponent,
+	TmplComponent,
+	TaggedTmplComponent,
+	tmplStr,
+	tmpl,
+	text,
+	attr,
+	attrVal,
+};
+
 class CoyoteComponent {}
 type Component = CoyoteComponent | Node | string | undefined;
 
@@ -107,19 +123,3 @@ function attr(attrStr: string): AttrComponent {
 function attrVal(attr: string, val: string): AttrValComponent {
 	return new AttrValComponent(attr, val);
 }
-
-export type { Component };
-
-export {
-	CoyoteComponent,
-	AttrComponent,
-	AttrValComponent,
-	TextComponent,
-	TmplComponent,
-	TaggedTmplComponent,
-	tmplStr,
-	tmpl,
-	text,
-	attr,
-	attrVal,
-};

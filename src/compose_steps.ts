@@ -5,6 +5,8 @@ import type { TagInfoInterface } from "./tag_info.ts";
 import { TagInfo, from } from "./tag_info.js";
 import { getTextFromStep } from "./parse_str.js";
 
+export { composeSteps, pushText };
+
 type Router = (
 	results: string[],
 	stack: TagInfoInterface[],
@@ -103,6 +105,7 @@ function pushElement(
 	stack.push(tagInfo);
 }
 
+// tried, close
 function closeElement(results: string[], stack: TagInfo[]) {
 	let tagInfo = stack[stack.length - 1];
 	if (tagInfo === undefined) return;
@@ -304,12 +307,12 @@ function pushText(
 
 	if (rules.respectIndentation()) {
 		if ("InlineElement" === tagInfo.mostRecentDescendant) {
-			addInlineElementText(results, text);
+			addInlineElementText(results, text, tagInfo);
 		} else if ("InlineElementClosed" === tagInfo.mostRecentDescendant) {
 			addInlineElementClosedText(results, text, tagInfo);
 		} else if ("Initial" === tagInfo.mostRecentDescendant) {
 			if (tagInfo.inlineEl) {
-				addInlineElementText(results, text);
+				addInlineElementText(results, text, tagInfo);
 			} else {
 				addText(results, text, tagInfo);
 			}
@@ -320,9 +323,9 @@ function pushText(
 		if ("InlineElementClosed" === tagInfo.mostRecentDescendant) {
 			addUnprettyInlineElementClosedText(results, text);
 		} else if ("Text" === tagInfo.mostRecentDescendant) {
-			addInlineElementText(results, text);
+			addInlineElementText(results, text, tagInfo);
 		} else {
-			addInlineElementText(results, text);
+			addInlineElementText(results, text, tagInfo);
 		}
 	}
 
@@ -334,36 +337,66 @@ function allSpaces(text: string): boolean {
 	return text.length === getIndexOfFirstChar(text);
 }
 
-function addInlineElementText(results: string[], text: string) {
-	let found = false;
+// tried, close
+function addInlineElementText(
+	results: string[],
+	text: string,
+	tagInfo: TagInfo,
+) {
+	let texts = text.split("\n");
 
-	for (let line of text.split("\n")) {
+	let index = 0;
+	while (index < texts.length) {
+		let line = texts[index];
+		index += 1;
+
+		if (!allSpaces(line)) {
+			results.push(line.trimEnd());
+			break;
+		}
+	}
+
+	while (index < texts.length) {
+		let line = texts[index];
+		index += 1;
+
 		if (allSpaces(line)) continue;
 
-		if (found) results.push(" ");
-
+		results.push("\n");
+		results.push("\t".repeat(tagInfo.indentCount));
 		results.push(line.trim());
-		found = true;
 	}
 }
 
+// tried close
 function addInlineElementClosedText(
 	results: string[],
 	text: string,
 	tagInfo: TagInfo,
 ) {
-	const texts = text.split("\n");
+	let texts = text.split("\n");
 
-	let first_text = texts[0];
-	if (first_text && !allSpaces(first_text)) {
-		results.push(" ", first_text.trim());
+	let index = 0;
+	while (index < texts.length) {
+		let line = texts[index];
+		index += 1;
+
+		if (!allSpaces(line)) {
+			results.push(" ");
+			results.push(line.trim());
+			break;
+		}
 	}
 
-	for (let index = 1; index < texts.length; index++) {
-		let text = texts[index];
-		if (allSpaces(text)) continue;
+	while (index < texts.length) {
+		let line = texts[index];
+		index += 1;
 
-		results.push("\n", "\t".repeat(tagInfo.indentCount), text.trim());
+		if (allSpaces(line)) continue;
+
+		results.push("\n");
+		results.push("\t".repeat(tagInfo.indentCount));
+		results.push(line.trim());
 	}
 }
 
@@ -387,6 +420,7 @@ function addText(results: string[], text: string, tagInfo: TagInfo) {
 	}
 }
 
+// tried, seems close
 function popClosingSquence(
 	results: string[],
 	stack: TagInfo[],
@@ -408,19 +442,22 @@ function popClosingSquence(
 		return;
 	}
 
+	stack.pop();
+
+	let prevTagInfo = stack[stack.length - 1];
+	if (prevTagInfo === undefined) return;
+
 	if (
 		rules.respectIndentation() &&
-		!tagInfo.inlineEl &&
-		!tagInfo.preservedTextPath &&
-		"Initial" != tagInfo.mostRecentDescendant
+		!prevTagInfo.inlineEl &&
+		!prevTagInfo.preservedTextPath &&
+		"Initial" != prevTagInfo.mostRecentDescendant
 	) {
 		results.push("\n");
-		results.push("\t".repeat(tagInfo.indentCount));
+		results.push("\t".repeat(prevTagInfo.indentCount));
 	}
 
 	results.push(closingSequence);
-
-	stack.pop();
 }
 
 function getIndexOfFirstChar(text: string): number {
@@ -481,5 +518,3 @@ function getMostCommonIndexBetweenTwoStrings(
 
 	return minLength - 1;
 }
-
-export { composeSteps, pushText };

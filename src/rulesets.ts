@@ -1,3 +1,7 @@
+export type { RulesetInterface };
+
+export { ClientRules, ServerRules, XmlRules };
+
 interface RulesetInterface {
 	// parse
 	getInitialNamespace(): string;
@@ -237,7 +241,3 @@ function isNameSpaceEl(tag: string): boolean {
 function isPreservedTextEl(tag: string): boolean {
 	return "pre" === tag;
 }
-
-export type { RulesetInterface };
-
-export { ClientRules, ServerRules, XmlRules };

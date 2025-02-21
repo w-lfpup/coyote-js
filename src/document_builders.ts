@@ -7,6 +7,8 @@ import { compose, composeTemplateArr } from "./template_steps.js";
 import { ClientRules, ServerRules, XmlRules } from "./rulesets.js";
 import { composeString } from "./component_string.js";
 
+export { ClientHtml, Html, Xml };
+
 class Builder implements BuilderInterface {
 	// place to add cache for:
 	// - templateStr
@@ -24,9 +26,7 @@ class Builder implements BuilderInterface {
 	}
 }
 
-// return [string, Error | undefined];
 class Html {
-	// rules
 	rules = new ServerRules();
 	builder = new Builder();
 
@@ -36,7 +36,6 @@ class Html {
 }
 
 class ClientHtml {
-	// rules
 	rules = new ClientRules();
 	builder = new Builder();
 
@@ -46,7 +45,6 @@ class ClientHtml {
 }
 
 class Xml {
-	// rules
 	rules = new XmlRules();
 	builder = new Builder();
 
@@ -54,5 +52,3 @@ class Xml {
 		return composeString(this.builder, this.rules, component);
 	}
 }
-
-export { ClientHtml, Html, Xml };

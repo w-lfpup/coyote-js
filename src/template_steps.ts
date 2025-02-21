@@ -3,6 +3,10 @@ import type { RulesetInterface } from "./rulesets.js";
 
 import { parseStr, route } from "./parse_str.js";
 
+export type { ResultsInterface };
+
+export { Results, compose, composeTemplateArr };
+
 interface ResultsInterface {
 	steps: StepInterface[][];
 	injs: (StepKind | undefined)[];
@@ -76,6 +80,3 @@ function pushInjection(results: ResultsInterface, stepKind: StepKind) {
 	results.steps.push([]);
 	results.injs.push(stepKind);
 }
-
-export type { ResultsInterface };
-export { Results, compose, composeTemplateArr };

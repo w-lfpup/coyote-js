@@ -1,3 +1,7 @@
+export type { StepKind };
+
+export { route };
+
 type StepKind =
 	| "AttrQuoteClosed"
 	| "AttrQuote"
@@ -165,6 +169,3 @@ function getKindFromInitial(glyph: string): StepKind {
 
 	return "Text";
 }
-
-export type { StepKind };
-export { route };
