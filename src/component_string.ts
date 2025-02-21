@@ -86,31 +86,31 @@ function composeString(
 
 			// handle injection
 			let injKind = bit.results.injs[index];
+			if ("AttrMapInjection" === injKind) {
+				addAttrInj(results, component);
+			}
 
-			let inj: Component;
-			if (bit.component instanceof TaggedTmplComponent) {
-				inj = bit.component.injections[index];
-			}
-			if (bit.component instanceof TmplComponent) {
-				inj = bit.component.injections[index];
-			}
-			if (inj) {
-				if ("AttrMapInjection" === injKind) {
-					addAttrInj(results, component);
-				}
-				if ("DescendantInjection" === injKind) {
-					stack.push(bit);
+			// let inj: Component;
+			// if (bit.component instanceof TaggedTmplComponent) {
+			// 	inj = bit.component.injections[index];
+			// }
+			// if (bit.component instanceof TmplComponent) {
+			// 	inj = bit.component.injections[index];
+			// }
+			// if (inj) {
+			if ("DescendantInjection" === injKind) {
+				stack.push(bit);
 
-					let nuBit = getStackBitFromComponent(
-						tagInfoStack,
-						builder,
-						rules,
-						inj,
-					);
-					stack.push(nuBit);
-					continue;
-				}
+				let nuBit = getStackBitFromComponent(
+					tagInfoStack,
+					builder,
+					rules,
+					bit.component[index],
+				);
+				stack.push(nuBit);
+				continue;
 			}
+			// }
 
 			// tail case
 			if (index < bit.results.steps.length) {
@@ -119,8 +119,8 @@ function composeString(
 					return [
 						undefined,
 						new Error(`
-						Coyote Err: the following template component is imbalanced:
-						${"woah!"}
+Coyote Err: the following template component is imbalanced:
+${"woah!"}
 					`),
 					];
 				}
