@@ -1,11 +1,11 @@
-import {
-	BuilderInterface,
-	compose as buildComponent,
-} from "./component_string.js";
-import { Component } from "./components.js";
-import { compose, composeTemplateArr, Results } from "./template_steps.js";
-import { RulesetInterface } from "./rulesets.js";
+import type { BuilderInterface } from "./component_string.js";
+import type { Component } from "./components.js";
+import type { RulesetInterface } from "./rulesets.js";
+import type { Results } from "./template_steps.js";
+
+import { compose, composeTemplateArr } from "./template_steps.js";
 import { ClientRules, ServerRules, XmlRules } from "./rulesets.js";
+import { composeString } from "./component_string.js";
 
 class Builder implements BuilderInterface {
 	// place to add cache for:
@@ -31,7 +31,7 @@ class Html {
 	builder = new Builder();
 
 	build(component: Component): string {
-		return buildComponent(this.builder, this.rules, component);
+		return composeString(this.builder, this.rules, component);
 	}
 }
 
@@ -41,7 +41,7 @@ class ClientHtml {
 	builder = new Builder();
 
 	build(component: Component): string {
-		return buildComponent(this.builder, this.rules, component);
+		return composeString(this.builder, this.rules, component);
 	}
 }
 
@@ -51,7 +51,7 @@ class Xml {
 	builder = new Builder();
 
 	build(component: Component): string {
-		return buildComponent(this.builder, this.rules, component);
+		return composeString(this.builder, this.rules, component);
 	}
 }
 

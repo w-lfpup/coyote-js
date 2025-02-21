@@ -22,18 +22,20 @@ interface BuilderInterface {
 class TemplateBit {
 	component: Component;
 	results: Results;
+	stackDepth: number;
+
 	index = 0;
-	stackDepth = 0;
 
 	constructor(component: Component, results: Results, stackDepth: number) {
 		this.component = component;
 		this.results = results;
+		this.stackDepth = stackDepth;
 	}
 }
 
 type StackBit = Component | TemplateBit;
 
-function compose(
+function composeString(
 	builder: BuilderInterface,
 	rules: RulesetInterface,
 	component: Component,
@@ -159,4 +161,4 @@ function addAttrVal(results: string[], attr: string, val: string) {
 }
 
 export type { BuilderInterface };
-export { compose };
+export { composeString };
