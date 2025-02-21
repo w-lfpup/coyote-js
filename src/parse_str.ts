@@ -39,8 +39,6 @@ function parseStr(
 		let glyph = templateStr.charAt(index);
 		// slide window
 		if (slidingWindow) {
-			console.log("sliding window!");
-			console.log("glyph:", glyph);
 			if (!slidingWindow.slide(glyph)) continue;
 			if (!addReservedElementText(sieve, steps, tag, index)) return steps;
 
@@ -81,8 +79,6 @@ function parseStr(
 		if ("ElementClosed" === step.kind) {
 			let closeSequence = sieve.getCloseSequenceFromAltTextTag(tag);
 			if (closeSequence) {
-				console.log("alt text close sequence character start:");
-				console.log(glyph);
 				let slider = new SlidingWindow(closeSequence);
 				slider.slide(glyph);
 				slidingWindow = slider;
@@ -98,7 +94,6 @@ function parseStr(
 		step.target = templateStr.length;
 	}
 
-	console.log(steps);
 	return steps;
 }
 

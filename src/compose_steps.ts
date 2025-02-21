@@ -273,7 +273,6 @@ function pushTextStep(
 	step: StepInterface,
 ) {
 	let text = getTextFromStep(templateStr, step);
-	console.log(text);
 	pushText(results, stack, rules, text);
 }
 
@@ -305,14 +304,10 @@ function pushText(
 	// alt text
 	let altText = rules.getCloseSequenceFromAltTextTag(tagInfo.tag);
 	if (altText) {
-		console.log("alt text FOUND!");
-		console.log(text);
 		let commonIndex = getMostCommonSpaceIndex(text);
-		// console.log("common index: ", commonIndex);
 
 		for (let line of text.split("\n")) {
 			if (allSpaces(line)) continue;
-			console.log(line.slice(commonIndex).trimEnd());
 
 			results.push("\n");
 			results.push("\t".repeat(tagInfo.indentCount + 1));
@@ -456,8 +451,6 @@ function getIndexOfFirstChar(text: string): number {
 
 // this is probably wrong
 function getMostCommonSpaceIndex(text: string): number {
-	// console.log("get most common index!");
-	// console.log(text);
 	let prevSpaceIndex = text.length;
 	let spaceIndex = text.length;
 

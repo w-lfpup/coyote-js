@@ -96,8 +96,12 @@ function testPrettyHtmlScriptEl() {
 				console.log();
 			}
         </script>`;
-	const expected =
-		"<style>\n\t#woof .bark {\n\t    color: doggo;\n\t}\n</style>";
+
+	const expected = `<script>
+	if 2 < 3 {
+		console.log();
+	}
+</script>`;
 
 	const html = new Html();
 	let results = html.build(template);
@@ -220,16 +224,16 @@ function testPrettyHtmWithoutIndentsAndText() {
 }
 
 export const tests = [
-	// testPrettyHtmlNoEmptySpace,
-	// testPrettyHtmlVoidEl,
-	// testPrettyHtmlVoidElWithAttributes,
-	// testPrettyHtmlVoidElAndOthers,
-	// testPrettyHtmlNestedVoidEl,
+	testPrettyHtmlNoEmptySpace,
+	testPrettyHtmlVoidEl,
+	testPrettyHtmlVoidElWithAttributes,
+	testPrettyHtmlVoidElAndOthers,
+	testPrettyHtmlNestedVoidEl,
 	testPrettyHtmlPreservedSpaceEl,
 	testPrettyHtmlScriptEl,
-	// testPrettyHtmlDoc,
-	// testPrettyHtmlClient,
-	// testPrettyHtmlWithoutIndents,
-	// testPrettyHtmlWithoutIndentsClient,
-	// testPrettyHtmWithoutIndentsAndText,
+	testPrettyHtmlDoc,
+	testPrettyHtmlClient,
+	testPrettyHtmlWithoutIndents,
+	testPrettyHtmlWithoutIndentsClient,
+	testPrettyHtmWithoutIndentsAndText,
 ];
