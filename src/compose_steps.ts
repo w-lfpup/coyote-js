@@ -119,8 +119,11 @@ function closeElement(results: string[], stack: TagInfo[]) {
 	}
 }
 
-function updateMostRecentDescendant( stack: TagInfo[], descdantStatus: DescendantStatus) {
-	let tag_info = stack[stack.length -1];
+function updateMostRecentDescendant(
+	stack: TagInfo[],
+	descdantStatus: DescendantStatus,
+) {
+	let tag_info = stack[stack.length - 1];
 	if (tag_info) {
 		tag_info.mostRecentDescendant = descdantStatus;
 	}
@@ -139,20 +142,24 @@ function closeEmptyElement(results: string[], stack: TagInfo[]) {
 	if ("html" !== tagInfo.namespace) {
 		results.push("/>");
 	}
-	
+
 	if ("html" === tagInfo.namespace) {
 		if (!tagInfo.voidEl) {
 			results.push("></");
 			results.push(tagInfo.tag);
 		}
 
-		results.push(">");	
+		results.push(">");
 	}
 
 	let last_tag = stack.pop();
-	let descdantStatus: DescendantStatus = last_tag.inlineEl ? "InlineElementClosed" : "ElementClosed";
+	let descdantStatus: DescendantStatus = last_tag.inlineEl
+		? "InlineElementClosed"
+		: "ElementClosed";
 	updateMostRecentDescendant(stack, descdantStatus);
 }
+
+// RUST doesnt protect against banned
 
 function popElement(
 	results: string[],
