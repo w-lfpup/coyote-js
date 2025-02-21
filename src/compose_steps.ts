@@ -1,6 +1,6 @@
 import type { StepInterface, StepKind } from "./parse_str.ts";
 import type { RulesetInterface } from "./rulesets.ts";
-import type { TagInfoInterface } from "./tag_info.ts";
+import type { DescendantStatus, TagInfoInterface } from "./tag_info.ts";
 
 import { TagInfo, from } from "./tag_info.js";
 import { getTextFromStep } from "./parse_str.js";
@@ -119,9 +119,17 @@ function closeElement(results: string[], stack: TagInfo[]) {
 	}
 }
 
+function updateMostRecentDescendant( stack: TagInfo[], descdantStatus: DescendantStatus) {
+	let tag_info = stack[stack.length -1];
+	if (tag_info) {
+		tag_info.mostRecentDescendant = descdantStatus;
+	}
+}
+
+// tried close, should update RUST version
 function closeEmptyElement(results: string[], stack: TagInfo[]) {
 	let tagInfo = stack[stack.length - 1];
-	if (tagInfo === undefined) return;
+	if (undefined === tagInfo) return;
 
 	if (tagInfo.bannedPath || tagInfo.voidEl) {
 		stack.pop();
@@ -130,18 +138,20 @@ function closeEmptyElement(results: string[], stack: TagInfo[]) {
 
 	if ("html" !== tagInfo.namespace) {
 		results.push("/>");
-		stack.pop();
-		return;
+	}
+	
+	if ("html" === tagInfo.namespace) {
+		if (!tagInfo.voidEl) {
+			results.push("></");
+			results.push(tagInfo.tag);
+		}
+
+		results.push(">");	
 	}
 
-	if (!tagInfo.voidEl) {
-		results.push("></");
-		results.push(tagInfo.tag);
-	}
-
-	results.push(">");
-
-	stack.pop();
+	let last_tag = stack.pop();
+	let descdantStatus: DescendantStatus = last_tag.inlineEl ? "InlineElementClosed" : "ElementClosed";
+	updateMostRecentDescendant(stack, descdantStatus);
 }
 
 function popElement(
