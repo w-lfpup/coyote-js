@@ -1,16 +1,14 @@
-import type { RulesetInterface } from "./rulesets.ts";
 import type { Component } from "./components.js";
+import type { RulesetInterface } from "./rulesets.ts";
 import type { Results } from "./template_steps.js";
-import { TagInfo } from "./tag_info.js";
 
 import {
-	CoyoteComponent,
 	TmplComponent,
 	TaggedTmplComponent,
 	AttrComponent,
 	AttrValComponent,
 } from "./components.js";
-
+import { TagInfo } from "./tag_info.js";
 import { composeSteps, pushText } from "./compose_steps.js";
 
 interface BuilderInterface {
@@ -38,7 +36,7 @@ type StackBit = Component | TemplateBit;
 function compose(
 	builder: BuilderInterface,
 	rules: RulesetInterface,
-	component: CoyoteComponent,
+	component: Component,
 ): string {
 	let results: string[] = [];
 
@@ -67,40 +65,43 @@ function compose(
 
 			// add text chunk
 			let currChunk = bit.results.steps[index];
-			if (currChunk) {
-				let templateStr;
-				if (component instanceof TaggedTmplComponent) {
-					templateStr = component.templateArr[index];
-				}
-				if (component instanceof TmplComponent) {
-					templateStr = component.templateStr;
-				}
-				if (templateStr) {
-					composeSteps(rules, results, tagInfoStack, templateStr, currChunk);
-				}
+			let templateStr: string;
+			if (component instanceof TaggedTmplComponent) {
+				templateStr = component.templateArr[index];
+			}
+			if (component instanceof TmplComponent) {
+				templateStr = component.templateStr;
+			}
+			if (templateStr) {
+				composeSteps(rules, results, tagInfoStack, templateStr, currChunk);
 			}
 
 			// handle injection
-			// injection is from two kinds of templates
 			let injKind = bit.results.injs[index];
 
-			let inj;
+			let inj: Component;
 			if (bit.component instanceof TaggedTmplComponent) {
 				inj = bit.component.injections[index];
 			}
 			if (bit.component instanceof TmplComponent) {
 				inj = bit.component.injections[index];
 			}
+			if (inj) {
+				if ("AttrMapInjection" === injKind) {
+					addAttrInj(results, component);
+				}
+				if ("DescendantInjection" === injKind) {
+					stack.push(bit);
 
-			if ("AttrMapInjection" === injKind && undefined !== inj) {
-				addAttrInj(results, component);
-			}
-			if ("DescendantInjection" === injKind && undefined !== inj) {
-				stack.push(bit);
-
-				let nuBit = getStackBitFromComponent(tagInfoStack, builder, rules, inj);
-				stack.push(nuBit);
-				continue;
+					let nuBit = getStackBitFromComponent(
+						tagInfoStack,
+						builder,
+						rules,
+						inj,
+					);
+					stack.push(nuBit);
+					continue;
+				}
 			}
 
 			// tail case
@@ -117,7 +118,7 @@ function getStackBitFromComponent(
 	stack: TagInfo[],
 	builder: BuilderInterface,
 	rules: RulesetInterface,
-	component: CoyoteComponent,
+	component: Component,
 ): StackBit {
 	if (typeof component === "string" || Array.isArray(component))
 		return component;
