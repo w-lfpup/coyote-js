@@ -5,7 +5,12 @@ import type { DescendantStatus, TagInfoInterface } from "./tag_info.ts";
 import { TagInfo, from } from "./tag_info.js";
 import { getTextFromStep } from "./parse_str.js";
 
-export { composeSteps, pushText, pushAttrValueComponent, pushAttrComponent };
+export {
+	composeSteps,
+	pushTextComponent,
+	pushAttrValueComponent,
+	pushAttrComponent,
+};
 
 type Router = (
 	results: string[],
@@ -26,12 +31,12 @@ const htmlRoutes = new Map<StepKind, Router>([
 	["ElementClosed", closeElement],
 	["EmptyElementClosed", closeEmptyElement],
 	["TailTag", popElement],
-	["Text", pushTextStep],
+	["Text", pushText],
 	["Attr", pushAttr],
 	["AttrValue", pushAttrValue],
 	["AttrValueUnquoted", pushAttrValueUnquoted],
-	["CommentText", pushTextStep],
-	["AltText", pushTextStep],
+	["CommentText", pushText],
+	["AltText", pushText],
 	["AltTextCloseSequence", popClosingSquence],
 ]);
 
@@ -269,7 +274,7 @@ function pushAttrValueUnquoted(
 	results.push(val);
 }
 
-function pushTextStep(
+function pushText(
 	results: string[],
 	stack: TagInfo[],
 	rules: RulesetInterface,
@@ -277,10 +282,10 @@ function pushTextStep(
 	step: StepInterface,
 ) {
 	let text = getTextFromStep(templateStr, step);
-	pushText(results, stack, rules, text);
+	pushTextComponent(results, stack, rules, text);
 }
 
-function pushText(
+function pushTextComponent(
 	results: string[],
 	stack: TagInfo[],
 	rules: RulesetInterface,

@@ -11,7 +11,7 @@ import {
 import { TagInfo } from "./tag_info.js";
 import {
 	composeSteps,
-	pushText,
+	pushTextComponent,
 	pushAttrComponent,
 	pushAttrValueComponent,
 } from "./compose_steps.js";
@@ -66,7 +66,7 @@ function composeString(
 		const bit = stack.pop();
 
 		if (typeof bit === "string") {
-			pushText(results, tagInfoStack, rules, bit);
+			pushTextComponent(results, tagInfoStack, rules, bit);
 		}
 
 		if (Array.isArray(bit)) {
