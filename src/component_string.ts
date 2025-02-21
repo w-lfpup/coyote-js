@@ -1,6 +1,6 @@
 import type { Component } from "./components.js";
 import type { RulesetInterface } from "./rulesets.ts";
-import type { Results } from "./template_steps.js";
+import type { Results as TemplateSteps } from "./template_steps.js";
 
 import {
 	TmplComponent,
@@ -12,21 +12,25 @@ import { TagInfo } from "./tag_info.js";
 import { composeSteps, pushText } from "./compose_steps.js";
 
 interface BuilderInterface {
-	build(rules: RulesetInterface, templateStr: string): Results;
+	build(rules: RulesetInterface, templateStr: string): TemplateSteps;
 	buildTemplate(
 		rules: RulesetInterface,
 		templateArray: TemplateStringsArray,
-	): Results;
+	): TemplateSteps;
 }
 
 class TemplateBit {
 	component: Component;
-	results: Results;
+	results: TemplateSteps;
 	stackDepth: number;
 
 	index = 0;
 
-	constructor(component: Component, results: Results, stackDepth: number) {
+	constructor(
+		component: Component,
+		results: TemplateSteps,
+		stackDepth: number,
+	) {
 		this.component = component;
 		this.results = results;
 		this.stackDepth = stackDepth;
@@ -35,11 +39,13 @@ class TemplateBit {
 
 type StackBit = Component | TemplateBit;
 
+type Results = [string?, Error?];
+
 function composeString(
 	builder: BuilderInterface,
 	rules: RulesetInterface,
 	component: Component,
-): string {
+): Results {
 	let results: string[] = [];
 
 	let tagInfoBit = new TagInfo(rules, ":root");
@@ -108,12 +114,22 @@ function composeString(
 
 			// tail case
 			if (index < bit.results.steps.length) {
+				// check for imbalance error
+				if (bit.stackDepth !== tagInfoStack.length) {
+					return [
+						undefined,
+						new Error(`
+						Coyote Err: the following template component is imbalanced:
+						${"woah!"}
+					`),
+					];
+				}
 				stack.push(bit);
 			}
 		}
 	}
 
-	return results.join("");
+	return [results.join(""), undefined];
 }
 
 function getStackBitFromComponent(
@@ -160,5 +176,5 @@ function addAttrVal(results: string[], attr: string, val: string) {
 	results.push(" ", attr, '="', val, '"');
 }
 
-export type { BuilderInterface };
+export type { BuilderInterface, Results };
 export { composeString };

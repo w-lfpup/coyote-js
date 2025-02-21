@@ -292,7 +292,7 @@ function pushText(
 			if (allSpaces(line)) continue;
 
 			results.push("\n");
-			results.push("\t".repeat(tagInfo.indentCount + 1));
+			results.push("\t".repeat(tagInfo.indentCount));
 			results.push(line.slice(commonIndex).trimEnd());
 		}
 
@@ -363,7 +363,7 @@ function addInlineElementClosedText(
 		let text = texts[index];
 		if (allSpaces(text)) continue;
 
-		results.push("\n", "\t".repeat(tagInfo.indentCount + 1), text.trim());
+		results.push("\n", "\t".repeat(tagInfo.indentCount), text.trim());
 	}
 }
 

@@ -1,19 +1,30 @@
 import { tmpl, ClientHtml, Html } from "./mod.js";
+import type { Results } from "./component_string.js";
 
-function prettyPrint(expected: string, results: string): string[] | undefined {
-	let assertions = [];
-	if (expected !== results) {
-		assertions.push(`
+function prettyPrint(
+	expected: string,
+	results: Results,
+): { toString: Object["toString"] } {
+	// let assertions = [];
+
+	let [document, error] = results;
+
+	if (error) {
+		return error;
+	}
+
+	if (expected !== document) {
+		return `
 Expected:
 ${expected}
 
 Results:
 ${results}
 
-`);
+`;
 	}
 
-	return assertions;
+	// return assertions;
 }
 
 function testPrettyHtmlNoEmptySpace() {
