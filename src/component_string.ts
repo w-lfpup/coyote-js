@@ -1,7 +1,7 @@
 import type { RulesetInterface } from "./rulesets.ts";
 import type { Component } from "./components.js";
 import type { Results } from "./template_steps.js";
-import type { TagInfo } from "./tag_info.js";
+import { TagInfo } from "./tag_info.js";
 
 import {
 	CoyoteComponent,
@@ -25,8 +25,9 @@ class TemplateBit {
 	component: Component;
 	results: Results;
 	index = 0;
+	stackDepth = 0;
 
-	constructor(component: Component, results: Results) {
+	constructor(component: Component, results: Results, stackDepth: number) {
 		this.component = component;
 		this.results = results;
 	}
@@ -41,9 +42,10 @@ function compose(
 ): string {
 	let results: string[] = [];
 
-	let bit = getStackBitFromComponent(builder, rules, component);
+	let tagInfoBit = new TagInfo(rules, ":root");
+	let tagInfoStack: TagInfo[] = [tagInfoBit];
 
-	let tagInfoStack: TagInfo[] = [];
+	let bit = getStackBitFromComponent(tagInfoStack, builder, rules, component);
 	let stack = [bit];
 
 	while (0 < stack.length) {
@@ -55,10 +57,7 @@ function compose(
 
 		if (Array.isArray(bit)) {
 			// reverse
-			for (let index = bit.length - 1; 0 < index; index--) {
-				const next_bit = getStackBitFromComponent(builder, rules, bit);
-				stack.push(next_bit);
-			}
+			while (bit.length) stack.push(bit.pop());
 		}
 
 		if (bit instanceof TemplateBit) {
@@ -99,7 +98,7 @@ function compose(
 			if ("DescendantInjection" === injKind && undefined !== inj) {
 				stack.push(bit);
 
-				let nuBit = getStackBitFromComponent(builder, rules, inj);
+				let nuBit = getStackBitFromComponent(tagInfoStack, builder, rules, inj);
 				stack.push(nuBit);
 				continue;
 			}
@@ -115,6 +114,7 @@ function compose(
 }
 
 function getStackBitFromComponent(
+	stack: TagInfo[],
 	builder: BuilderInterface,
 	rules: RulesetInterface,
 	component: CoyoteComponent,
@@ -124,12 +124,12 @@ function getStackBitFromComponent(
 
 	if (component instanceof TmplComponent) {
 		let buildResults = builder.build(rules, component.templateStr);
-		return new TemplateBit(component, buildResults);
+		return new TemplateBit(component, buildResults, stack.length);
 	}
 
 	if (component instanceof TaggedTmplComponent) {
 		let buildResults = builder.buildTemplate(rules, component.templateArr);
-		return new TemplateBit(component, buildResults);
+		return new TemplateBit(component, buildResults, stack.length);
 	}
 }
 
