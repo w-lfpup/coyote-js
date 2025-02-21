@@ -97,11 +97,7 @@ function testPrettyHtmlScriptEl() {
 			}
         </script>`;
 
-	const expected = `<script>
-	if 2 < 3 {
-		console.log();
-	}
-</script>`;
+	const expected = `<script>\n\tif 2 < 3 {\n\t\tconsole.log();\n\t}\n</script>`;
 
 	const html = new Html();
 	let results = html.build(template);

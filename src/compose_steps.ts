@@ -3,7 +3,7 @@ import type { RulesetInterface } from "./rulesets.ts";
 import type { TagInfoInterface } from "./tag_info.ts";
 
 import { TagInfo, from } from "./tag_info.js";
-import { getTextFromStep, parseStr } from "./parse_str.js";
+import { getTextFromStep } from "./parse_str.js";
 
 type Router = (
 	results: string[],
@@ -14,11 +14,9 @@ type Router = (
 ) => void;
 
 const spaceCharCodes = new Set([
-	32, 9, 10, 113, 160, 0x0009, 0x000b, 0x000c, 0x000d, 0xfeff,
-
-	// whitespace chars
-	0x0020, 0x00a0, 0x1680, 0x2000, 0x2001, 0x2002, 0x2003, 0x2004, 0x2005,
-	0x2006, 0x2007, 0x2008, 0x2009, 0x200a, 0x202f, 0x205f, 0x3000,
+	0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x0020, 0x0071, 0x00a0, 0x0160,
+	0x1680, 0x2000, 0x2001, 0x2002, 0x2003, 0x2004, 0x2005, 0x2006, 0x2007,
+	0x2008, 0x2009, 0x200a, 0x202f, 0x205f, 0x3000, 0xfeff,
 ]);
 
 const htmlRoutes = new Map<StepKind, Router>([
@@ -249,22 +247,6 @@ function addAttrValUnquoted(
 	results.push(val);
 }
 
-// function pushInjectionKind(
-// 	results: string[],
-// 	stack: TagInfo[],
-// 	_rules: RulesetInterface,
-// 	templateStr: string,
-// 	step: StepInterface,
-// ) {
-// 	let tagInfo = stack[stack.length - 1];
-// 	if (tagInfo === undefined) return;
-
-// 	if (tagInfo.bannedPath) return;
-
-// 	let glpyhs = getTextFromStep(templateStr, step);
-// 	results.push(glpyhs);
-// }
-
 function pushTextStep(
 	results: string[],
 	stack: TagInfo[],
@@ -465,7 +447,7 @@ function getMostCommonSpaceIndex(text: string): number {
 	for (let index = 1; index < texts.length; index++) {
 		const line = texts[index];
 		if (line === undefined) break;
-		
+
 		let firstChar = getIndexOfFirstChar(line);
 		if (line.length === firstChar) continue;
 
