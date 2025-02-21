@@ -5,7 +5,7 @@ import { parseStr, route } from "./parse_str.js";
 
 interface ResultsInterface {
 	steps: StepInterface[][];
-	injs: StepKind[];
+	injs: (StepKind | undefined)[];
 }
 
 class Results implements ResultsInterface {
@@ -58,10 +58,10 @@ function composeTemplateArr(
 
 		if ("AttrMapInjection" === injStepKind) {
 			pushInjection(results, "AttrMapInjection");
-		}
-
-		if ("DescendantInjection" === injStepKind) {
+		} else if ("DescendantInjection" === injStepKind) {
 			pushInjection(results, "DescendantInjection");
+		} else {
+			pushInjection(results, undefined);
 		}
 	}
 

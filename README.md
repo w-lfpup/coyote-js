@@ -15,11 +15,9 @@ npm install --save-dev https://github.com/wolfpup-software/coyote-js
 Create documents with coyote [components](./components.md).
 
 ```TS
-import type { Component } from "coyote";
-
 import { tmpl } from "coyote";
 
-function hai(): Component {
+function hai() {
     return tmpl`<p>hai :3</p>`;
 }
 ```
@@ -29,19 +27,16 @@ function hai(): Component {
 Render components as `html` with [document builders](./document_builders.md).
 
 ```TS
-import type { Component } from "coyote";
-
 import { Html, tmpl } from "coyote";
 
-function hai(): Component {
+function hai() {
     return tmpl`<p>hai :3</p>`;
 }
 
 let helloWorld = hai();
-
 let html = new Html();
-let document = html.build(helloWorld);
 
+let document = html.build(helloWorld);
 console.log(document);
 ```
 

@@ -1,5 +1,5 @@
 import type { RulesetInterface } from "./rulesets.ts";
-import type { Component } from "./coyote.ts";
+import type { Component } from "./components.js";
 import type { Results } from "./template_steps.js";
 import type { TagInfo } from "./tag_info.js";
 
@@ -9,7 +9,7 @@ import {
 	TaggedTmplComponent,
 	AttrComponent,
 	AttrValComponent,
-} from "./coyote.js";
+} from "./components.js";
 
 import { composeSteps, pushText } from "./compose_steps.js";
 
@@ -111,7 +111,6 @@ function compose(
 		}
 	}
 
-	console.log("compose_string\n", results);
 	return results.join("");
 }
 

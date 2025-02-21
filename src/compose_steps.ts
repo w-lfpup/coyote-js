@@ -49,7 +49,6 @@ function composeSteps(
 		}
 	}
 
-	console.log("compose_steps!\n", results);
 	return results.join("");
 }
 
@@ -135,7 +134,7 @@ function closeEmptyElement(results: string[], stack: TagInfo[]) {
 	}
 
 	if (!tagInfo.voidEl) {
-		results.push(">/<");
+		results.push("></");
 		results.push(tagInfo.tag);
 	}
 

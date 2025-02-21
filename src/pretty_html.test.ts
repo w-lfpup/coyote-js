@@ -1,5 +1,21 @@
 import { tmpl, ClientHtml, Html } from "./mod.js";
 
+function prettyPrint(expected: string, results: string): string[] | undefined {
+	let assertions = [];
+	if (expected !== results) {
+		assertions.push(`
+Expected:
+${expected}
+
+Results:
+${results}
+
+`);
+	}
+
+	return assertions;
+}
+
 function testPrettyHtmlNoEmptySpace() {
 	const template = tmpl`<html></html>`;
 	const expected = "<html></html>";
@@ -7,7 +23,7 @@ function testPrettyHtmlNoEmptySpace() {
 	const html = new Html();
 	let results = html.build(template);
 
-	return expected !== results;
+	return prettyPrint(expected, results);
 }
 
 function testPrettyHtmlVoidEl() {
@@ -19,7 +35,7 @@ function testPrettyHtmlVoidEl() {
 	const html = new Html();
 	let results = html.build(template);
 
-	return expected !== results;
+	return prettyPrint(expected, results);
 }
 
 function testPrettyHtmlVoidElWithAttributes() {
@@ -32,7 +48,7 @@ function testPrettyHtmlVoidElWithAttributes() {
 	const html = new Html();
 	let results = html.build(template);
 
-	return expected !== results;
+	return prettyPrint(expected, results);
 }
 
 function testPrettyHtmlVoidElAndOthers() {
@@ -43,7 +59,7 @@ function testPrettyHtmlVoidElAndOthers() {
 	const html = new Html();
 	let results = html.build(template);
 
-	return expected !== results;
+	return prettyPrint(expected, results);
 }
 
 function testPrettyHtmlNestedVoidEl() {
@@ -58,7 +74,7 @@ function testPrettyHtmlNestedVoidEl() {
 	const html = new Html();
 	let results = html.build(template);
 
-	return expected !== results;
+	return prettyPrint(expected, results);
 }
 
 function testPrettyHtmlPreservedSpaceEl() {
@@ -71,12 +87,7 @@ function testPrettyHtmlPreservedSpaceEl() {
 	const html = new Html();
 	let results = html.build(template);
 
-	console.log("expected:");
-	console.log(expected);
-	console.log("results:\n");
-	console.log(results);
-
-	return expected !== results;
+	return prettyPrint(expected, results);
 }
 
 function testPrettyHtmlDoc() {
@@ -105,12 +116,7 @@ function testPrettyHtmlDoc() {
 	const html = new Html();
 	let results = html.build(template);
 
-	console.log("expected:");
-	console.log(expected);
-	console.log("results:\n");
-	console.log(results);
-
-	return expected !== results;
+	return prettyPrint(expected, results);
 }
 
 function testPrettyHtmlClient() {
@@ -139,12 +145,7 @@ if 2 < 3 {
 	const clientHtml = new ClientHtml();
 	let results = clientHtml.build(template);
 
-	console.log("expected:");
-	console.log(expected);
-	console.log("results:\n");
-	console.log(results);
-
-	return expected !== results;
+	return prettyPrint(expected, results);
 }
 
 function testPrettyHtmlWithoutIndents() {
@@ -167,12 +168,7 @@ function testPrettyHtmlWithoutIndents() {
 	const html = new Html();
 	let results = html.build(template);
 
-	console.log("expected:");
-	console.log(expected);
-	console.log("results:");
-	console.log(results);
-
-	return expected !== results;
+	return prettyPrint(expected, results);
 }
 
 function testPrettyHtmlWithoutIndentsClient() {
@@ -190,17 +186,12 @@ function testPrettyHtmlWithoutIndentsClient() {
         </body>
 </html>`;
 	const expected =
-		"<!DOCTYPE>\n<html>\n\t<head></head>\n\t<body>\n\t\t<article>\n\t\t\tYou're a <span>boy kisser</span> aren't you?\n\t\t\tClick\n\t\t\t<a>\n\t\t\t\there\n\t\t\t</a>\n\t\t\tand go somewhere else.\n\t\t</article>\n\t\t<footer></footer>\n\t</body>\n</html>";
+		"<!DOCTYPE><html><head></head><body><article>You're a <span>boy kisser</span> aren't you? Click <a>here</a> and go somewhere else.</article><footer></footer></body></html>";
 
 	const clientHtml = new ClientHtml();
 	let results = clientHtml.build(template);
 
-	console.log("expected:");
-	console.log(expected);
-	console.log("results:");
-	console.log(results);
-
-	return expected !== results;
+	return prettyPrint(expected, results);
 }
 
 function testPrettyHtmWithoutIndentsAndText() {
@@ -210,12 +201,7 @@ function testPrettyHtmWithoutIndentsAndText() {
 	const clientHtml = new ClientHtml();
 	let results = clientHtml.build(template);
 
-	console.log("expected:");
-	console.log(expected);
-	console.log("results:\n");
-	console.log(results);
-
-	return expected !== results;
+	return prettyPrint(expected, results);
 }
 
 export const tests = [
@@ -224,11 +210,11 @@ export const tests = [
 	testPrettyHtmlVoidElWithAttributes,
 	testPrettyHtmlVoidElAndOthers,
 	testPrettyHtmlNestedVoidEl,
-	// testPrettyHtmlPreservedSpaceEl,
-	// testPrettyHtmlDoc,
-	// testPrettyHtmlClient,
-	// testPrettyHtmlWithoutIndents,
-	// testPrettyHtmlWithoutIndentsClient,
+	testPrettyHtmlPreservedSpaceEl,
+	testPrettyHtmlDoc,
+	testPrettyHtmlClient,
+	testPrettyHtmlWithoutIndents,
+	testPrettyHtmlWithoutIndentsClient,
 	testPrettyHtmWithoutIndentsAndText,
 ];
 

@@ -1,3 +1,3 @@
-import * as prettyHtmlTests from "./pretty_html.tests.js";
+import * as prettyHtmlTests from "./pretty_html.test.js";
 
 export const testModules = [prettyHtmlTests];

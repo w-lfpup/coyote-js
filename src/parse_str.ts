@@ -94,8 +94,6 @@ function parseStr(
 		step.target = templateStr.length;
 	}
 
-	console.log("steps!\n", steps);
-
 	return steps;
 }
 
