@@ -105,7 +105,6 @@ function pushElement(
 	stack.push(tagInfo);
 }
 
-// tried, close
 function closeElement(results: string[], stack: TagInfo[]) {
 	let tagInfo = stack[stack.length - 1];
 	if (tagInfo === undefined) return;
@@ -119,7 +118,6 @@ function closeElement(results: string[], stack: TagInfo[]) {
 	}
 }
 
-// tried close, should update RUST version
 function closeEmptyElement(results: string[], stack: TagInfo[]) {
 	let tagInfo = stack.pop();
 	if (undefined === tagInfo) return;
@@ -325,7 +323,6 @@ function addAltElementText(results: string[], text: string, tagInfo: TagInfo) {
 	}
 }
 
-// tried, close
 function addInlineElementText(
 	results: string[],
 	text: string,
@@ -356,7 +353,6 @@ function addInlineElementText(
 	}
 }
 
-// tried close
 function addInlineElementClosedText(
 	results: string[],
 	text: string,
@@ -388,7 +384,6 @@ function addInlineElementClosedText(
 	}
 }
 
-// tried close
 function addTextNoIndents(results: string[], text: string) {
 	let texts = text.split("\n");
 
@@ -433,7 +428,6 @@ function addText(results: string[], text: string, tagInfo: TagInfo) {
 	}
 }
 
-// tried, seems close
 function popClosingSquence(
 	results: string[],
 	stack: TagInfo[],
@@ -485,7 +479,6 @@ function getIndexOfFirstChar(text: string): number {
 	return text.length;
 }
 
-// this is probably wrong
 function getMostCommonSpaceIndex(text: string): number {
 	let prevSpaceIndex = text.length;
 	let spaceIndex = text.length;
@@ -511,7 +504,6 @@ function getMostCommonSpaceIndex(text: string): number {
 	return spaceIndex;
 }
 
-// this is probably wrong
 function getMostCommonIndexBetweenTwoStrings(
 	source: string,
 	target: string,
