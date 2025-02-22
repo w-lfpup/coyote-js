@@ -512,13 +512,8 @@ function getMostCommonSpaceIndex(text: string): number {
 	let prevSpaceIndex = text.length;
 	let spaceIndex = text.length;
 
-	let prevLine = "";
-
 	let texts = text.split("\n");
-	let firstLine = texts[0];
-	if (firstLine) {
-		prevLine = firstLine;
-	}
+	let prevLine = texts[0];
 
 	for (let index = 1; index < texts.length; index++) {
 		const line = texts[index];
