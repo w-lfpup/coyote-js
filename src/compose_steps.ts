@@ -65,7 +65,9 @@ function pushElement(
 	let prevTagInfo = stack[stack.length - 1];
 
 	let tag = getTextFromStep(templateStr, step);
-	const tagInfo = prevTagInfo ? from(rules, prevTagInfo, tag) : new TagInfo(rules, tag);
+	const tagInfo = prevTagInfo
+		? from(rules, prevTagInfo, tag)
+		: new TagInfo(rules, tag);
 
 	if (tagInfo.bannedPath) {
 		stack.push(tagInfo);
@@ -74,8 +76,11 @@ function pushElement(
 
 	if (rules.respectIndentation()) {
 		if (tagInfo.inlineEl) {
-			if ("Text" === prevTagInfo.mostRecentDescendant || "InlineElementClosed" === prevTagInfo.mostRecentDescendant) {
-				results.push(" ")
+			if (
+				"Text" === prevTagInfo.mostRecentDescendant ||
+				"InlineElementClosed" === prevTagInfo.mostRecentDescendant
+			) {
+				results.push(" ");
 			}
 		} else {
 			if (stack.length > 1 || "Initial" !== prevTagInfo.mostRecentDescendant) {
@@ -275,7 +280,6 @@ function pushTextComponent(
 ) {
 	if (allSpaces(text)) return;
 
-
 	let tagInfo = stack[stack.length - 1];
 	if (tagInfo === undefined) return;
 
@@ -304,21 +308,19 @@ function pushTextComponent(
 		} else if ("Initial" === tagInfo.mostRecentDescendant) {
 			tagInfo.inlineEl
 				? addInlineElementText(results, text, tagInfo)
-				: addText(results, text, tagInfo)
-
+				: addText(results, text, tagInfo);
 		} else {
 			// default
-			addText(results, text, tagInfo)
+			addText(results, text, tagInfo);
 		}
 	} else {
 		if ("InlineElementClosed" === tagInfo.mostRecentDescendant) {
-			addNoIndentsInlineElementClosedText(results, text)
+			addNoIndentsInlineElementClosedText(results, text);
 		} else {
 			// default
 			addTextNoIndents(results, text);
 		}
 	}
-
 
 	tagInfo.mostRecentDescendant = "Text";
 }
@@ -332,10 +334,10 @@ function addAltElementText(results: string[], text: string, tagInfo: TagInfo) {
 	let commonIndex = getMostCommonSpaceIndex(text);
 	for (const line of text.split("\n")) {
 		if (allSpaces(line)) continue;
-		
+
 		results.push("\n");
 		results.push("\t".repeat(tagInfo.indentCount));
-		results.push(line.slice(commonIndex).trimEnd())
+		results.push(line.slice(commonIndex).trimEnd());
 	}
 }
 
@@ -403,10 +405,7 @@ function addInlineElementClosedText(
 }
 
 // tried close
-function addTextNoIndents(
-	results: string[],
-	text: string,
-) {
+function addTextNoIndents(results: string[], text: string) {
 	let texts = text.split("\n");
 
 	let index = 0;
@@ -431,10 +430,7 @@ function addTextNoIndents(
 	}
 }
 
-function addNoIndentsInlineElementClosedText(
-	results: string[],
-	text: string,
-) {
+function addNoIndentsInlineElementClosedText(results: string[], text: string) {
 	for (const line of text.split("\n")) {
 		if (!allSpaces(line)) {
 			results.push(" ");
