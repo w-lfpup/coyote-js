@@ -5,6 +5,10 @@ import type { StepKind } from "./routes.ts";
 import { route } from "./routes.js";
 import { SlidingWindow } from "./sliding_window.js";
 
+export type { StepKind, StepInterface, Results };
+
+export { route, parseStr, getTextFromStep, isInjectionKind };
+
 interface StepInterface {
 	kind: StepKind;
 	origin: number;
@@ -111,6 +115,7 @@ function addReservedElementText(
 	tag: string,
 	index: number,
 ): boolean {
+	// adding reserved element text!
 	let step = steps[steps.length - 1];
 	if (step === undefined) return false;
 
@@ -128,7 +133,3 @@ function addReservedElementText(
 
 	return true;
 }
-
-export type { StepKind, StepInterface, Results };
-
-export { route, parseStr, getTextFromStep, isInjectionKind };

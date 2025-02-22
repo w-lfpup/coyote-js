@@ -1,3 +1,7 @@
+export type { RulesetInterface };
+
+export { ClientRules, ServerRules, XmlRules };
+
 interface RulesetInterface {
 	// parse
 	getInitialNamespace(): string;
@@ -225,7 +229,7 @@ function getCloseSequenceFromAltTextTag(tag: string): string | undefined {
 }
 
 function getTagFromCloseSequence(tag: string): string | undefined {
-	if ("</script" === tag) return "script";
+	if ("</script>" === tag) return "script";
 	if ("</style>" === tag) return "style";
 	if ("-->" === tag) return "!--";
 }
@@ -237,7 +241,3 @@ function isNameSpaceEl(tag: string): boolean {
 function isPreservedTextEl(tag: string): boolean {
 	return "pre" === tag;
 }
-
-export type { RulesetInterface };
-
-export { ClientRules, ServerRules, XmlRules };

@@ -1,57 +1,54 @@
-import {
-	BuilderInterface,
-	compose as buildComponent,
-} from "./component_string.js";
-import { Component } from "./coyote.js";
-import { compose, composeTemplateArr, Results } from "./template_steps.js";
-import { RulesetInterface } from "./rulesets.js";
+import type { BuilderInterface, Results } from "./component_string.js";
+import type { Component } from "./components.js";
+import type { RulesetInterface } from "./rulesets.js";
+import type { Results as StepResults } from "./template_steps.js";
+
+import { compose, composeTemplateArr } from "./template_steps.js";
 import { ClientRules, ServerRules, XmlRules } from "./rulesets.js";
+import { composeString } from "./component_string.js";
+
+export { ClientHtml, Html, Xml };
 
 class Builder implements BuilderInterface {
 	// place to add cache for:
 	// - templateStr
 	// - templateArr
 
-	build(ruleset: RulesetInterface, templateStr: string): Results {
+	build(ruleset: RulesetInterface, templateStr: string): StepResults {
 		return compose(ruleset, templateStr);
 	}
 
 	buildTemplate(
 		ruleset: RulesetInterface,
 		templateArray: TemplateStringsArray,
-	): Results {
+	): StepResults {
 		return composeTemplateArr(ruleset, templateArray);
 	}
 }
 
 class Html {
-	// rules
 	rules = new ServerRules();
-	builder: BuilderInterface;
+	builder = new Builder();
 
-	build(component: Component): string {
-		return buildComponent(this.builder, this.rules, component);
+	build(component: Component): Results {
+		return composeString(this.builder, this.rules, component);
 	}
 }
 
 class ClientHtml {
-	// rules
 	rules = new ClientRules();
 	builder = new Builder();
 
-	build(component: Component): string {
-		return buildComponent(this.builder, this.rules, component);
+	build(component: Component): Results {
+		return composeString(this.builder, this.rules, component);
 	}
 }
 
 class Xml {
-	// rules
 	rules = new XmlRules();
-	builder: BuilderInterface;
+	builder = new Builder();
 
-	build(component: Component): string {
-		return buildComponent(this.builder, this.rules, component);
+	build(component: Component): Results {
+		return composeString(this.builder, this.rules, component);
 	}
 }
-
-export { ClientHtml, Html, Xml };

@@ -3,9 +3,13 @@ import type { RulesetInterface } from "./rulesets.js";
 
 import { parseStr, route } from "./parse_str.js";
 
+export type { ResultsInterface };
+
+export { Results, compose, composeTemplateArr };
+
 interface ResultsInterface {
 	steps: StepInterface[][];
-	injs: StepKind[];
+	injs: (StepKind | undefined)[];
 }
 
 class Results implements ResultsInterface {
@@ -58,10 +62,10 @@ function composeTemplateArr(
 
 		if ("AttrMapInjection" === injStepKind) {
 			pushInjection(results, "AttrMapInjection");
-		}
-
-		if ("DescendantInjection" === injStepKind) {
+		} else if ("DescendantInjection" === injStepKind) {
 			pushInjection(results, "DescendantInjection");
+		} else {
+			pushInjection(results, undefined);
 		}
 	}
 
@@ -76,6 +80,3 @@ function pushInjection(results: ResultsInterface, stepKind: StepKind) {
 	results.steps.push([]);
 	results.injs.push(stepKind);
 }
-
-export type { ResultsInterface };
-export { Results, compose, composeTemplateArr };

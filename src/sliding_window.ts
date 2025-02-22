@@ -1,9 +1,13 @@
+export type { SlidingWindowInterface };
+
+export { SlidingWindow };
+
 interface SlidingWindowInterface {
 	slide(glyph: string): boolean;
 }
 
 class SlidingWindow implements SlidingWindow {
-	#index: number = 0;
+	#index: number = 1;
 	#target: string;
 
 	constructor(target: string) {
@@ -16,7 +20,7 @@ class SlidingWindow implements SlidingWindow {
 		}
 
 		if (this.#target.charAt(this.#index - 1) !== glyph) {
-			this.#index == 0;
+			this.#index = 0;
 		}
 
 		this.#index += 1;
@@ -24,7 +28,3 @@ class SlidingWindow implements SlidingWindow {
 		return this.#index > this.#target.length;
 	}
 }
-
-export type { SlidingWindowInterface };
-
-export { SlidingWindow };

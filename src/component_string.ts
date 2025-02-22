@@ -1,64 +1,77 @@
+import type { Component } from "./components.js";
 import type { RulesetInterface } from "./rulesets.ts";
-import type { Component } from "./coyote.ts";
-import type { Results } from "./template_steps.js";
-import type { TagInfo } from "./tag_info.js";
+import type { Results as TemplateSteps } from "./template_steps.js";
 
 import {
-	CoyoteComponent,
 	TmplComponent,
 	TaggedTmplComponent,
 	AttrComponent,
 	AttrValComponent,
-} from "./coyote.js";
+} from "./components.js";
+import { TagInfo } from "./tag_info.js";
+import {
+	composeSteps,
+	pushTextComponent,
+	pushAttrComponent,
+	pushAttrValueComponent,
+} from "./compose_steps.js";
 
-import { composeSteps, pushText } from "./compose_steps.js";
+export type { BuilderInterface, Results };
+export { composeString };
 
 interface BuilderInterface {
-	build(rules: RulesetInterface, templateStr: string): Results;
+	build(rules: RulesetInterface, templateStr: string): TemplateSteps;
 	buildTemplate(
 		rules: RulesetInterface,
 		templateArray: TemplateStringsArray,
-	): Results;
+	): TemplateSteps;
 }
 
 class TemplateBit {
 	component: Component;
-	results: Results;
+	results: TemplateSteps;
+	stackDepth: number;
+
 	index = 0;
 
-	constructor(component: Component, results: Results) {
+	constructor(
+		component: Component,
+		results: TemplateSteps,
+		stackDepth: number,
+	) {
 		this.component = component;
 		this.results = results;
+		this.stackDepth = stackDepth;
 	}
 }
 
 type StackBit = Component | TemplateBit;
 
-function compose(
+type Results = [string?, Error?];
+
+function composeString(
 	builder: BuilderInterface,
 	rules: RulesetInterface,
-	component: CoyoteComponent,
-): string {
+	component: Component,
+): Results {
 	let results: string[] = [];
 
-	let bit = getStackBitFromComponent(builder, rules, component);
+	let tagInfoBit = new TagInfo(rules, ":root");
+	let tagInfoStack: TagInfo[] = [tagInfoBit];
 
-	let tagInfoStack: TagInfo[] = [];
+	let bit = getStackBitFromComponent(tagInfoStack, builder, rules, component);
 	let stack = [bit];
 
 	while (0 < stack.length) {
 		const bit = stack.pop();
 
 		if (typeof bit === "string") {
-			pushText(results, tagInfoStack, rules, bit);
+			pushTextComponent(results, tagInfoStack, rules, bit);
 		}
 
 		if (Array.isArray(bit)) {
 			// reverse
-			for (let index = bit.length - 1; 0 < index; index--) {
-				const next_bit = getStackBitFromComponent(builder, rules, bit);
-				stack.push(next_bit);
-			}
+			while (bit.length) stack.push(bit.pop());
 		}
 
 		if (bit instanceof TemplateBit) {
@@ -68,88 +81,100 @@ function compose(
 
 			// add text chunk
 			let currChunk = bit.results.steps[index];
-			if (currChunk) {
-				let templateStr;
-				if (component instanceof TaggedTmplComponent) {
-					templateStr = component.templateArr[index];
-				}
-				if (component instanceof TmplComponent) {
-					templateStr = component.templateStr;
-				}
-				if (templateStr) {
-					composeSteps(rules, results, tagInfoStack, templateStr, currChunk);
-				}
-
-				// results.push(currChunk);
+			let templateStr: string;
+			if (component instanceof TaggedTmplComponent) {
+				templateStr = component.templateArr[index];
+			}
+			if (component instanceof TmplComponent) {
+				templateStr = component.templateStr;
+			}
+			if (templateStr) {
+				composeSteps(rules, results, tagInfoStack, templateStr, currChunk);
 			}
 
 			// handle injection
 			let injKind = bit.results.injs[index];
-			let inj = bit.results.injs[index];
-
-			if ("AttrMapInjection" === injKind && undefined !== inj) {
-				addAttrInj(results, component);
+			if ("AttrMapInjection" === injKind) {
+				addAttrInj(tagInfoStack, results, bit.component[index]);
 			}
-			if ("DescendantInjection" === injKind && undefined !== inj) {
+
+			if ("DescendantInjection" === injKind) {
 				stack.push(bit);
 
-				let nuBit = getStackBitFromComponent(builder, rules, inj);
+				let nuBit = getStackBitFromComponent(
+					tagInfoStack,
+					builder,
+					rules,
+					bit.component[index],
+				);
 				stack.push(nuBit);
 				continue;
 			}
 
 			// tail case
 			if (index < bit.results.steps.length) {
+				// check for imbalance error
+				let template: string;
+				if (component instanceof TaggedTmplComponent) {
+					template = component.templateArr.raw.toString();
+				}
+				if (component instanceof TmplComponent) {
+					template = component.templateStr;
+				}
+				if (bit.stackDepth !== tagInfoStack.length) {
+					return [
+						undefined,
+						new Error(`
+Coyote Err: the following template component is imbalanced:
+${template}
+					`),
+					];
+				}
+
 				stack.push(bit);
 			}
 		}
 	}
 
-	return results.join("");
+	return [results.join(""), undefined];
 }
 
 function getStackBitFromComponent(
+	stack: TagInfo[],
 	builder: BuilderInterface,
 	rules: RulesetInterface,
-	component: CoyoteComponent,
+	component: Component,
 ): StackBit {
 	if (typeof component === "string" || Array.isArray(component))
 		return component;
 
 	if (component instanceof TmplComponent) {
 		let buildResults = builder.build(rules, component.templateStr);
-		return new TemplateBit(component, buildResults);
+		return new TemplateBit(component, buildResults, stack.length);
 	}
 
 	if (component instanceof TaggedTmplComponent) {
 		let buildResults = builder.buildTemplate(rules, component.templateArr);
-		return new TemplateBit(component, buildResults);
+		return new TemplateBit(component, buildResults, stack.length);
 	}
 }
 
-function addAttrInj(results: string[], component: Component) {
+function addAttrInj(stack: TagInfo[], results: string[], component: Component) {
 	if (component instanceof AttrComponent)
-		return addAttr(results, component.attr);
-	if (component instanceof AttrValComponent)
-		return addAttrVal(results, component.attr, component.value);
+		return pushAttrComponent(results, stack, component.attr);
+	if (component instanceof AttrValComponent) {
+		pushAttrComponent(results, stack, component.attr);
+		return pushAttrValueComponent(results, stack, component.value);
+	}
 
 	if (Array.isArray(component)) {
 		for (const cmpnt of component) {
 			if (component instanceof AttrComponent)
-				return addAttr(results, component.attr);
-			if (component instanceof AttrValComponent)
-				return addAttrVal(results, component.attr, component.value);
+				return pushAttrComponent(results, stack, component.attr);
+			if (component instanceof AttrValComponent) {
+				pushAttrComponent(results, stack, component.attr);
+				return pushAttrValueComponent(results, stack, component.value);
+			}
 		}
 	}
 }
-
-function addAttr(results: string[], attr: string) {
-	results.push(" ", attr);
-}
-
-function addAttrVal(results: string[], attr: string, val: string) {
-	results.push(" ", attr, '="', val, '"');
-}
-
-export type { BuilderInterface };
-export { compose };
