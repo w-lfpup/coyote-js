@@ -41,7 +41,6 @@ function parseStr(
 
 	for (let index = 0; index < templateStr.length; index++) {
 		let glyph = templateStr.charAt(index);
-		// slide window
 		if (slidingWindow) {
 			if (!slidingWindow.slide(glyph)) continue;
 			if (!addReservedElementText(sieve, steps, tag, index)) return steps;
@@ -115,7 +114,6 @@ function addReservedElementText(
 	tag: string,
 	index: number,
 ): boolean {
-	// adding reserved element text!
 	let step = steps[steps.length - 1];
 	if (step === undefined) return false;
 

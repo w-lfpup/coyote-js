@@ -3,12 +3,10 @@ export type { RulesetInterface };
 export { ClientRules, ServerRules, XmlRules };
 
 interface RulesetInterface {
-	// parse
 	getInitialNamespace(): string;
 	isComment(tag: string): boolean;
 	getCloseSequenceFromAltTextTag(tag: string): string | undefined;
 	getTagFromCloseSequence(close_sequence: string): string | undefined;
-	// html
 	respectIndentation(): boolean;
 	isBannedEl(tag: string): boolean;
 	isVoidEl(tag: string): boolean;
@@ -104,7 +102,6 @@ let voidElements = new Set([
 ]);
 
 class ServerRules implements RulesetInterface {
-	// parse
 	getInitialNamespace(): string {
 		return "html";
 	}
@@ -117,7 +114,6 @@ class ServerRules implements RulesetInterface {
 	getTagFromCloseSequence(tag: string): string | undefined {
 		return getTagFromCloseSequence(tag);
 	}
-	// html
 	respectIndentation(): boolean {
 		return true;
 	}
@@ -139,7 +135,6 @@ class ServerRules implements RulesetInterface {
 }
 
 class ClientRules implements RulesetInterface {
-	// parse
 	getInitialNamespace(): string {
 		return "html";
 	}
@@ -152,7 +147,6 @@ class ClientRules implements RulesetInterface {
 	getTagFromCloseSequence(tag: string): string {
 		return getTagFromCloseSequence(tag);
 	}
-	// html
 	respectIndentation(): boolean {
 		return false;
 	}
@@ -182,7 +176,6 @@ class ClientRules implements RulesetInterface {
 }
 
 class XmlRules implements RulesetInterface {
-	// parse
 	getInitialNamespace(): string {
 		return "xml";
 	}
@@ -197,7 +190,6 @@ class XmlRules implements RulesetInterface {
 		if ("-->" === tag) return "!--";
 		if ("]]>" === tag) return "![CDATA[";
 	}
-	// html
 	respectIndentation(): boolean {
 		return true;
 	}

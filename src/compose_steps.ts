@@ -95,7 +95,6 @@ function pushElement(
 		}
 	}
 
-	// combine with above
 	prevTagInfo.mostRecentDescendant = tagInfo.inlineEl
 		? "InlineElement"
 		: "Element";
@@ -106,7 +105,6 @@ function pushElement(
 	stack.push(tagInfo);
 }
 
-// tried, close
 function closeElement(results: string[], stack: TagInfo[]) {
 	let tagInfo = stack[stack.length - 1];
 	if (tagInfo === undefined) return;
@@ -120,21 +118,15 @@ function closeElement(results: string[], stack: TagInfo[]) {
 	}
 }
 
-// tried close, should update RUST version
 function closeEmptyElement(results: string[], stack: TagInfo[]) {
-	let tagInfo = stack[stack.length - 1];
+	let tagInfo = stack.pop();
 	if (undefined === tagInfo) return;
 
-	if (tagInfo.bannedPath || tagInfo.voidEl) {
-		stack.pop();
-		return;
-	}
+	if (tagInfo.bannedPath || tagInfo.voidEl) return;
 
 	if ("html" !== tagInfo.namespace) {
 		results.push("/>");
-	}
-
-	if ("html" === tagInfo.namespace) {
+	} else {
 		if (!tagInfo.voidEl) {
 			results.push("></");
 			results.push(tagInfo.tag);
@@ -143,14 +135,11 @@ function closeEmptyElement(results: string[], stack: TagInfo[]) {
 		results.push(">");
 	}
 
-	let last_tag = stack.pop();
-	let descdantStatus: DescendantStatus = last_tag.inlineEl
+	let descdantStatus: DescendantStatus = tagInfo.inlineEl
 		? "InlineElementClosed"
 		: "ElementClosed";
 	updateMostRecentDescendant(stack, descdantStatus);
 }
-
-// RUST doesnt protect against banned
 
 function popElement(
 	results: string[],
@@ -159,16 +148,13 @@ function popElement(
 	templateStr: string,
 	step: StepInterface,
 ) {
-	let tag = getTextFromStep(templateStr, step);
 	let tagInfo = stack.pop();
 	if (tagInfo === undefined) return;
 
-	if (tag !== tagInfo.tag) return;
+	if (tagInfo.bannedPath) return;
 
-	if (tagInfo.bannedPath) {
-		stack.pop();
-		return;
-	}
+	let tag = getTextFromStep(templateStr, step);
+	if (tag !== tagInfo.tag) return;
 
 	let descdantStatus: DescendantStatus = tagInfo.inlineEl
 		? "InlineElementClosed"
@@ -291,10 +277,6 @@ function pushTextComponent(
 		return;
 	}
 
-	// alt text
-	//
-
-	// need an alt text method
 	let altText = rules.getCloseSequenceFromAltTextTag(tagInfo.tag);
 	if (altText) {
 		addAltElementText(results, text, tagInfo);
@@ -341,7 +323,6 @@ function addAltElementText(results: string[], text: string, tagInfo: TagInfo) {
 	}
 }
 
-// tried, close
 function addInlineElementText(
 	results: string[],
 	text: string,
@@ -372,7 +353,6 @@ function addInlineElementText(
 	}
 }
 
-// tried close
 function addInlineElementClosedText(
 	results: string[],
 	text: string,
@@ -404,7 +384,6 @@ function addInlineElementClosedText(
 	}
 }
 
-// tried close
 function addTextNoIndents(results: string[], text: string) {
 	let texts = text.split("\n");
 
@@ -449,7 +428,6 @@ function addText(results: string[], text: string, tagInfo: TagInfo) {
 	}
 }
 
-// tried, seems close
 function popClosingSquence(
 	results: string[],
 	stack: TagInfo[],
@@ -457,24 +435,18 @@ function popClosingSquence(
 	templateStr: string,
 	step: StepInterface,
 ) {
-	let closingSequence = getTextFromStep(templateStr, step);
-	let tag = rules.getTagFromCloseSequence(closingSequence);
-	if (tag === undefined) return;
-
-	let tagInfo = stack[stack.length - 1];
+	let tagInfo = stack.pop();
 	if (tagInfo === undefined) return;
 
+	let closingSequence = getTextFromStep(templateStr, step);
+	let tag = rules.getTagFromCloseSequence(closingSequence);
+	if (undefined === tag) return;
 	if (tag !== tagInfo.tag) return;
 
-	if (tagInfo.bannedPath) {
-		stack.pop();
-		return;
-	}
-
-	stack.pop();
+	if (tagInfo.bannedPath) return;
 
 	let prevTagInfo = stack[stack.length - 1];
-	if (prevTagInfo === undefined) return;
+	if (undefined === prevTagInfo) return;
 
 	if (
 		rules.respectIndentation() &&
@@ -507,18 +479,12 @@ function getIndexOfFirstChar(text: string): number {
 	return text.length;
 }
 
-// this is probably wrong
 function getMostCommonSpaceIndex(text: string): number {
 	let prevSpaceIndex = text.length;
 	let spaceIndex = text.length;
 
-	let prevLine = "";
-
 	let texts = text.split("\n");
-	let firstLine = texts[0];
-	if (firstLine) {
-		prevLine = firstLine;
-	}
+	let prevLine = texts[0];
 
 	for (let index = 1; index < texts.length; index++) {
 		const line = texts[index];
@@ -538,7 +504,6 @@ function getMostCommonSpaceIndex(text: string): number {
 	return spaceIndex;
 }
 
-// this is probably wrong
 function getMostCommonIndexBetweenTwoStrings(
 	source: string,
 	target: string,

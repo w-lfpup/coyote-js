@@ -1,14 +1,11 @@
 import { tmpl, ClientHtml, Html } from "./mod.js";
 import type { Results } from "./component_string.js";
 
-function prettyPrint(
+function assertResults(
 	expected: string,
 	results: Results,
 ): { toString: Object["toString"] } {
-	// let assertions = [];
-
 	let [document, error] = results;
-
 	if (error) {
 		return error;
 	}
@@ -23,8 +20,6 @@ ${results}
 
 `;
 	}
-
-	// return assertions;
 }
 
 function testPrettyHtmlNoEmptySpace() {
@@ -34,7 +29,7 @@ function testPrettyHtmlNoEmptySpace() {
 	const html = new Html();
 	let results = html.build(template);
 
-	return prettyPrint(expected, results);
+	return assertResults(expected, results);
 }
 
 function testPrettyHtmlVoidEl() {
@@ -46,7 +41,7 @@ function testPrettyHtmlVoidEl() {
 	const html = new Html();
 	let results = html.build(template);
 
-	return prettyPrint(expected, results);
+	return assertResults(expected, results);
 }
 
 function testPrettyHtmlVoidElWithAttributes() {
@@ -59,7 +54,7 @@ function testPrettyHtmlVoidElWithAttributes() {
 	const html = new Html();
 	let results = html.build(template);
 
-	return prettyPrint(expected, results);
+	return assertResults(expected, results);
 }
 
 function testPrettyHtmlVoidElAndOthers() {
@@ -70,7 +65,7 @@ function testPrettyHtmlVoidElAndOthers() {
 	const html = new Html();
 	let results = html.build(template);
 
-	return prettyPrint(expected, results);
+	return assertResults(expected, results);
 }
 
 function testPrettyHtmlNestedVoidEl() {
@@ -85,7 +80,7 @@ function testPrettyHtmlNestedVoidEl() {
 	const html = new Html();
 	let results = html.build(template);
 
-	return prettyPrint(expected, results);
+	return assertResults(expected, results);
 }
 
 function testPrettyHtmlPreservedSpaceEl() {
@@ -98,7 +93,7 @@ function testPrettyHtmlPreservedSpaceEl() {
 	const html = new Html();
 	let results = html.build(template);
 
-	return prettyPrint(expected, results);
+	return assertResults(expected, results);
 }
 
 function testPrettyHtmlScriptEl() {
@@ -113,7 +108,7 @@ function testPrettyHtmlScriptEl() {
 	const html = new Html();
 	let results = html.build(template);
 
-	return prettyPrint(expected, results);
+	return assertResults(expected, results);
 }
 
 function testPrettyHtmlDoc() {
@@ -142,7 +137,7 @@ function testPrettyHtmlDoc() {
 	const html = new Html();
 	let results = html.build(template);
 
-	return prettyPrint(expected, results);
+	return assertResults(expected, results);
 }
 
 function testPrettyHtmlClient() {
@@ -171,7 +166,7 @@ if 2 < 3 {
 	const clientHtml = new ClientHtml();
 	let results = clientHtml.build(template);
 
-	return prettyPrint(expected, results);
+	return assertResults(expected, results);
 }
 
 function testPrettyHtmlWithoutIndents() {
@@ -194,7 +189,7 @@ function testPrettyHtmlWithoutIndents() {
 	const html = new Html();
 	let results = html.build(template);
 
-	return prettyPrint(expected, results);
+	return assertResults(expected, results);
 }
 
 function testPrettyHtmlWithoutIndentsClient() {
@@ -217,7 +212,7 @@ function testPrettyHtmlWithoutIndentsClient() {
 	const clientHtml = new ClientHtml();
 	let results = clientHtml.build(template);
 
-	return prettyPrint(expected, results);
+	return assertResults(expected, results);
 }
 
 function testPrettyHtmWithoutIndentsAndText() {
@@ -227,7 +222,7 @@ function testPrettyHtmWithoutIndentsAndText() {
 	const clientHtml = new ClientHtml();
 	let results = clientHtml.build(template);
 
-	return prettyPrint(expected, results);
+	return assertResults(expected, results);
 }
 
 export const tests = [

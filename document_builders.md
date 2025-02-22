@@ -16,15 +16,45 @@ function hai(): Component {
 let helloWorld = hai();
 
 let html = new Html();
-let document = html.build(helloWorld);
+let [doc, _error] = html.build(helloWorld);
 
-console.log(document);
+console.log(doc);
 ```
 
 The output will be:
 
 ```html
 <p>hai :3</p>
+```
+
+### Hello, error world!
+
+`Document builders` will return (not throw) an `Error` when template components do not close all their tags.
+
+The example below returns an `error` when a coyote function returns an imbalanced template.
+
+```ts
+import type { Component } from "coyote";
+
+import { Html, tmpl } from "coyote";
+
+function hai(): Component {
+	tmpl`<p>omgawsh hai :3`;
+}
+
+let helloWorld = hai();
+
+let html = new Html();
+let [_doc, error] = html.build(helloWorld);
+
+console.log(error);
+```
+
+The output will be:
+
+```
+Coyote Err: the following template component is imbalanced:
+<p>omgawsh hai :3
 ```
 
 ### Hello, safer world!
@@ -58,9 +88,9 @@ function hai(): Component {
 let hello_world = hai();
 
 let saferHtml = new ClientHtml();
-let document = saferHtml.build(hello_world);
+let [doc, _error] = saferHtml.build(hello_world);
 
-console.log(document);
+console.log(doc);
 ```
 
 The output will be:
