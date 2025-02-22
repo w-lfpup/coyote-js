@@ -4,7 +4,6 @@ export {
 	CoyoteComponent,
 	AttrComponent,
 	AttrValComponent,
-	TextComponent,
 	TmplComponent,
 	TaggedTmplComponent,
 	tmplStr,
@@ -16,21 +15,6 @@ export {
 
 class CoyoteComponent {}
 type Component = CoyoteComponent | Node | string | undefined;
-
-class TextComponent extends CoyoteComponent {
-	#text: string;
-	constructor(text: string) {
-		super();
-		this.#text = text
-			.replaceAll("<", "&lt;")
-			.replaceAll("&", "&amp;")
-			.replaceAll("{", "&#123;");
-	}
-
-	get text() {
-		return this.#text;
-	}
-}
 
 class AttrComponent extends CoyoteComponent {
 	#attr: string;
@@ -112,8 +96,11 @@ function tmpl(
 	return new TaggedTmplComponent(txts, injections);
 }
 
-function text(txt: string): TextComponent {
-	return new TextComponent(txt);
+function text(txt: string): string {
+	return txt
+		.replaceAll("<", "&lt;")
+		.replaceAll("&", "&amp;")
+		.replaceAll("{", "&#123;");
 }
 
 function attr(attrStr: string): AttrComponent {
