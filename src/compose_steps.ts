@@ -95,7 +95,6 @@ function pushElement(
 		}
 	}
 
-	// combine with above
 	prevTagInfo.mostRecentDescendant = tagInfo.inlineEl
 		? "InlineElement"
 		: "Element";
@@ -122,19 +121,14 @@ function closeElement(results: string[], stack: TagInfo[]) {
 
 // tried close, should update RUST version
 function closeEmptyElement(results: string[], stack: TagInfo[]) {
-	let tagInfo = stack[stack.length - 1];
+	let tagInfo = stack.pop();
 	if (undefined === tagInfo) return;
 
-	if (tagInfo.bannedPath || tagInfo.voidEl) {
-		stack.pop();
-		return;
-	}
+	if (tagInfo.bannedPath || tagInfo.voidEl) return;
 
 	if ("html" !== tagInfo.namespace) {
 		results.push("/>");
-	}
-
-	if ("html" === tagInfo.namespace) {
+	} else {
 		if (!tagInfo.voidEl) {
 			results.push("></");
 			results.push(tagInfo.tag);
@@ -143,14 +137,11 @@ function closeEmptyElement(results: string[], stack: TagInfo[]) {
 		results.push(">");
 	}
 
-	let last_tag = stack.pop();
-	let descdantStatus: DescendantStatus = last_tag.inlineEl
+	let descdantStatus: DescendantStatus = tagInfo.inlineEl
 		? "InlineElementClosed"
 		: "ElementClosed";
 	updateMostRecentDescendant(stack, descdantStatus);
 }
-
-// RUST doesnt protect against banned
 
 function popElement(
 	results: string[],
@@ -159,16 +150,13 @@ function popElement(
 	templateStr: string,
 	step: StepInterface,
 ) {
-	let tag = getTextFromStep(templateStr, step);
 	let tagInfo = stack.pop();
 	if (tagInfo === undefined) return;
 
-	if (tag !== tagInfo.tag) return;
+	if (tagInfo.bannedPath) return;
 
-	if (tagInfo.bannedPath) {
-		stack.pop();
-		return;
-	}
+	let tag = getTextFromStep(templateStr, step);
+	if (tag !== tagInfo.tag) return;
 
 	let descdantStatus: DescendantStatus = tagInfo.inlineEl
 		? "InlineElementClosed"
@@ -291,10 +279,6 @@ function pushTextComponent(
 		return;
 	}
 
-	// alt text
-	//
-
-	// need an alt text method
 	let altText = rules.getCloseSequenceFromAltTextTag(tagInfo.tag);
 	if (altText) {
 		addAltElementText(results, text, tagInfo);
@@ -457,24 +441,18 @@ function popClosingSquence(
 	templateStr: string,
 	step: StepInterface,
 ) {
-	let closingSequence = getTextFromStep(templateStr, step);
-	let tag = rules.getTagFromCloseSequence(closingSequence);
-	if (tag === undefined) return;
-
-	let tagInfo = stack[stack.length - 1];
+	let tagInfo = stack.pop();
 	if (tagInfo === undefined) return;
 
+	let closingSequence = getTextFromStep(templateStr, step);
+	let tag = rules.getTagFromCloseSequence(closingSequence);
+	if (undefined === tag) return;
 	if (tag !== tagInfo.tag) return;
 
-	if (tagInfo.bannedPath) {
-		stack.pop();
-		return;
-	}
-
-	stack.pop();
+	if (tagInfo.bannedPath) return;
 
 	let prevTagInfo = stack[stack.length - 1];
-	if (prevTagInfo === undefined) return;
+	if (undefined === prevTagInfo) return;
 
 	if (
 		rules.respectIndentation() &&
