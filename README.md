@@ -36,7 +36,7 @@ function hai() {
 let helloWorld = hai();
 let html = new Html();
 
-let document = html.build(helloWorld);
+let [document, error] = html.build(helloWorld);
 console.log(document);
 ```
 
