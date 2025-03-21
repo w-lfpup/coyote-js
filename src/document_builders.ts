@@ -13,6 +13,7 @@ class Html {
 	builder = new Builder();
 
 	build(component: Component): Results {
+		console.log("html components!", component);
 		return composeString(this.builder, this.rules, component);
 	}
 }
