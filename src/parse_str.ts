@@ -52,6 +52,7 @@ function parseStr(
 
 		let step = steps[steps.length - 1];
 		if (step === undefined) return steps;
+		step.target = index;
 
 		let currKind =
 			"InjectionConfirmed" === step.kind
@@ -64,19 +65,17 @@ function parseStr(
 			prevInjKind = step.kind;
 		}
 
-		step.target = index;
-
 		if ("Tag" === step.kind) {
 			tag = getTextFromStep(templateStr, step);
-		}
 
-		if (sieve.tagIsAtributeless(tag)) {
-			let closeSequence = sieve.getCloseSequenceFromAltTextTag(tag);
-			if (closeSequence) {
-				let slider = new SlidingWindow(closeSequence);
-				slider.slide(glyph);
-				slidingWindow = slider;
-				currKind = "Text";
+			if (sieve.tagIsAtributeless(tag)) {
+				let closeSequence = sieve.getCloseSequenceFromAltTextTag(tag);
+				if (closeSequence) {
+					let slider = new SlidingWindow(closeSequence);
+					slider.slide(glyph);
+					slidingWindow = slider;
+					currKind = "Text";
+				}
 			}
 		}
 
@@ -124,7 +123,7 @@ function addAltElementText(
 	step.target = index - (closingSequence.length - 1);
 	steps.push(
 		new Step(
-			"Text",
+			"TailTag",
 			index - (closingSequence.length - 1),
 			index - closingSequence.length,
 		),

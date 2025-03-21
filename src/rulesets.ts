@@ -167,10 +167,8 @@ class ClientRules implements RulesetInterface {
 	tagIsPreservedTextEl(tag: string): boolean {
 		return isPreservedTextEl(tag);
 	}
-	tagIsInlineEl(tag: string): boolean {
-		if ("a" === tag) return true;
-
-		return inlineElements.has(tag);
+	tagIsInlineEl(): boolean {
+		return true;
 	}
 }
 
@@ -182,29 +180,29 @@ class XmlRules implements RulesetInterface {
 		return isAtributeless(tag);
 	}
 	getCloseSequenceFromAltTextTag(tag: string): string | undefined {
-		if ("!--" === tag) return "-->";
-		if ("![CDATA[" === tag) return "]]>";
+		if ("!--" === tag) return "--";
+		if ("![CDATA[" === tag) return "]]";
 	}
 	getAltTextTagFromCloseSequence(tag: string): string | undefined {
-		if ("-->" === tag) return "!--";
-		if ("]]>" === tag) return "![CDATA[";
+		if ("--" === tag) return "!--";
+		if ("]]" === tag) return "![CDATA[";
 	}
 	respectIndentation(): boolean {
 		return true;
 	}
-	tagIsBannedEl(tag: string): boolean {
+	tagIsBannedEl(): boolean {
 		return false;
 	}
-	tagIsVoidEl(tag: string): boolean {
+	tagIsVoidEl(): boolean {
 		return false;
 	}
-	tagIsNamespaceEl(tag: string): boolean {
+	tagIsNamespaceEl(): boolean {
 		return false;
 	}
-	tagIsPreservedTextEl(tag: string): boolean {
+	tagIsPreservedTextEl(): boolean {
 		return false;
 	}
-	tagIsInlineEl(tag: string): boolean {
+	tagIsInlineEl(): boolean {
 		return false;
 	}
 }
@@ -214,15 +212,15 @@ function isAtributeless(tag: string): boolean {
 }
 
 function getCloseSequenceFromAltTextTag(tag: string): string | undefined {
-	if ("script" === tag) return "</script>";
-	if ("style" === tag) return "</style>";
-	if ("!--" === tag) return "--!";
+	if ("!--" === tag) return "--";
+	if ("script" === tag) return "</script";
+	if ("style" === tag) return "</style";
 }
 
 function getAltTextTagFromCloseSequence(tag: string): string | undefined {
-	if ("</script>" === tag) return "script";
-	if ("</style>" === tag) return "style";
-	if ("-->" === tag) return "!--";
+	if ("--" === tag) return "!--";
+	if ("</script" === tag) return "script";
+	if ("</style" === tag) return "style";
 }
 
 function isNameSpaceEl(tag: string): boolean {
