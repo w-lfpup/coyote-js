@@ -1,21 +1,15 @@
 import type { RulesetInterface } from "./rulesets.ts";
 
-export type { TagInfoInterface, DescendantStatus };
+export type { TagInfoInterface, TextFormat };
 
 export { TagInfo, from };
 
-type DescendantStatus =
-	| "Element"
-	| "ElementClosed"
-	| "Initial"
-	| "InlineElement"
-	| "InlineElementClosed"
-	| "Text";
+type TextFormat = "Block" | "Initial" | "Inline" | "Root";
 
 interface TagInfoInterface {
 	namespace: string;
 	tag: string;
-	mostRecentDescendant: DescendantStatus;
+	textFormat: TextFormat;
 	indentCount: number;
 	voidEl: boolean;
 	inlineEl: boolean;
@@ -26,7 +20,7 @@ interface TagInfoInterface {
 class TagInfo implements TagInfoInterface {
 	namespace: string;
 	tag: string;
-	mostRecentDescendant: DescendantStatus;
+	textFormat: TextFormat;
 	indentCount = 0;
 	voidEl: boolean;
 	inlineEl: boolean;
@@ -34,17 +28,17 @@ class TagInfo implements TagInfoInterface {
 	bannedPath: boolean;
 
 	constructor(rules: RulesetInterface, tag: string) {
-		this.namespace = !rules.isNamespaceEl(tag)
+		this.namespace = !rules.tagIsNamespaceEl(tag)
 			? rules.getInitialNamespace()
 			: tag;
 
 		this.tag = tag;
-		this.mostRecentDescendant = "Initial";
+		this.textFormat = "Root";
 		this.indentCount = 0;
-		this.voidEl = rules.isVoidEl(tag);
-		this.inlineEl = rules.isInlineEl(tag);
-		this.preservedTextPath = rules.isPreservedTextEl(tag);
-		this.bannedPath = rules.isBannedEl(tag);
+		this.voidEl = rules.tagIsVoidEl(tag);
+		this.inlineEl = rules.tagIsInlineEl(tag);
+		this.preservedTextPath = rules.tagIsPreservedTextEl(tag);
+		this.bannedPath = rules.tagIsBannedEl(tag);
 	}
 }
 
@@ -57,20 +51,21 @@ function from(
 
 	tagInfo.namespace = prevTagInfo.namespace;
 	tagInfo.indentCount = prevTagInfo.indentCount;
+	tagInfo.textFormat = "Initial";
 
-	if (rules.isNamespaceEl(tag)) {
+	if (rules.tagIsNamespaceEl(tag)) {
 		tagInfo.namespace = tag;
 	}
 
-	if (rules.isPreservedTextEl(prevTagInfo.tag)) {
+	if (rules.tagIsPreservedTextEl(prevTagInfo.tag)) {
 		tagInfo.preservedTextPath = true;
 	}
 
-	if (rules.isBannedEl(tag)) {
+	if (rules.tagIsBannedEl(tag)) {
 		tagInfo.bannedPath = true;
 	}
 
-	if (!rules.isVoidEl(prevTagInfo.tag) && !rules.isInlineEl(tag)) {
+	if (!rules.tagIsVoidEl(prevTagInfo.tag) && !rules.tagIsInlineEl(tag)) {
 		tagInfo.indentCount += 1;
 	}
 

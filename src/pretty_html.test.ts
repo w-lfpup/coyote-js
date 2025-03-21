@@ -225,6 +225,26 @@ function testPrettyHtmWithoutIndentsAndText() {
 	return assertResults(expected, results);
 }
 
+// nested alt text
+function testCannotNestScriptInjections() {
+	let text = `
+		if 2 < 3 {
+			console.log();
+		}
+	`;
+
+	const template = tmpl`
+		<script>${text}</script>
+	`;
+
+	const expected = "<script></script>";
+
+	const html = new Html();
+	let results = html.build(template);
+
+	return assertResults(expected, results);
+}
+
 export const tests = [
 	testPrettyHtmlNoEmptySpace,
 	testPrettyHtmlVoidEl,
@@ -238,4 +258,5 @@ export const tests = [
 	testPrettyHtmlWithoutIndents,
 	testPrettyHtmlWithoutIndentsClient,
 	testPrettyHtmWithoutIndentsAndText,
+	testCannotNestScriptInjections,
 ];

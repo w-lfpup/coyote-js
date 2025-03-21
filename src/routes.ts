@@ -26,10 +26,7 @@ type StepKind =
 	| "ElementSpace"
 	| "Element"
 	| "Tag"
-	| "Text"
-	| "AltText"
-	| "AltTextCloseSequence"
-	| "CommentText";
+	| "Text";
 
 type Router = (glyph: string) => StepKind;
 
@@ -162,6 +159,11 @@ function getKindFromTailTag(glyph: string): StepKind {
 
 	return "TailTag";
 }
+
+// // will always return alt text, needs to be broken
+// function getKindFromAltText(glyph: string): StepKind {
+// 	return "AltText";
+// }
 
 function getKindFromInitial(glyph: string): StepKind {
 	if ("<" === glyph) return "Element";
