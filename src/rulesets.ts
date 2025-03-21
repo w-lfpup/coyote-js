@@ -6,7 +6,7 @@ interface RulesetInterface {
 	getInitialNamespace(): string;
 	tagIsAtributeless(tag: string): boolean;
 	getCloseSequenceFromAltTextTag(tag: string): string | undefined;
-	getAltTtextTagFromCloseSequence(close_sequence: string): string | undefined;
+	getAltTextTagFromCloseSequence(close_sequence: string): string | undefined;
 	respectIndentation(): boolean;
 	tagIsBannedEl(tag: string): boolean;
 	tagIsVoidEl(tag: string): boolean;
@@ -110,8 +110,8 @@ class ServerRules implements RulesetInterface {
 	getCloseSequenceFromAltTextTag(tag: string): string | undefined {
 		return getCloseSequenceFromAltTextTag(tag);
 	}
-	getAltTtextTagFromCloseSequence(tag: string): string | undefined {
-		return getAltTtextTagFromCloseSequence(tag);
+	getAltTextTagFromCloseSequence(tag: string): string | undefined {
+		return getAltTextTagFromCloseSequence(tag);
 	}
 	respectIndentation(): boolean {
 		return true;
@@ -143,8 +143,8 @@ class ClientRules implements RulesetInterface {
 	getCloseSequenceFromAltTextTag(tag: string): string {
 		return getCloseSequenceFromAltTextTag(tag);
 	}
-	getAltTtextTagFromCloseSequence(tag: string): string {
-		return getAltTtextTagFromCloseSequence(tag);
+	getAltTextTagFromCloseSequence(tag: string): string {
+		return getAltTextTagFromCloseSequence(tag);
 	}
 	respectIndentation(): boolean {
 		return false;
@@ -185,7 +185,7 @@ class XmlRules implements RulesetInterface {
 		if ("!--" === tag) return "-->";
 		if ("![CDATA[" === tag) return "]]>";
 	}
-	getAltTtextTagFromCloseSequence(tag: string): string | undefined {
+	getAltTextTagFromCloseSequence(tag: string): string | undefined {
 		if ("-->" === tag) return "!--";
 		if ("]]>" === tag) return "![CDATA[";
 	}
@@ -219,7 +219,7 @@ function getCloseSequenceFromAltTextTag(tag: string): string | undefined {
 	if ("!--" === tag) return "--!";
 }
 
-function getAltTtextTagFromCloseSequence(tag: string): string | undefined {
+function getAltTextTagFromCloseSequence(tag: string): string | undefined {
 	if ("</script>" === tag) return "script";
 	if ("</style>" === tag) return "style";
 	if ("-->" === tag) return "!--";
