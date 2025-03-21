@@ -298,7 +298,7 @@ function pushTextComponent(
 	}
 
 	if (tagInfo.inlineEl || "Inline" === tagInfo.textFormat) {
-		// addFirstLineText
+		addFirstLineText(results, text, tagInfo);
 	} else {
 		addText(results, text, tagInfo);
 	}
@@ -313,6 +313,7 @@ function allSpaces(text: string): boolean {
 
 function addAltElementText(results: string[], text: string, tagInfo: TagInfo) {
 	let commonIndex = getMostCommonSpaceIndex(text);
+
 	for (const line of text.split("\n")) {
 		if (allSpaces(line)) continue;
 
@@ -322,7 +323,7 @@ function addAltElementText(results: string[], text: string, tagInfo: TagInfo) {
 	}
 }
 
-function addInlineText(results: string[], text: string, tagInfo: TagInfo) {
+function addFirstLineText(results: string[], text: string, tagInfo: TagInfo) {
 	let texts = text.split("\n");
 
 	let index = 0;
@@ -331,8 +332,7 @@ function addInlineText(results: string[], text: string, tagInfo: TagInfo) {
 		index += 1;
 
 		if (!allSpaces(line)) {
-			results.push(" ");
-			results.push(line.trim());
+			results.push(line);
 			break;
 		}
 	}
@@ -349,13 +349,63 @@ function addInlineText(results: string[], text: string, tagInfo: TagInfo) {
 	}
 }
 
-function addText(results: string[], text: string, tagInfo: TagInfo) {
-	for (let line of text.split("\n")) {
+function addInlineText(results: string[], text: string, tagInfo: TagInfo) {
+	let texts = text.split("\n");
+
+	let index = 0;
+	while (index < texts.length) {
+		let line = texts[index];
+		index += 1;
+
+		if (allSpaces(line)) continue;
+
+		if ("Root" !== tagInfo.textFormat && "Initial" !== tagInfo.textFormat) {
+			results.push(" ");
+		}
+
+		results.push(line.trim());
+		break;
+	}
+
+	while (index < texts.length) {
+		let line = texts[index];
+		index += 1;
+
 		if (!allSpaces(line)) {
-			results.push("\n");
-			results.push("\t".repeat(tagInfo.indentCount));
+			results.push(" ");
 			results.push(line.trim());
 		}
+	}
+}
+
+function addText(results: string[], text: string, tagInfo: TagInfo) {
+	let texts = text.split("\n");
+
+	let index = 0;
+	while (index < texts.length) {
+		let line = texts[index];
+		index += 1;
+
+		if (allSpaces(line)) continue;
+
+		if ("Root" !== tagInfo.textFormat) {
+			results.push("\n");
+		}
+
+		results.push("\t".repeat(tagInfo.indentCount));
+		results.push(line.trim());
+		break;
+	}
+
+	while (index < texts.length) {
+		let line = texts[index];
+		index += 1;
+
+		if (allSpaces(line)) continue;
+
+		results.push("\n");
+		results.push("\t".repeat(tagInfo.indentCount));
+		results.push(line.trim());
 	}
 }
 
@@ -374,8 +424,10 @@ function getMostCommonSpaceIndex(text: string): number {
 	let texts = text.split("\n");
 
 	let index = 0;
-	while(index < text.length) {
+	while (index < text.length) {
 		let line = texts[index];
+		index += 1;
+
 		if (allSpaces(line)) continue;
 
 		spaceIndex = getIndexOfFirstChar(line);
@@ -385,6 +437,7 @@ function getMostCommonSpaceIndex(text: string): number {
 
 	while (index < text.length) {
 		let line = texts[index];
+		index += 1;
 
 		if (allSpaces(line)) continue;
 
