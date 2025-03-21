@@ -27,10 +27,10 @@ const spaceCharCodes = new Set([
 ]);
 
 const htmlRoutes = new Map<StepKind, Router>([
-	["Tag", pushElement],
-	["ElementClosed", closeElement],
-	["EmptyElementClosed", closeEmptyElement],
-	["TailTag", popElement],
+	["Tag", pushElement], //
+	["ElementClosed", closeElement], //
+	["EmptyElementClosed", closeEmptyElement], //
+	["TailTag", popElement], //
 	["Text", pushText],
 	["Attr", pushAttr],
 	["AttrValue", pushAttrValue],
@@ -200,7 +200,7 @@ function pushAttrComponent(results: string[], stack: TagInfo[], attr: string) {
 	if (tagInfo.bannedPath) return;
 
 	results.push(" ");
-	results.push(attr);
+	results.push(attr.trim());
 }
 
 function pushAttrValue(
@@ -225,7 +225,7 @@ function pushAttrValueComponent(
 	if (tagInfo.bannedPath) return;
 
 	results.push('="');
-	results.push(val);
+	results.push(val.trim());
 	results.push('"');
 }
 
@@ -270,12 +270,14 @@ function pushTextComponent(
 
 	if (tagInfo.bannedPath || tagInfo.voidEl) return;
 
+	// preserved text
 	if (tagInfo.preservedTextPath) {
 		results.push(text);
 		tagInfo.textFormat = "Inline";
 		return;
 	}
 
+	// alt text
 	let altText = rules.getCloseSequenceFromAltTextTag(tagInfo.tag);
 	if (altText) {
 		addAltElementText(results, text, tagInfo);
@@ -283,24 +285,22 @@ function pushTextComponent(
 		return;
 	}
 
-	if (rules.respectIndentation()) {
-		if ("Inline" === tagInfo.textFormat) {
-			addInlineText(results, text, tagInfo);
-		} else if ("Initial" === tagInfo.textFormat) {
-			tagInfo.inlineEl
-				? addInlineElementText(results, text, tagInfo)
-				: addText(results, text, tagInfo);
-		} else {
-			// default
-			addText(results, text, tagInfo);
-		}
+	// if unformatted
+	if (!rules.respectIndentation()) {
+		addInlineText(results, text, tagInfo);
+		tagInfo.textFormat = "Inline";
+		return;
+	}
+
+	// formatted
+	if ("Inline" === tagInfo.textFormat) {
+		results.push(" ");
+	}
+
+	if (tagInfo.inlineEl || "Inline" === tagInfo.textFormat) {
+		// addFirstLineText
 	} else {
-		if ("Inline" === tagInfo.textFormat) {
-			addNoIndentsInlineText(results, text);
-		} else {
-			// default
-			addTextNoIndents(results, text);
-		}
+		addText(results, text, tagInfo);
 	}
 
 	tagInfo.textFormat = "Inline";
@@ -420,13 +420,6 @@ function addText(results: string[], text: string, tagInfo: TagInfo) {
 			results.push("\t".repeat(tagInfo.indentCount));
 			results.push(line.trim());
 		}
-	}
-}
-
-function updatetextFormat(stack: TagInfo[], textFormat: TextFormat) {
-	let tag_info = stack[stack.length - 1];
-	if (tag_info) {
-		tag_info.textFormat = textFormat;
 	}
 }
 
