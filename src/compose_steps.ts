@@ -322,36 +322,6 @@ function addAltElementText(results: string[], text: string, tagInfo: TagInfo) {
 	}
 }
 
-function addInlineElementText(
-	results: string[],
-	text: string,
-	tagInfo: TagInfo,
-) {
-	let texts = text.split("\n");
-
-	let index = 0;
-	while (index < texts.length) {
-		let line = texts[index];
-		index += 1;
-
-		if (!allSpaces(line)) {
-			results.push(line.trimEnd());
-			break;
-		}
-	}
-
-	while (index < texts.length) {
-		let line = texts[index];
-		index += 1;
-
-		if (allSpaces(line)) continue;
-
-		results.push("\n");
-		results.push("\t".repeat(tagInfo.indentCount));
-		results.push(line.trim());
-	}
-}
-
 function addInlineText(results: string[], text: string, tagInfo: TagInfo) {
 	let texts = text.split("\n");
 
@@ -379,40 +349,6 @@ function addInlineText(results: string[], text: string, tagInfo: TagInfo) {
 	}
 }
 
-function addTextNoIndents(results: string[], text: string) {
-	let texts = text.split("\n");
-
-	let index = 0;
-	while (index < texts.length) {
-		let line = texts[index];
-		index += 1;
-
-		if (!allSpaces(line)) {
-			results.push(line.trim());
-			break;
-		}
-	}
-
-	while (index < texts.length) {
-		let line = texts[index];
-		index += 1;
-
-		if (allSpaces(line)) continue;
-
-		results.push(" ");
-		results.push(line.trim());
-	}
-}
-
-function addNoIndentsInlineText(results: string[], text: string) {
-	for (const line of text.split("\n")) {
-		if (!allSpaces(line)) {
-			results.push(" ");
-			results.push(line.trim());
-		}
-	}
-}
-
 function addText(results: string[], text: string, tagInfo: TagInfo) {
 	for (let line of text.split("\n")) {
 		if (!allSpaces(line)) {
@@ -432,22 +368,29 @@ function getIndexOfFirstChar(text: string): number {
 }
 
 function getMostCommonSpaceIndex(text: string): number {
-	let prevSpaceIndex = text.length;
 	let spaceIndex = text.length;
+	let prevLine = "";
 
 	let texts = text.split("\n");
-	let prevLine = texts[0];
 
-	for (let index = 1; index < texts.length; index++) {
-		const line = texts[index];
-		if (line === undefined) break;
+	let index = 0;
+	while(index < text.length) {
+		let line = texts[index];
+		if (allSpaces(line)) continue;
 
-		let firstChar = getIndexOfFirstChar(line);
-		if (line.length === firstChar) continue;
+		spaceIndex = getIndexOfFirstChar(line);
+		prevLine = line;
+		break;
+	}
 
-		spaceIndex = getMostCommonIndexBetweenTwoStrings(prevLine, line);
-		if (spaceIndex < prevSpaceIndex) {
-			prevSpaceIndex = spaceIndex;
+	while (index < text.length) {
+		let line = texts[index];
+
+		if (allSpaces(line)) continue;
+
+		let currIndex = getMostCommonIndexBetweenTwoStrings(prevLine, line);
+		if (currIndex < spaceIndex) {
+			spaceIndex = currIndex;
 		}
 
 		prevLine = line;
