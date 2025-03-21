@@ -60,39 +60,40 @@ function pushElement(
 	step: StepInterface,
 ) {
 	let prevTagInfo = stack[stack.length - 1];
+	if (undefined === prevTagInfo) return;
 
 	let tag = getTextFromStep(templateStr, step);
-	const tagInfo = prevTagInfo
-		? from(rules, prevTagInfo, tag)
-		: new TagInfo(rules, tag);
+	const tagInfo = from(rules, prevTagInfo, tag);
 
 	if (tagInfo.bannedPath) {
 		stack.push(tagInfo);
 		return;
 	}
 
-	if (rules.respectIndentation()) {
-		if (tagInfo.inlineEl) {
-			if (
-				"Inline" === prevTagInfo.textFormat ||
-				"Block" === prevTagInfo.textFormat
-			) {
-				results.push(" ");
-			}
-		} else {
-			if (stack.length > 1 || "Initial" !== prevTagInfo.textFormat) {
-				results.push("\n");
-			}
-
-			results.push("\t".repeat(prevTagInfo.indentCount));
-		}
-	} else {
-		if ("Inline" === prevTagInfo.textFormat) {
-			results.push(" ");
-		}
+	if (
+		!rules.respectIndentation() &&
+		"Initial" !== prevTagInfo.textFormat &&
+		"Root" !== prevTagInfo.textFormat
+	) {
+		results.push(" ");
 	}
 
-	prevTagInfo.textFormat = tagInfo.inlineEl ? "Inline" : "Block";
+	if (rules.respectIndentation()) {
+		if (!tagInfo.inlineEl) {
+			if ("Root" !== prevTagInfo.textFormat) {
+				results.push("\n");
+				results.push("\t".repeat(prevTagInfo.indentCount));
+			}
+			prevTagInfo.textFormat = "Block";
+		}
+
+		if (tagInfo.inlineEl) {
+			if ("Inline" === prevTagInfo.textFormat) {
+				results.push(" ");
+			}
+			prevTagInfo.textFormat = "Inline";
+		}
+	}
 
 	results.push("<");
 	results.push(tag);
@@ -117,7 +118,7 @@ function closeEmptyElement(results: string[], stack: TagInfo[]) {
 	let tagInfo = stack.pop();
 	if (undefined === tagInfo) return;
 
-	if (tagInfo.bannedPath || tagInfo.voidEl) return;
+	if (tagInfo.bannedPath) return;
 
 	if ("html" !== tagInfo.namespace) {
 		results.push("/>");
@@ -129,9 +130,6 @@ function closeEmptyElement(results: string[], stack: TagInfo[]) {
 
 		results.push(">");
 	}
-
-	let textFormat: TextFormat = tagInfo.inlineEl ? "Inline" : "Block";
-	updatetextFormat(stack, textFormat);
 }
 
 function popElement(
@@ -147,10 +145,12 @@ function popElement(
 	if (tagInfo.bannedPath) return;
 
 	let tag = getTextFromStep(templateStr, step);
-	if (tag !== tagInfo.tag) return;
+	let altTag = rules.getAltTextTagFromCloseSequence(tag);
+	if (altTag) {
+		tag = altTag;
+	}
 
-	let textFormat: TextFormat = tagInfo.inlineEl ? "Inline" : "Block";
-	updatetextFormat(stack, textFormat);
+	if (tag !== tagInfo.tag) return;
 
 	if (tagInfo.voidEl && "html" === tagInfo.namespace) {
 		results.push(">");
@@ -163,10 +163,18 @@ function popElement(
 	if (
 		rules.respectIndentation() &&
 		!tagInfo.inlineEl &&
+		!tagInfo.preservedTextPath &&
 		"Initial" !== tagInfo.textFormat
 	) {
 		results.push("\n");
 		results.push("\t".repeat(prevTagInfo.indentCount));
+	}
+
+	let closeSeq = rules.getCloseSequenceFromAltTextTag(tag);
+	if (closeSeq) {
+		results.push(closeSeq);
+		results.push(">");
+		return;
 	}
 
 	results.push("</");
@@ -413,39 +421,6 @@ function addText(results: string[], text: string, tagInfo: TagInfo) {
 			results.push(line.trim());
 		}
 	}
-}
-
-function popClosingSquence(
-	results: string[],
-	stack: TagInfo[],
-	rules: RulesetInterface,
-	templateStr: string,
-	step: StepInterface,
-) {
-	let tagInfo = stack.pop();
-	if (tagInfo === undefined) return;
-
-	let closingSequence = getTextFromStep(templateStr, step);
-	let tag = rules.getAltTextTagFromCloseSequence(closingSequence);
-	if (undefined === tag) return;
-	if (tag !== tagInfo.tag) return;
-
-	if (tagInfo.bannedPath) return;
-
-	let prevTagInfo = stack[stack.length - 1];
-	if (undefined === prevTagInfo) return;
-
-	if (
-		rules.respectIndentation() &&
-		!prevTagInfo.inlineEl &&
-		!prevTagInfo.preservedTextPath &&
-		"Initial" != prevTagInfo.textFormat
-	) {
-		results.push("\n");
-		results.push("\t".repeat(prevTagInfo.indentCount));
-	}
-
-	results.push(closingSequence);
 }
 
 function updatetextFormat(stack: TagInfo[], textFormat: TextFormat) {
