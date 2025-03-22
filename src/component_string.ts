@@ -91,7 +91,7 @@ function composeString(
 				}
 				if (templateStr) {
 					composeSteps(rules, results, tagInfoStack, templateStr, currChunk);
-				}	
+				}
 			}
 
 			// handle injection
@@ -110,7 +110,7 @@ function composeString(
 					bit.component[index],
 				);
 				stack.push(nuBit);
-				
+
 				continue;
 			}
 

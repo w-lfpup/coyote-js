@@ -263,6 +263,7 @@ function pushTextComponent(
 	rules: RulesetInterface,
 	text: string,
 ) {
+	// console.log("push text component")
 	if (allSpaces(text)) return;
 
 	let tagInfo = stack[stack.length - 1];
@@ -324,6 +325,7 @@ function addAltElementText(results: string[], text: string, tagInfo: TagInfo) {
 }
 
 function addFirstLineText(results: string[], text: string, tagInfo: TagInfo) {
+	// console.log("add first line");
 	let texts = text.split("\n");
 
 	let index = 0;
@@ -332,7 +334,7 @@ function addFirstLineText(results: string[], text: string, tagInfo: TagInfo) {
 		index += 1;
 
 		if (!allSpaces(line)) {
-			results.push(line);
+			results.push(line.trim());
 			break;
 		}
 	}
@@ -350,6 +352,7 @@ function addFirstLineText(results: string[], text: string, tagInfo: TagInfo) {
 }
 
 function addInlineText(results: string[], text: string, tagInfo: TagInfo) {
+	// console.log("adding inline text!");
 	let texts = text.split("\n");
 
 	let index = 0;
@@ -379,6 +382,7 @@ function addInlineText(results: string[], text: string, tagInfo: TagInfo) {
 }
 
 function addText(results: string[], text: string, tagInfo: TagInfo) {
+	// console.log("add text");
 	let texts = text.split("\n");
 
 	let index = 0;
