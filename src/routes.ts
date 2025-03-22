@@ -160,11 +160,6 @@ function getKindFromTailTag(glyph: string): StepKind {
 	return "TailTag";
 }
 
-// // will always return alt text, needs to be broken
-// function getKindFromAltText(glyph: string): StepKind {
-// 	return "AltText";
-// }
-
 function getKindFromInitial(glyph: string): StepKind {
 	if ("<" === glyph) return "Element";
 	if ("{" === glyph) return "DescendantInjection";
