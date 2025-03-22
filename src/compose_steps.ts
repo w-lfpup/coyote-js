@@ -313,9 +313,12 @@ function allSpaces(text: string): boolean {
 }
 
 function addAltElementText(results: string[], text: string, tagInfo: TagInfo) {
+	// console.log("alt text:\n", text);
+
 	let commonIndex = getMostCommonSpaceIndex(text);
 
-	for (const line of text.split("\n")) {
+	for (let line of text.split("\n")) {
+		// console.log("split: ", line.trim())
 		if (allSpaces(line)) continue;
 
 		results.push("\n");
@@ -428,7 +431,7 @@ function getMostCommonSpaceIndex(text: string): number {
 	let texts = text.split("\n");
 
 	let index = 0;
-	while (index < text.length) {
+	while (index < texts.length) {
 		let line = texts[index];
 		index += 1;
 
@@ -439,7 +442,7 @@ function getMostCommonSpaceIndex(text: string): number {
 		break;
 	}
 
-	while (index < text.length) {
+	while (index < texts.length) {
 		let line = texts[index];
 		index += 1;
 

@@ -1,5 +1,6 @@
-import { tmplStr, ClientHtml, Html } from "./mod.js";
+import { tmplStr, Html } from "./mod.js";
 import type { Results } from "./component_string.js";
+
 function assertResults(
 	expected: string,
 	results: Results,
@@ -20,6 +21,7 @@ ${results}
 `;
 	}
 }
+
 function textElement() {
 	let template = tmplStr(
 		`
@@ -118,10 +120,137 @@ function inlineElementWithText() {
 	return assertResults(expected, results);
 }
 
+function anchorElementWithText() {
+	let template = tmplStr(
+		`
+	<a>
+		hello!    </a>
+		`,
+		[],
+	);
+
+	let expected = "<a>\n\thello!\n</a>";
+
+	let html = new Html();
+	let results = html.build(template);
+
+	return assertResults(expected, results);
+}
+
+function voidElement() {
+	let template = tmplStr(
+		`
+		<input />
+		`,
+		[],
+	);
+
+	let expected = "<input>";
+
+	let html = new Html();
+	let results = html.build(template);
+
+	return assertResults(expected, results);
+}
+
+function nonVoidElement() {
+	let template = tmplStr(
+		`
+		<p />
+		`,
+		[],
+	);
+
+	let expected = "<p></p>";
+
+	let html = new Html();
+	let results = html.build(template);
+
+	return assertResults(expected, results);
+}
+
+function commentElement() {
+	let template = tmplStr(
+		`
+	<!--
+			Hello!
+		-->
+		`,
+		[],
+	);
+
+	let expected = "<!--\n\tHello!\n-->";
+
+	let html = new Html();
+	let results = html.build(template);
+
+	return assertResults(expected, results);
+}
+
+function altTextElement() {
+	let template = tmplStr(
+		`<style>#woof .bark {
+    color: doggo;
+}</style>`,
+		[],
+	);
+
+	let expected = "<style>\n\t#woof .bark {\n\t    color: doggo;\n\t}\n</style>";
+
+	let html = new Html();
+	let results = html.build(template);
+
+	return assertResults(expected, results);
+}
+
+function altTextElementNoDescendants() {
+	let template = tmplStr(
+		`
+		<script>
+			{}
+		</script>
+		`,
+		[],
+	);
+
+	let expected = "<script>\n\t{}\n</script>";
+
+	let html = new Html();
+	let results = html.build(template);
+
+	return assertResults(expected, results);
+}
+
+function preservedTextElement() {
+	let template = tmplStr(
+		`
+<pre>
+	U w U
+	  woof woof!
+</pre>
+		`,
+		[],
+	);
+
+	let expected = "<pre>\n\tU w U\n\t  woof woof!\n</pre>";
+
+	let html = new Html();
+	let results = html.build(template);
+
+	return assertResults(expected, results);
+}
+
 export const tests = [
-	// textElement,
-	// emptyElement,
-	// fragment,
-	// elementWithText,
+	textElement,
+	emptyElement,
+	fragment,
+	elementWithText,
 	inlineElementWithText,
+	anchorElementWithText,
+	voidElement,
+	nonVoidElement,
+	commentElement,
+	altTextElement,
+	altTextElementNoDescendants,
+	preservedTextElement,
 ];
