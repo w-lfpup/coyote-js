@@ -67,19 +67,14 @@ let inlineElements = new Set([
 	"time",
 	"u",
 	"var",
-	"wbr",
-	"area",
 	"audio",
 	"img",
 	"map",
-	"track",
 	"video",
-	"embed",
 	"iframe",
 	"object",
 	"picture",
 	"portal",
-	"source",
 ]);
 
 let voidElements = new Set([
