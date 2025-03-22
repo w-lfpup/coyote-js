@@ -1,5 +1,5 @@
-import { tmplStr, Html } from "../mod.js";
 import { assert } from "./assertion.js";
+import { tmplStr, Html } from "../mod.js";
 
 function textElement() {
 	let template = tmplStr(
@@ -15,11 +15,9 @@ function textElement() {
 	let expected = "Beasts tread\nsoftly underfoot.";
 
 	let html = new Html();
-	let [doc, _err] = html.build(template);
+	let results = html.build(template);
 
-	if (expected !== doc) {
-		return "failed to parse text";
-	}
+	return assert(expected, results);
 }
 
 function emptyElement() {
@@ -36,11 +34,9 @@ function emptyElement() {
 	let expected = "<p></p>";
 
 	let html = new Html();
-	let [doc, _err] = html.build(template);
+	let results = html.build(template);
 
-	if (expected !== doc) {
-		return "failed to parse text";
-	}
+	return assert(expected, results);
 }
 
 function fragment() {
@@ -57,11 +53,9 @@ function fragment() {
 	let expected = "";
 
 	let html = new Html();
-	let [doc, _err] = html.build(template);
+	let results = html.build(template);
 
-	if (expected !== doc) {
-		return "failed to parse text";
-	}
+	return assert(expected, results);
 }
 
 function elementWithText() {
@@ -75,11 +69,9 @@ function elementWithText() {
 	let expected = "<p>\n\thello!\n</p>";
 
 	let html = new Html();
-	let [doc, _err] = html.build(template);
+	let results = html.build(template);
 
-	if (expected !== doc) {
-		return "failed to parse text";
-	}
+	return assert(expected, results);
 }
 
 function inlineElementWithText() {
