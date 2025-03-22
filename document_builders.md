@@ -27,7 +27,7 @@ The output will be:
 <p>hai :3</p>
 ```
 
-### Hello, error world!
+### Hello, error!
 
 `Document builders` will return (not throw) an `Error` when template components do not close all their tags.
 

@@ -19,7 +19,6 @@ function textElement() {
 	let html = new Html();
 	let [doc, _err] = html.build(template);
 
-	console.log("doc", doc);
 	if (expected !== doc) {
 		return "failed to parse text";
 	}

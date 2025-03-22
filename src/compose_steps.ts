@@ -44,7 +44,6 @@ function composeSteps(
 	templateStr: string,
 	steps: StepInterface[],
 ) {
-	console.log("stepeeee", steps);
 	for (const step of steps) {
 		let route = htmlRoutes.get(step.kind);
 		if (route) {

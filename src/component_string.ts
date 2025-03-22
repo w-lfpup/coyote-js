@@ -62,8 +62,6 @@ function composeString(
 	let bit = getStackBitFromComponent(tagInfoStack, builder, rules, component);
 	let stack = [bit];
 
-	console.log("component!", component);
-	console.log(stack);
 	while (0 < stack.length) {
 		const bit = stack.pop();
 
@@ -83,15 +81,17 @@ function composeString(
 
 			// add text chunk
 			let currChunk = bit.results.steps[index];
-			let templateStr: string;
-			// if (component instanceof TaggedTmplComponent) {
-			// 	templateStr = component.templateArr[index];
-			// }
-			if (component instanceof TmplComponent) {
-				templateStr = component.templateStr;
-			}
-			if (templateStr) {
-				composeSteps(rules, results, tagInfoStack, templateStr, currChunk);
+			if (currChunk) {
+				let templateStr: string;
+				// if (component instanceof TaggedTmplComponent) {
+				// 	templateStr = component.templateArr[index];
+				// }
+				if (component instanceof TmplComponent) {
+					templateStr = component.templateStr;
+				}
+				if (templateStr) {
+					composeSteps(rules, results, tagInfoStack, templateStr, currChunk);
+				}	
 			}
 
 			// handle injection
@@ -110,6 +110,7 @@ function composeString(
 					bit.component[index],
 				);
 				stack.push(nuBit);
+				
 				continue;
 			}
 
