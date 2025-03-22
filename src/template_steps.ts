@@ -5,7 +5,8 @@ import { parseStr, route } from "./parse_str.js";
 
 export type { ResultsInterface };
 
-export { Results, compose, composeTemplateArr };
+// export { Results, compose, composeTemplateArr };
+export { Results, compose };
 
 interface ResultsInterface {
 	steps: StepInterface[][];
@@ -38,38 +39,38 @@ function compose(
 	return results;
 }
 
-function composeTemplateArr(
-	ruleset: RulesetInterface,
-	templateStrArr: TemplateStringsArray,
-): ResultsInterface {
-	let results = new Results();
+// function composeTemplateArr(
+// 	ruleset: RulesetInterface,
+// 	templateStrArr: TemplateStringsArray,
+// ): ResultsInterface {
+// 	let results = new Results();
 
-	let stepKind: StepKind = "Initial";
+// 	let stepKind: StepKind = "Initial";
 
-	// every one except for the last
-	for (let [index, templateStr] of templateStrArr.entries()) {
-		for (let step of parseStr(ruleset, templateStr, stepKind)) {
-			stepKind = step.kind;
-			pushStep(results, step);
-		}
+// 	// every one except for the last
+// 	for (let [index, templateStr] of templateStrArr.entries()) {
+// 		for (let step of parseStr(ruleset, templateStr, stepKind)) {
+// 			stepKind = step.kind;
+// 			pushStep(results, step);
+// 		}
 
-		// if last template str stop
-		if (index > templateStrArr.length - 1) continue;
+// 		// if last template str stop
+// 		if (index > templateStrArr.length - 1) continue;
 
-		let injStepKind = route("{", stepKind);
+// 		let injStepKind = route("{", stepKind);
 
-		if (
-			"AttrMapInjection" === injStepKind ||
-			"DescendantInjection" === injStepKind
-		) {
-			pushInjection(results, "DescendantInjection");
-		} else {
-			pushInjection(results, undefined);
-		}
-	}
+// 		if (
+// 			"AttrMapInjection" === injStepKind ||
+// 			"DescendantInjection" === injStepKind
+// 		) {
+// 			pushInjection(results, "DescendantInjection");
+// 		} else {
+// 			pushInjection(results, undefined);
+// 		}
+// 	}
 
-	return results;
-}
+// 	return results;
+// }
 
 function pushStep(results: ResultsInterface, step: StepInterface) {
 	results.steps[results.steps.length - 1]?.push(step);

@@ -35,6 +35,7 @@ function parseStr(
 	initialKind: StepKind,
 ): StepInterface[] {
 	let steps = [new Step(initialKind)];
+
 	let tag = "";
 	let prevInjKind = initialKind;
 	let slidingWindow: SlidingWindowInterface | undefined;
@@ -43,7 +44,7 @@ function parseStr(
 		let glyph = templateStr.charAt(index);
 		if (slidingWindow) {
 			if (!slidingWindow.slide(glyph)) continue;
-			if (!addReservedElementText(sieve, steps, tag, index)) return steps;
+			if (!addAltElementText(sieve, steps, tag, index)) return steps;
 
 			slidingWindow = undefined;
 			continue;
@@ -51,6 +52,7 @@ function parseStr(
 
 		let step = steps[steps.length - 1];
 		if (step === undefined) return steps;
+		step.target = index;
 
 		let currKind =
 			"InjectionConfirmed" === step.kind
@@ -63,19 +65,17 @@ function parseStr(
 			prevInjKind = step.kind;
 		}
 
-		step.target = index;
-
 		if ("Tag" === step.kind) {
 			tag = getTextFromStep(templateStr, step);
-		}
 
-		if (sieve.isComment(tag)) {
-			let closeSequence = sieve.getCloseSequenceFromAltTextTag(tag);
-			if (closeSequence) {
-				let slider = new SlidingWindow(closeSequence);
-				slider.slide(glyph);
-				slidingWindow = slider;
-				currKind = "CommentText";
+			if (sieve.tagIsAtributeless(tag)) {
+				let closeSequence = sieve.getCloseSequenceFromAltTextTag(tag);
+				if (closeSequence) {
+					let slider = new SlidingWindow(closeSequence);
+					slider.slide(glyph);
+					slidingWindow = slider;
+					currKind = "Text";
+				}
 			}
 		}
 
@@ -85,7 +85,7 @@ function parseStr(
 				let slider = new SlidingWindow(closeSequence);
 				slider.slide(glyph);
 				slidingWindow = slider;
-				currKind = "AltText";
+				currKind = "Text";
 			}
 		}
 
@@ -108,7 +108,7 @@ function isInjectionKind(stepKind: StepKind): boolean {
 	return "AttrMapInjection" === stepKind || "DescendantInjection" === stepKind;
 }
 
-function addReservedElementText(
+function addAltElementText(
 	sieve: RulesetInterface,
 	steps: Step[],
 	tag: string,
@@ -123,7 +123,7 @@ function addReservedElementText(
 	step.target = index - (closingSequence.length - 1);
 	steps.push(
 		new Step(
-			"AltTextCloseSequence",
+			"TailTag",
 			index - (closingSequence.length - 1),
 			index - closingSequence.length,
 		),

@@ -21,10 +21,10 @@ export { composeString };
 
 interface BuilderInterface {
 	build(rules: RulesetInterface, templateStr: string): TemplateSteps;
-	buildTemplate(
-		rules: RulesetInterface,
-		templateArray: TemplateStringsArray,
-	): TemplateSteps;
+	// buildTemplate(
+	// 	rules: RulesetInterface,
+	// 	templateArray: TemplateStringsArray,
+	// ): TemplateSteps;
 }
 
 class TemplateBit {
@@ -81,15 +81,17 @@ function composeString(
 
 			// add text chunk
 			let currChunk = bit.results.steps[index];
-			let templateStr: string;
-			if (component instanceof TaggedTmplComponent) {
-				templateStr = component.templateArr[index];
-			}
-			if (component instanceof TmplComponent) {
-				templateStr = component.templateStr;
-			}
-			if (templateStr) {
-				composeSteps(rules, results, tagInfoStack, templateStr, currChunk);
+			if (currChunk) {
+				let templateStr: string;
+				// if (component instanceof TaggedTmplComponent) {
+				// 	templateStr = component.templateArr[index];
+				// }
+				if (component instanceof TmplComponent) {
+					templateStr = component.templateStr;
+				}
+				if (templateStr) {
+					composeSteps(rules, results, tagInfoStack, templateStr, currChunk);
+				}
 			}
 
 			// handle injection
@@ -108,6 +110,7 @@ function composeString(
 					bit.component[index],
 				);
 				stack.push(nuBit);
+
 				continue;
 			}
 
@@ -115,9 +118,9 @@ function composeString(
 			if (index < bit.results.steps.length) {
 				// check for imbalance error
 				let template: string;
-				if (component instanceof TaggedTmplComponent) {
-					template = component.templateArr.raw.toString();
-				}
+				// if (component instanceof TaggedTmplComponent) {
+				// 	template = component.templateArr.raw.toString();
+				// }
 				if (component instanceof TmplComponent) {
 					template = component.templateStr;
 				}
@@ -153,10 +156,10 @@ function getStackBitFromComponent(
 		return new TemplateBit(component, buildResults, stack.length);
 	}
 
-	if (component instanceof TaggedTmplComponent) {
-		let buildResults = builder.buildTemplate(rules, component.templateArr);
-		return new TemplateBit(component, buildResults, stack.length);
-	}
+	// if (component instanceof TaggedTmplComponent) {
+	// 	let buildResults = builder.buildTemplate(rules, component.templateArr);
+	// 	return new TemplateBit(component, buildResults, stack.length);
+	// }
 }
 
 function addAttrInj(stack: TagInfo[], results: string[], component: Component) {

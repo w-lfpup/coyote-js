@@ -34,9 +34,11 @@ function hai() {
 }
 
 let helloWorld = hai();
+
 let html = new Html();
 
 let [document, _error] = html.build(helloWorld);
+
 console.log(document);
 ```
 

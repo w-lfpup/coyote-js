@@ -26,10 +26,7 @@ type StepKind =
 	| "ElementSpace"
 	| "Element"
 	| "Tag"
-	| "Text"
-	| "AltText"
-	| "AltTextCloseSequence"
-	| "CommentText";
+	| "Text";
 
 type Router = (glyph: string) => StepKind;
 

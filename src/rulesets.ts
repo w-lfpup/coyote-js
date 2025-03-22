@@ -4,15 +4,15 @@ export { ClientRules, ServerRules, XmlRules };
 
 interface RulesetInterface {
 	getInitialNamespace(): string;
-	isComment(tag: string): boolean;
+	tagIsAtributeless(tag: string): boolean;
 	getCloseSequenceFromAltTextTag(tag: string): string | undefined;
-	getTagFromCloseSequence(close_sequence: string): string | undefined;
+	getAltTextTagFromCloseSequence(close_sequence: string): string | undefined;
 	respectIndentation(): boolean;
-	isBannedEl(tag: string): boolean;
-	isVoidEl(tag: string): boolean;
-	isNamespaceEl(tag: string): boolean;
-	isPreservedTextEl(tag: string): boolean;
-	isInlineEl(tag: string): boolean;
+	tagIsBannedEl(tag: string): boolean;
+	tagIsVoidEl(tag: string): boolean;
+	tagIsNamespaceEl(tag: string): boolean;
+	tagIsPreservedTextEl(tag: string): boolean;
+	tagIsInlineEl(tag: string): boolean;
 }
 
 let bannedElements = new Set([
@@ -67,24 +67,10 @@ let inlineElements = new Set([
 	"time",
 	"u",
 	"var",
-	"wbr",
-	"area",
-	"audio",
-	"img",
-	"map",
-	"track",
-	"video",
-	"embed",
-	"iframe",
-	"object",
-	"picture",
-	"portal",
-	"source",
 ]);
 
 let voidElements = new Set([
 	"!DOCTYPE",
-	"!--",
 	"area",
 	"base",
 	"br",
@@ -105,31 +91,31 @@ class ServerRules implements RulesetInterface {
 	getInitialNamespace(): string {
 		return "html";
 	}
-	isComment(tag: string): boolean {
-		return isComment(tag);
+	tagIsAtributeless(tag: string): boolean {
+		return isAtributeless(tag);
 	}
 	getCloseSequenceFromAltTextTag(tag: string): string | undefined {
 		return getCloseSequenceFromAltTextTag(tag);
 	}
-	getTagFromCloseSequence(tag: string): string | undefined {
-		return getTagFromCloseSequence(tag);
+	getAltTextTagFromCloseSequence(tag: string): string | undefined {
+		return getAltTextTagFromCloseSequence(tag);
 	}
 	respectIndentation(): boolean {
 		return true;
 	}
-	isBannedEl(tag: string): boolean {
+	tagIsBannedEl(tag: string): boolean {
 		return bannedElements.has(tag);
 	}
-	isVoidEl(tag: string): boolean {
+	tagIsVoidEl(tag: string): boolean {
 		return voidElements.has(tag);
 	}
-	isNamespaceEl(tag: string): boolean {
+	tagIsNamespaceEl(tag: string): boolean {
 		return isNameSpaceEl(tag);
 	}
-	isPreservedTextEl(tag: string): boolean {
+	tagIsPreservedTextEl(tag: string): boolean {
 		return isPreservedTextEl(tag);
 	}
-	isInlineEl(tag: string): boolean {
+	tagIsInlineEl(tag: string): boolean {
 		return inlineElements.has(tag);
 	}
 }
@@ -138,19 +124,19 @@ class ClientRules implements RulesetInterface {
 	getInitialNamespace(): string {
 		return "html";
 	}
-	isComment(tag: string): boolean {
-		return isComment(tag);
+	tagIsAtributeless(tag: string): boolean {
+		return isAtributeless(tag);
 	}
 	getCloseSequenceFromAltTextTag(tag: string): string {
 		return getCloseSequenceFromAltTextTag(tag);
 	}
-	getTagFromCloseSequence(tag: string): string {
-		return getTagFromCloseSequence(tag);
+	getAltTextTagFromCloseSequence(tag: string): string {
+		return getAltTextTagFromCloseSequence(tag);
 	}
 	respectIndentation(): boolean {
 		return false;
 	}
-	isBannedEl(tag: string): boolean {
+	tagIsBannedEl(tag: string): boolean {
 		return (
 			"!--" === tag ||
 			"link" === tag ||
@@ -159,19 +145,17 @@ class ClientRules implements RulesetInterface {
 			bannedElements.has(tag)
 		);
 	}
-	isVoidEl(tag: string): boolean {
+	tagIsVoidEl(tag: string): boolean {
 		return voidElements.has(tag);
 	}
-	isNamespaceEl(tag: string): boolean {
+	tagIsNamespaceEl(tag: string): boolean {
 		return isNameSpaceEl(tag);
 	}
-	isPreservedTextEl(tag: string): boolean {
+	tagIsPreservedTextEl(tag: string): boolean {
 		return isPreservedTextEl(tag);
 	}
-	isInlineEl(tag: string): boolean {
-		if ("a" === tag) return true;
-
-		return inlineElements.has(tag);
+	tagIsInlineEl(): boolean {
+		return true;
 	}
 }
 
@@ -179,51 +163,51 @@ class XmlRules implements RulesetInterface {
 	getInitialNamespace(): string {
 		return "xml";
 	}
-	isComment(tag: string): boolean {
-		return isComment(tag);
+	tagIsAtributeless(tag: string): boolean {
+		return isAtributeless(tag);
 	}
 	getCloseSequenceFromAltTextTag(tag: string): string | undefined {
-		if ("!--" === tag) return "-->";
-		if ("![CDATA[" === tag) return "]]>";
+		if ("!--" === tag) return "--";
+		if ("![CDATA[" === tag) return "]]";
 	}
-	getTagFromCloseSequence(tag: string): string | undefined {
-		if ("-->" === tag) return "!--";
-		if ("]]>" === tag) return "![CDATA[";
+	getAltTextTagFromCloseSequence(tag: string): string | undefined {
+		if ("--" === tag) return "!--";
+		if ("]]" === tag) return "![CDATA[";
 	}
 	respectIndentation(): boolean {
 		return true;
 	}
-	isBannedEl(tag: string): boolean {
+	tagIsBannedEl(): boolean {
 		return false;
 	}
-	isVoidEl(tag: string): boolean {
+	tagIsVoidEl(): boolean {
 		return false;
 	}
-	isNamespaceEl(tag: string): boolean {
+	tagIsNamespaceEl(): boolean {
 		return false;
 	}
-	isPreservedTextEl(tag: string): boolean {
+	tagIsPreservedTextEl(): boolean {
 		return false;
 	}
-	isInlineEl(tag: string): boolean {
+	tagIsInlineEl(): boolean {
 		return false;
 	}
 }
 
-function isComment(tag: string): boolean {
+function isAtributeless(tag: string): boolean {
 	return "!--" === tag;
 }
 
 function getCloseSequenceFromAltTextTag(tag: string): string | undefined {
-	if ("script" === tag) return "</script>";
-	if ("style" === tag) return "</style>";
-	if ("!--" === tag) return "--!";
+	if ("!--" === tag) return "--";
+	if ("script" === tag) return "</script";
+	if ("style" === tag) return "</style";
 }
 
-function getTagFromCloseSequence(tag: string): string | undefined {
-	if ("</script>" === tag) return "script";
-	if ("</style>" === tag) return "style";
-	if ("-->" === tag) return "!--";
+function getAltTextTagFromCloseSequence(tag: string): string | undefined {
+	if ("--" === tag) return "!--";
+	if ("</script" === tag) return "script";
+	if ("</style" === tag) return "style";
 }
 
 function isNameSpaceEl(tag: string): boolean {

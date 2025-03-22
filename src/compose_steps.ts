@@ -1,6 +1,6 @@
 import type { StepInterface, StepKind } from "./parse_str.ts";
 import type { RulesetInterface } from "./rulesets.ts";
-import type { DescendantStatus, TagInfoInterface } from "./tag_info.ts";
+import type { TextFormat, TagInfoInterface } from "./tag_info.ts";
 
 import { TagInfo, from } from "./tag_info.js";
 import { getTextFromStep } from "./parse_str.js";
@@ -27,17 +27,14 @@ const spaceCharCodes = new Set([
 ]);
 
 const htmlRoutes = new Map<StepKind, Router>([
-	["Tag", pushElement],
-	["ElementClosed", closeElement],
-	["EmptyElementClosed", closeEmptyElement],
-	["TailTag", popElement],
+	["Tag", pushElement], //
+	["ElementClosed", closeElement], //
+	["EmptyElementClosed", closeEmptyElement], //
+	["TailTag", popElement], //
 	["Text", pushText],
 	["Attr", pushAttr],
 	["AttrValue", pushAttrValue],
 	["AttrValueUnquoted", pushAttrValueUnquoted],
-	["CommentText", pushText],
-	["AltText", pushText],
-	["AltTextCloseSequence", popClosingSquence],
 ]);
 
 function composeSteps(
@@ -63,41 +60,40 @@ function pushElement(
 	step: StepInterface,
 ) {
 	let prevTagInfo = stack[stack.length - 1];
+	if (undefined === prevTagInfo) return;
 
 	let tag = getTextFromStep(templateStr, step);
-	const tagInfo = prevTagInfo
-		? from(rules, prevTagInfo, tag)
-		: new TagInfo(rules, tag);
+	const tagInfo = from(rules, prevTagInfo, tag);
 
 	if (tagInfo.bannedPath) {
 		stack.push(tagInfo);
 		return;
 	}
 
-	if (rules.respectIndentation()) {
-		if (tagInfo.inlineEl) {
-			if (
-				"Text" === prevTagInfo.mostRecentDescendant ||
-				"InlineElementClosed" === prevTagInfo.mostRecentDescendant
-			) {
-				results.push(" ");
-			}
-		} else {
-			if (stack.length > 1 || "Initial" !== prevTagInfo.mostRecentDescendant) {
-				results.push("\n");
-			}
-
-			results.push("\t".repeat(prevTagInfo.indentCount));
-		}
-	} else {
-		if ("Text" === prevTagInfo.mostRecentDescendant) {
-			results.push(" ");
-		}
+	if (
+		!rules.respectIndentation() &&
+		"Initial" !== prevTagInfo.textFormat &&
+		"Root" !== prevTagInfo.textFormat
+	) {
+		results.push(" ");
 	}
 
-	prevTagInfo.mostRecentDescendant = tagInfo.inlineEl
-		? "InlineElement"
-		: "Element";
+	if (rules.respectIndentation()) {
+		if (!tagInfo.inlineEl) {
+			if ("Root" !== prevTagInfo.textFormat) {
+				results.push("\n");
+				results.push("\t".repeat(prevTagInfo.indentCount));
+			}
+			prevTagInfo.textFormat = "Block";
+		}
+
+		if (tagInfo.inlineEl) {
+			if ("Inline" === prevTagInfo.textFormat) {
+				results.push(" ");
+			}
+			prevTagInfo.textFormat = "Inline";
+		}
+	}
 
 	results.push("<");
 	results.push(tag);
@@ -122,7 +118,7 @@ function closeEmptyElement(results: string[], stack: TagInfo[]) {
 	let tagInfo = stack.pop();
 	if (undefined === tagInfo) return;
 
-	if (tagInfo.bannedPath || tagInfo.voidEl) return;
+	if (tagInfo.bannedPath) return;
 
 	if ("html" !== tagInfo.namespace) {
 		results.push("/>");
@@ -134,11 +130,6 @@ function closeEmptyElement(results: string[], stack: TagInfo[]) {
 
 		results.push(">");
 	}
-
-	let descdantStatus: DescendantStatus = tagInfo.inlineEl
-		? "InlineElementClosed"
-		: "ElementClosed";
-	updateMostRecentDescendant(stack, descdantStatus);
 }
 
 function popElement(
@@ -154,12 +145,12 @@ function popElement(
 	if (tagInfo.bannedPath) return;
 
 	let tag = getTextFromStep(templateStr, step);
-	if (tag !== tagInfo.tag) return;
+	let altTag = rules.getAltTextTagFromCloseSequence(tag);
+	if (altTag) {
+		tag = altTag;
+	}
 
-	let descdantStatus: DescendantStatus = tagInfo.inlineEl
-		? "InlineElementClosed"
-		: "ElementClosed";
-	updateMostRecentDescendant(stack, descdantStatus);
+	if (tag !== tagInfo.tag) return;
 
 	if (tagInfo.voidEl && "html" === tagInfo.namespace) {
 		results.push(">");
@@ -172,10 +163,18 @@ function popElement(
 	if (
 		rules.respectIndentation() &&
 		!tagInfo.inlineEl &&
-		"Initial" !== tagInfo.mostRecentDescendant
+		!tagInfo.preservedTextPath &&
+		"Initial" !== tagInfo.textFormat
 	) {
 		results.push("\n");
 		results.push("\t".repeat(prevTagInfo.indentCount));
+	}
+
+	let closeSeq = rules.getCloseSequenceFromAltTextTag(tag);
+	if (closeSeq) {
+		results.push(closeSeq);
+		results.push(">");
+		return;
 	}
 
 	results.push("</");
@@ -201,7 +200,7 @@ function pushAttrComponent(results: string[], stack: TagInfo[], attr: string) {
 	if (tagInfo.bannedPath) return;
 
 	results.push(" ");
-	results.push(attr);
+	results.push(attr.trim());
 }
 
 function pushAttrValue(
@@ -226,7 +225,7 @@ function pushAttrValueComponent(
 	if (tagInfo.bannedPath) return;
 
 	results.push('="');
-	results.push(val);
+	results.push(val.trim());
 	results.push('"');
 }
 
@@ -271,40 +270,40 @@ function pushTextComponent(
 
 	if (tagInfo.bannedPath || tagInfo.voidEl) return;
 
+	// preserved text
 	if (tagInfo.preservedTextPath) {
 		results.push(text);
-		tagInfo.mostRecentDescendant = "Text";
+		tagInfo.textFormat = "Inline";
 		return;
 	}
 
+	// alt text
 	let altText = rules.getCloseSequenceFromAltTextTag(tagInfo.tag);
 	if (altText) {
 		addAltElementText(results, text, tagInfo);
-		tagInfo.mostRecentDescendant = "Text";
+		tagInfo.textFormat = "Inline";
 		return;
 	}
 
-	if (rules.respectIndentation()) {
-		if ("InlineElementClosed" === tagInfo.mostRecentDescendant) {
-			addInlineElementClosedText(results, text, tagInfo);
-		} else if ("Initial" === tagInfo.mostRecentDescendant) {
-			tagInfo.inlineEl
-				? addInlineElementText(results, text, tagInfo)
-				: addText(results, text, tagInfo);
-		} else {
-			// default
-			addText(results, text, tagInfo);
-		}
-	} else {
-		if ("InlineElementClosed" === tagInfo.mostRecentDescendant) {
-			addNoIndentsInlineElementClosedText(results, text);
-		} else {
-			// default
-			addTextNoIndents(results, text);
-		}
+	// if unformatted
+	if (!rules.respectIndentation()) {
+		addInlineText(results, text, tagInfo);
+		tagInfo.textFormat = "Inline";
+		return;
 	}
 
-	tagInfo.mostRecentDescendant = "Text";
+	// formatted
+	if ("Inline" === tagInfo.textFormat) {
+		results.push(" ");
+	}
+
+	if (tagInfo.inlineEl || "Inline" === tagInfo.textFormat) {
+		addFirstLineText(results, text, tagInfo);
+	} else {
+		addText(results, text, tagInfo);
+	}
+
+	tagInfo.textFormat = "Inline";
 }
 
 // helpers
@@ -314,7 +313,8 @@ function allSpaces(text: string): boolean {
 
 function addAltElementText(results: string[], text: string, tagInfo: TagInfo) {
 	let commonIndex = getMostCommonSpaceIndex(text);
-	for (const line of text.split("\n")) {
+
+	for (let line of text.split("\n")) {
 		if (allSpaces(line)) continue;
 
 		results.push("\n");
@@ -323,11 +323,7 @@ function addAltElementText(results: string[], text: string, tagInfo: TagInfo) {
 	}
 }
 
-function addInlineElementText(
-	results: string[],
-	text: string,
-	tagInfo: TagInfo,
-) {
+function addFirstLineText(results: string[], text: string, tagInfo: TagInfo) {
 	let texts = text.split("\n");
 
 	let index = 0;
@@ -336,7 +332,7 @@ function addInlineElementText(
 		index += 1;
 
 		if (!allSpaces(line)) {
-			results.push(line.trimEnd());
+			results.push(line.trim());
 			break;
 		}
 	}
@@ -353,11 +349,7 @@ function addInlineElementText(
 	}
 }
 
-function addInlineElementClosedText(
-	results: string[],
-	text: string,
-	tagInfo: TagInfo,
-) {
+function addInlineText(results: string[], text: string, tagInfo: TagInfo) {
 	let texts = text.split("\n");
 
 	let index = 0;
@@ -365,52 +357,20 @@ function addInlineElementClosedText(
 		let line = texts[index];
 		index += 1;
 
-		if (!allSpaces(line)) {
+		if (allSpaces(line)) continue;
+
+		if ("Root" !== tagInfo.textFormat && "Initial" !== tagInfo.textFormat) {
 			results.push(" ");
-			results.push(line.trim());
-			break;
 		}
-	}
 
-	while (index < texts.length) {
-		let line = texts[index];
-		index += 1;
-
-		if (allSpaces(line)) continue;
-
-		results.push("\n");
-		results.push("\t".repeat(tagInfo.indentCount));
 		results.push(line.trim());
-	}
-}
-
-function addTextNoIndents(results: string[], text: string) {
-	let texts = text.split("\n");
-
-	let index = 0;
-	while (index < texts.length) {
-		let line = texts[index];
-		index += 1;
-
-		if (!allSpaces(line)) {
-			results.push(line.trim());
-			break;
-		}
+		break;
 	}
 
 	while (index < texts.length) {
 		let line = texts[index];
 		index += 1;
 
-		if (allSpaces(line)) continue;
-
-		results.push(" ");
-		results.push(line.trim());
-	}
-}
-
-function addNoIndentsInlineElementClosedText(results: string[], text: string) {
-	for (const line of text.split("\n")) {
 		if (!allSpaces(line)) {
 			results.push(" ");
 			results.push(line.trim());
@@ -419,55 +379,33 @@ function addNoIndentsInlineElementClosedText(results: string[], text: string) {
 }
 
 function addText(results: string[], text: string, tagInfo: TagInfo) {
-	for (let line of text.split("\n")) {
-		if (!allSpaces(line)) {
+	let texts = text.split("\n");
+
+	let index = 0;
+	while (index < texts.length) {
+		let line = texts[index];
+		index += 1;
+
+		if (allSpaces(line)) continue;
+
+		if ("Root" !== tagInfo.textFormat) {
 			results.push("\n");
-			results.push("\t".repeat(tagInfo.indentCount));
-			results.push(line.trim());
 		}
+
+		results.push("\t".repeat(tagInfo.indentCount));
+		results.push(line.trim());
+		break;
 	}
-}
 
-function popClosingSquence(
-	results: string[],
-	stack: TagInfo[],
-	rules: RulesetInterface,
-	templateStr: string,
-	step: StepInterface,
-) {
-	let tagInfo = stack.pop();
-	if (tagInfo === undefined) return;
+	while (index < texts.length) {
+		let line = texts[index];
+		index += 1;
 
-	let closingSequence = getTextFromStep(templateStr, step);
-	let tag = rules.getTagFromCloseSequence(closingSequence);
-	if (undefined === tag) return;
-	if (tag !== tagInfo.tag) return;
+		if (allSpaces(line)) continue;
 
-	if (tagInfo.bannedPath) return;
-
-	let prevTagInfo = stack[stack.length - 1];
-	if (undefined === prevTagInfo) return;
-
-	if (
-		rules.respectIndentation() &&
-		!prevTagInfo.inlineEl &&
-		!prevTagInfo.preservedTextPath &&
-		"Initial" != prevTagInfo.mostRecentDescendant
-	) {
 		results.push("\n");
-		results.push("\t".repeat(prevTagInfo.indentCount));
-	}
-
-	results.push(closingSequence);
-}
-
-function updateMostRecentDescendant(
-	stack: TagInfo[],
-	descdantStatus: DescendantStatus,
-) {
-	let tag_info = stack[stack.length - 1];
-	if (tag_info) {
-		tag_info.mostRecentDescendant = descdantStatus;
+		results.push("\t".repeat(tagInfo.indentCount));
+		results.push(line.trim());
 	}
 }
 
@@ -480,22 +418,32 @@ function getIndexOfFirstChar(text: string): number {
 }
 
 function getMostCommonSpaceIndex(text: string): number {
-	let prevSpaceIndex = text.length;
 	let spaceIndex = text.length;
+	let prevLine = "";
 
 	let texts = text.split("\n");
-	let prevLine = texts[0];
 
-	for (let index = 1; index < texts.length; index++) {
-		const line = texts[index];
-		if (line === undefined) break;
+	let index = 0;
+	while (index < texts.length) {
+		let line = texts[index];
+		index += 1;
 
-		let firstChar = getIndexOfFirstChar(line);
-		if (line.length === firstChar) continue;
+		if (allSpaces(line)) continue;
 
-		spaceIndex = getMostCommonIndexBetweenTwoStrings(prevLine, line);
-		if (spaceIndex < prevSpaceIndex) {
-			prevSpaceIndex = spaceIndex;
+		spaceIndex = getIndexOfFirstChar(line);
+		prevLine = line;
+		break;
+	}
+
+	while (index < texts.length) {
+		let line = texts[index];
+		index += 1;
+
+		if (allSpaces(line)) continue;
+
+		let currIndex = getMostCommonIndexBetweenTwoStrings(prevLine, line);
+		if (currIndex < spaceIndex) {
+			spaceIndex = currIndex;
 		}
 
 		prevLine = line;
