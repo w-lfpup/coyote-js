@@ -4,6 +4,3 @@ import * as html from "./html.js";
 import * as clientHtml from "./html_client.js";
 
 export const testModules = [atomics, clientAtomics, html, clientHtml];
-
-// export const testModules = [atomics, clientAtomics, html, clientHtml];
-//
