@@ -8,7 +8,7 @@
 		"prepare": "npm run build",
 		"build": "npx tsc --build",
 		"format": "npx prettier --write ./",
-		"test": "npx jackrabbit --file ./dist/mod.test.js"
+		"test": "npx jackrabbit --file ./dist/tests/mod.test.js"
 	},
 	"devDependencies": {
 		"jackrabbit": "github:wolfpup-software/jackrabbit-js",

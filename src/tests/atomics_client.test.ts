@@ -1,26 +1,5 @@
-import { tmplStr, ClientHtml } from "./mod.js";
-import type { Results } from "./component_string.js";
-
-function assertResults(
-	expected: string,
-	results: Results,
-): { toString: Object["toString"] } {
-	let [document, error] = results;
-	if (error) {
-		return error;
-	}
-
-	if (expected !== document) {
-		return `
-Expected:
-${expected}
-
-Results:
-${results}
-
-`;
-	}
-}
+import { tmplStr, ClientHtml } from "../mod.js";
+import { assert } from "./assertion.js";
 
 function textElement() {
 	let template = tmplStr(
@@ -117,7 +96,7 @@ function inlineElementWithText() {
 	let html = new ClientHtml();
 	let results = html.build(template);
 
-	return assertResults(expected, results);
+	return assert(expected, results);
 }
 
 function anchorElementWithText() {
@@ -134,7 +113,7 @@ function anchorElementWithText() {
 	let html = new ClientHtml();
 	let results = html.build(template);
 
-	return assertResults(expected, results);
+	return assert(expected, results);
 }
 
 function voidElement() {
@@ -150,7 +129,7 @@ function voidElement() {
 	let html = new ClientHtml();
 	let results = html.build(template);
 
-	return assertResults(expected, results);
+	return assert(expected, results);
 }
 
 function nonVoidElement() {
@@ -166,7 +145,7 @@ function nonVoidElement() {
 	let html = new ClientHtml();
 	let results = html.build(template);
 
-	return assertResults(expected, results);
+	return assert(expected, results);
 }
 
 function commentElement() {
@@ -184,7 +163,7 @@ function commentElement() {
 	let html = new ClientHtml();
 	let results = html.build(template);
 
-	return assertResults(expected, results);
+	return assert(expected, results);
 }
 
 function altTextElement() {
@@ -200,7 +179,7 @@ function altTextElement() {
 	let html = new ClientHtml();
 	let results = html.build(template);
 
-	return assertResults(expected, results);
+	return assert(expected, results);
 }
 
 function altTextElementNoDescendants() {
@@ -218,7 +197,7 @@ function altTextElementNoDescendants() {
 	let html = new ClientHtml();
 	let results = html.build(template);
 
-	return assertResults(expected, results);
+	return assert(expected, results);
 }
 
 function preservedTextElement() {
@@ -237,7 +216,7 @@ function preservedTextElement() {
 	let html = new ClientHtml();
 	let results = html.build(template);
 
-	return assertResults(expected, results);
+	return assert(expected, results);
 }
 
 export const tests = [
