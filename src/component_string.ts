@@ -21,10 +21,10 @@ export { composeString };
 
 interface BuilderInterface {
 	build(rules: RulesetInterface, templateStr: string): TemplateSteps;
-	// buildTemplate(
-	// 	rules: RulesetInterface,
-	// 	templateArray: TemplateStringsArray,
-	// ): TemplateSteps;
+	buildTemplate(
+		rules: RulesetInterface,
+		templateArray: TemplateStringsArray,
+	): TemplateSteps;
 }
 
 class TemplateBit {
@@ -83,14 +83,23 @@ function composeString(
 			let currChunk = bit.results.steps[index];
 			if (currChunk) {
 				let templateStr: string;
-				// if (component instanceof TaggedTmplComponent) {
-				// 	templateStr = component.templateArr[index];
-				// }
+				if (component instanceof TaggedTmplComponent) {
+					templateStr = component.templateArr[index];
+				}
 				if (component instanceof TmplComponent) {
 					templateStr = component.templateStr;
 				}
 				if (templateStr) {
 					composeSteps(rules, results, tagInfoStack, templateStr, currChunk);
+				}
+			} else {
+				if (bit.stackDepth !== tagInfoStack.length) {
+					return [
+						undefined,
+						new Error(`
+Coyote Err: the following template component is imbalanced:
+${currChunk}`),
+					];
 				}
 			}
 
@@ -116,24 +125,6 @@ function composeString(
 
 			// tail case
 			if (index < bit.results.steps.length) {
-				// check for imbalance error
-				let template: string;
-				// if (component instanceof TaggedTmplComponent) {
-				// 	template = component.templateArr.raw.toString();
-				// }
-				if (component instanceof TmplComponent) {
-					template = component.templateStr;
-				}
-				if (bit.stackDepth !== tagInfoStack.length) {
-					return [
-						undefined,
-						new Error(`
-Coyote Err: the following template component is imbalanced:
-${template}
-					`),
-					];
-				}
-
 				stack.push(bit);
 			}
 		}
@@ -156,10 +147,10 @@ function getStackBitFromComponent(
 		return new TemplateBit(component, buildResults, stack.length);
 	}
 
-	// if (component instanceof TaggedTmplComponent) {
-	// 	let buildResults = builder.buildTemplate(rules, component.templateArr);
-	// 	return new TemplateBit(component, buildResults, stack.length);
-	// }
+	if (component instanceof TaggedTmplComponent) {
+		let buildResults = builder.buildTemplate(rules, component.templateArr);
+		return new TemplateBit(component, buildResults, stack.length);
+	}
 }
 
 function addAttrInj(stack: TagInfo[], results: string[], component: Component) {
