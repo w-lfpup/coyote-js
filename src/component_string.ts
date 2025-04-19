@@ -71,7 +71,11 @@ function composeString(
 
 		if (Array.isArray(bit)) {
 			// reverse
-			while (bit.length) stack.push(bit.pop());
+			// while (bit.length) {
+			// 	let popped = bit.pop();
+			// 	let nubit = getStackBitFromComponent(tagInfoStack, builder, rules, popped);
+			// 	stack.push(nubit);
+			// }
 		}
 
 		if (bit instanceof TemplateBit) {
@@ -106,7 +110,6 @@ ${currChunk}`),
 			// handle injection
 			let injKind = bit.results.injs[index];
 			if ("AttrMapInjection" === injKind) {
-				console.log("attrmap", bit.component.injections[index]);
 				addAttrInj(tagInfoStack, results, bit.component.injections[index]);
 			}
 
