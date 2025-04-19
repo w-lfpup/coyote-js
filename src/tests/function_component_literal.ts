@@ -26,7 +26,6 @@ function coyote_api() {
 	let html = new Html();
 	let results = html.build(template);
 
-	console.log(results);
 	return assert(expected, results);
 }
 

@@ -55,7 +55,6 @@ function composeTemplateArr(
 		for (let index = 1; index < steps.length; index++) {
 			let step = steps[index];
 			stepKind = step.kind;
-			console.log("stepKind:", stepKind);
 			pushStep(results, step);
 		}
 
@@ -63,7 +62,6 @@ function composeTemplateArr(
 		if (index > templateStrArr.length - 1) continue;
 
 		let injStepKind = route("{", stepKind);
-		console.log("injection kind:", injStepKind);
 		if (!isInjection(injStepKind)) {
 			injStepKind = undefined;
 		}

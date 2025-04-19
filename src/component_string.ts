@@ -28,14 +28,14 @@ interface BuilderInterface {
 }
 
 class TemplateBit {
-	component: Component;
+	component: TaggedTmplComponent | TmplComponent;
 	results: TemplateSteps;
 	stackDepth: number;
 
 	index = 0;
 
 	constructor(
-		component: Component,
+		component: TaggedTmplComponent | TmplComponent,
 		results: TemplateSteps,
 		stackDepth: number,
 	) {
@@ -106,7 +106,8 @@ ${currChunk}`),
 			// handle injection
 			let injKind = bit.results.injs[index];
 			if ("AttrMapInjection" === injKind) {
-				addAttrInj(tagInfoStack, results, bit.component[index]);
+				console.log("attrmap", bit.component.injections[index]);
+				addAttrInj(tagInfoStack, results, bit.component.injections[index]);
 			}
 
 			if ("DescendantInjection" === injKind) {
@@ -116,7 +117,7 @@ ${currChunk}`),
 					tagInfoStack,
 					builder,
 					rules,
-					bit.component[index],
+					bit.component.injections[index],
 				);
 				stack.push(nuBit);
 
@@ -139,6 +140,7 @@ function getStackBitFromComponent(
 	rules: RulesetInterface,
 	component: Component,
 ): StackBit {
+	console.log("get stack bit!", component);
 	if (typeof component === "string" || Array.isArray(component))
 		return component;
 
@@ -154,6 +156,7 @@ function getStackBitFromComponent(
 }
 
 function addAttrInj(stack: TagInfo[], results: string[], component: Component) {
+	console.log("add attribute!", component);
 	if (component instanceof AttrComponent)
 		return pushAttrComponent(results, stack, component.attr);
 	if (component instanceof AttrValComponent) {
@@ -163,11 +166,11 @@ function addAttrInj(stack: TagInfo[], results: string[], component: Component) {
 
 	if (Array.isArray(component)) {
 		for (const cmpnt of component) {
-			if (component instanceof AttrComponent)
-				return pushAttrComponent(results, stack, component.attr);
-			if (component instanceof AttrValComponent) {
-				pushAttrComponent(results, stack, component.attr);
-				return pushAttrValueComponent(results, stack, component.value);
+			if (cmpnt instanceof AttrComponent)
+				pushAttrComponent(results, stack, cmpnt.attr);
+			if (cmpnt instanceof AttrValComponent) {
+				pushAttrComponent(results, stack, cmpnt.attr);
+				pushAttrValueComponent(results, stack, cmpnt.value);
 			}
 		}
 	}
