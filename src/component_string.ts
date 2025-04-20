@@ -57,7 +57,9 @@ function composeString(
 	let results: string[] = [];
 
 	let tagInfoStack: TagInfo[] = [new TagInfo(rules, ":root")];
-	let componentStack = [getStackBitFromComponent(tagInfoStack, builder, rules, component)];
+	let componentStack = [
+		getStackBitFromComponent(tagInfoStack, builder, rules, component),
+	];
 
 	while (componentStack.length) {
 		// console.log("component stack: \n", componentStack);
@@ -70,7 +72,12 @@ function composeString(
 
 		if (Array.isArray(cmpntBit)) {
 			for (let index = cmpntBit.length - 1; -1 < index; index--) {
-				let bit = getStackBitFromComponent(tagInfoStack, builder, rules,  cmpntBit[index]);
+				let bit = getStackBitFromComponent(
+					tagInfoStack,
+					builder,
+					rules,
+					cmpntBit[index],
+				);
 				// componentStack.push(bit);
 			}
 		}
@@ -80,7 +87,7 @@ function composeString(
 			let index = cmpntBit.index;
 			cmpntBit.index += 1;
 
-				// add text chunk
+			// add text chunk
 			let currChunk = cmpntBit.results.steps[index];
 			if (currChunk) {
 				let templateStr: string;
@@ -108,8 +115,6 @@ ${currChunk}`),
 				}
 			}
 
-
-
 			// handle injection
 			let injKind = cmpntBit.results.injs[index];
 			let injection = cmpntBit.component.injections[index];
@@ -117,19 +122,19 @@ ${currChunk}`),
 				if ("AttrMapInjection" === injKind) {
 					addAttrInj(tagInfoStack, results, injection);
 				}
-	
+
 				if ("DescendantInjection" === injKind) {
 					componentStack.push(cmpntBit);
-	
+
 					let bit = getStackBitFromComponent(
 						tagInfoStack,
 						builder,
 						rules,
 						injection,
 					);
-	
+
 					componentStack.push(bit);
-	
+
 					continue;
 				}
 			}
