@@ -9,7 +9,7 @@ export const testModules = [
 	// atomics,
 	// atomicsClient,
 	functionComponent,
-	functionComponentLiteral,
+	// functionComponentLiteral,
 	// html,
 	// htmlClient,
 ];

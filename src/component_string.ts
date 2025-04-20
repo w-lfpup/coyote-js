@@ -56,40 +56,34 @@ function composeString(
 ): Results {
 	let results: string[] = [];
 
-	let tagInfoBit = new TagInfo(rules, ":root");
-	let tagInfoStack: TagInfo[] = [tagInfoBit];
+	let tagInfoStack: TagInfo[] = [new TagInfo(rules, ":root")];
+	let componentStack = [getStackBitFromComponent(tagInfoStack, builder, rules, component)];
 
-	let bit = getStackBitFromComponent(tagInfoStack, builder, rules, component);
-	let stack = [bit];
+	while (componentStack.length) {
+		// console.log("component stack: \n", componentStack);
+		// console.log("componentStack:\n", componentStack);
+		const cmpntBit = componentStack.pop();
 
-	while (0 < stack.length) {
-		const bit = stack.pop();
-
-		if (typeof bit === "string") {
-			pushTextComponent(results, tagInfoStack, rules, bit);
+		if (typeof cmpntBit === "string") {
+			pushTextComponent(results, tagInfoStack, rules, cmpntBit);
 		}
 
-		if (Array.isArray(bit)) {
-			// reverse
-			// while (bit.length) {
-			// 	let popped = bit.pop();
-			// 	let nubit = getStackBitFromComponent(tagInfoStack, builder, rules, popped);
-			// 	stack.push(nubit);
-			// }
+		if (Array.isArray(cmpntBit)) {
+			for (let index = cmpntBit.length - 1; -1 < index; index--) {
+				let bit = getStackBitFromComponent(tagInfoStack, builder, rules,  cmpntBit[index]);
+				// componentStack.push(bit);
+			}
 		}
 
-		if (bit instanceof TemplateBit) {
+		if (cmpntBit instanceof TemplateBit) {
 			// increase index
-			let index = bit.index;
-			bit.index += 1;
+			let index = cmpntBit.index;
+			cmpntBit.index += 1;
 
-			// add text chunk
-			let currChunk = bit.results.steps[index];
+				// add text chunk
+			let currChunk = cmpntBit.results.steps[index];
 			if (currChunk) {
 				let templateStr: string;
-				if (component instanceof TaggedTmplComponent) {
-					templateStr = component.templateArr[index];
-				}
 				if (component instanceof TmplComponent) {
 					templateStr = component.templateStr;
 				}
@@ -97,7 +91,14 @@ function composeString(
 					composeSteps(rules, results, tagInfoStack, templateStr, currChunk);
 				}
 			} else {
-				if (bit.stackDepth !== tagInfoStack.length) {
+				// end of the template, should be balanced
+				console.log("finished a template!");
+				console.log("index:", index);
+				console.log("bit:", cmpntBit);
+				console.log("tagInfoStack:", tagInfoStack);
+				console.log("componentStack:", componentStack);
+				console.log("results", results.join(""));
+				if (cmpntBit.stackDepth !== tagInfoStack.length) {
 					return [
 						undefined,
 						new Error(`
@@ -107,29 +108,35 @@ ${currChunk}`),
 				}
 			}
 
+
+
 			// handle injection
-			let injKind = bit.results.injs[index];
-			if ("AttrMapInjection" === injKind) {
-				addAttrInj(tagInfoStack, results, bit.component.injections[index]);
-			}
-
-			if ("DescendantInjection" === injKind) {
-				stack.push(bit);
-
-				let nuBit = getStackBitFromComponent(
-					tagInfoStack,
-					builder,
-					rules,
-					bit.component.injections[index],
-				);
-				stack.push(nuBit);
-
-				continue;
+			let injKind = cmpntBit.results.injs[index];
+			let injection = cmpntBit.component.injections[index];
+			if (injKind && injection) {
+				if ("AttrMapInjection" === injKind) {
+					addAttrInj(tagInfoStack, results, injection);
+				}
+	
+				if ("DescendantInjection" === injKind) {
+					componentStack.push(cmpntBit);
+	
+					let bit = getStackBitFromComponent(
+						tagInfoStack,
+						builder,
+						rules,
+						injection,
+					);
+	
+					componentStack.push(bit);
+	
+					continue;
+				}
 			}
 
 			// tail case
-			if (index < bit.results.steps.length) {
-				stack.push(bit);
+			if (index < cmpntBit.results.steps.length) {
+				componentStack.push(cmpntBit);
 			}
 		}
 	}
@@ -143,7 +150,6 @@ function getStackBitFromComponent(
 	rules: RulesetInterface,
 	component: Component,
 ): StackBit {
-	console.log("get stack bit!", component);
 	if (typeof component === "string" || Array.isArray(component))
 		return component;
 
@@ -151,15 +157,9 @@ function getStackBitFromComponent(
 		let buildResults = builder.build(rules, component.templateStr);
 		return new TemplateBit(component, buildResults, stack.length);
 	}
-
-	if (component instanceof TaggedTmplComponent) {
-		let buildResults = builder.buildTemplate(rules, component.templateArr);
-		return new TemplateBit(component, buildResults, stack.length);
-	}
 }
 
 function addAttrInj(stack: TagInfo[], results: string[], component: Component) {
-	console.log("add attribute!", component);
 	if (component instanceof AttrComponent)
 		return pushAttrComponent(results, stack, component.attr);
 	if (component instanceof AttrValComponent) {

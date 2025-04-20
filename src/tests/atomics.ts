@@ -225,7 +225,3 @@ export const tests = [
 	altTextElementNoDescendants,
 	preservedTextElement,
 ];
-
-export const options = {
-	title: import.meta.url,
-};

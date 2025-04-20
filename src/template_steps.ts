@@ -14,8 +14,8 @@ interface ResultsInterface {
 }
 
 class Results implements ResultsInterface {
-	steps = [[]];
-	injs = [];
+	steps: StepInterface[][] = [[]];
+	injs: (StepKind | undefined)[] = [];
 }
 
 function isInjection(kind: StepKind): boolean {
