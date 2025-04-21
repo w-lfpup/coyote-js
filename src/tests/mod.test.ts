@@ -6,10 +6,10 @@ import * as html from "./html.js";
 import * as htmlClient from "./html_client.js";
 
 export const testModules = [
-	// atomics,
-	// atomicsClient,
+	atomics,
+	atomicsClient,
 	functionComponent,
 	// functionComponentLiteral,
-	// html,
-	// htmlClient,
+	html,
+	htmlClient,
 ];
