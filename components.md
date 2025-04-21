@@ -2,7 +2,7 @@
 
 `Coyote` creates documents from function components.
 
-### Function Components
+## Function Components
 
 Function components are functions that return components!
 
@@ -16,7 +16,7 @@ function hai(): Component {
 }
 ```
 
-### Types of components
+## Components
 
 `Components` are used to build documents:
 
@@ -33,7 +33,9 @@ Coyote also supports:
 - vanilla text for unescaped text purposes
 - arrays for lists of components
 
-## Templates
+## Template Syntax
+
+Template components are used to create reusable chunks of XML.
 
 ### Tags, void elements, fragments
 
@@ -56,7 +58,7 @@ function syntaxStory(): Component {
 
 ### Injections
 
-`Injections` create nested templates and attribute assignments.
+`Injections` nest templates and add attributes to elements.
 
 There are only two valid _injections_ in a `tmpl` component:
 
@@ -65,30 +67,9 @@ There are only two valid _injections_ in a `tmpl` component:
 
 Likewise there are only two valid injection locations in a `tmpl` component.
 
-Any other instance of `{}` in a template component will not be considered an injection.
-
-### Tagged Template Literals
-
-The following examples show how to create a template component from a tagged template literal.
-
-```ts
-function injectionStory(): Component {
-	let attribute = attr("uwu");
-	let descendant = text("hai! :3");
-
-	return tmpl`
-        <article ${attribute}>
-            ${descendant}
-        </article>
-    `;
-}
-```
+Any other instance of `{}` in a template component will not be considered an injection (read as a string).
 
 ### Strings
-
-Tagged template literals are great for javascript-first templates.
-
-But there are occasions when templates are not ergonomic enough to house in code.
 
 The following examples show how to create a template component from a string.
 
@@ -102,6 +83,25 @@ function strInjectionStory(): Component {
             {}
         </article>
     ", [attribute, descendant]);
+}
+```
+
+### Tagged Template Literals
+
+Tagged template literals are great for javascript-first templates.
+
+The following examples show how to create a template component from a tagged template literal.
+
+```ts
+function templateLiteralInjectionStory(): Component {
+	let attribute = attr("uwu");
+	let descendant = text("hai! :3");
+
+	return tmpl`
+        <article ${attribute}>
+            ${descendant}
+        </article>
+    `;
 }
 ```
 
@@ -122,7 +122,6 @@ function woof(): Component {
 
 function woofForm(): Component {
 	let attributes = [attrVal("action", "/uwu"), attrVal("method", "post")];
-
 	let descendants = [text("you're a boy kisser aren't you >:3"), woof()];
 
 	return tmpl`<form ${attributes}>${descendants}</form>`;

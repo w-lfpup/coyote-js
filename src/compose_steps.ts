@@ -27,10 +27,10 @@ const spaceCharCodes = new Set([
 ]);
 
 const htmlRoutes = new Map<StepKind, Router>([
-	["Tag", pushElement], //
-	["ElementClosed", closeElement], //
-	["EmptyElementClosed", closeEmptyElement], //
-	["TailTag", popElement], //
+	["Tag", pushElement],
+	["ElementClosed", closeElement],
+	["EmptyElementClosed", closeEmptyElement],
+	["TailTag", popElement],
 	["Text", pushText],
 	["Attr", pushAttr],
 	["AttrValue", pushAttrValue],
