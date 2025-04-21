@@ -16,7 +16,7 @@ class Builder implements BuilderInterface {
 		return compose(ruleset, templateStr);
 	}
 
-	buildTemplate(
+	buildTemplateLiteral(
 		ruleset: RulesetInterface,
 		templateArray: TemplateStringsArray,
 	): StepResults {

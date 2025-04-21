@@ -139,7 +139,6 @@ function popElement(
 	templateStr: string,
 	step: StepInterface,
 ) {
-
 	let tagInfo = stack.pop();
 	if (tagInfo === undefined) return;
 

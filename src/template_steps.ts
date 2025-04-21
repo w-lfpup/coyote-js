@@ -67,13 +67,8 @@ function composeTemplateArr(
 		}
 		pushInjection(results, injStepKind);
 
-		if ("DescendantInjection" === injStepKind) {
-			stepKind = "Initial";
-		}
-
-		if ("AttrMapInjection" === injStepKind) {
-			stepKind = "ElementSpace";
-		}
+		if ("DescendantInjection" === injStepKind) stepKind = "Initial";
+		if ("AttrMapInjection" === injStepKind) stepKind = "ElementSpace";
 	}
 
 	return results;

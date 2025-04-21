@@ -1,9 +1,8 @@
 import type { Results } from "./component_string.js";
 import type { Component } from "./components.js";
 
-import { ClientRules, ServerRules, XmlRules } from "./rulesets.js";
 import { composeString } from "./component_string.js";
-
+import { ClientRules, ServerRules, XmlRules } from "./rulesets.js";
 import { Builder } from "./template_builders.js";
 
 export { ClientHtml, Html, Xml };

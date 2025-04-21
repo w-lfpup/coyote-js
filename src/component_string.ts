@@ -21,7 +21,7 @@ export { composeString };
 
 interface BuilderInterface {
 	build(rules: RulesetInterface, templateStr: string): TemplateResults;
-	buildTemplate(
+	buildTemplateLiteral(
 		rules: RulesetInterface,
 		templateArray: TemplateStringsArray,
 	): TemplateResults;
@@ -93,6 +93,9 @@ function composeString(
 				if (cmpntBit.component instanceof TmplComponent) {
 					templateStr = cmpntBit.component.templateStr;
 				}
+				if (cmpntBit.component instanceof TaggedTmplComponent) {
+					templateStr = cmpntBit.component.templateArr[index];
+				}
 				if (templateStr) {
 					composeSteps(rules, results, tagInfoStack, templateStr, chunk);
 				}
@@ -153,6 +156,14 @@ function getStackBitFromComponent(
 
 	if (component instanceof TmplComponent) {
 		let templateSteps = builder.build(rules, component.templateStr);
+		return new TemplateBit(component, templateSteps, stack.length);
+	}
+
+	if (component instanceof TaggedTmplComponent) {
+		let templateSteps = builder.buildTemplateLiteral(
+			rules,
+			component.templateArr,
+		);
 		return new TemplateBit(component, templateSteps, stack.length);
 	}
 }
