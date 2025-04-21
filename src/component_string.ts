@@ -1,6 +1,6 @@
 import type { Component } from "./components.js";
 import type { RulesetInterface } from "./rulesets.ts";
-import type { Results as TemplateSteps } from "./template_steps.js";
+import type { Results as TemplateResults } from "./template_steps.js";
 
 import {
 	TmplComponent,
@@ -20,27 +20,28 @@ export type { BuilderInterface, Results };
 export { composeString };
 
 interface BuilderInterface {
-	build(rules: RulesetInterface, templateStr: string): TemplateSteps;
+	build(rules: RulesetInterface, templateStr: string): TemplateResults;
 	buildTemplate(
 		rules: RulesetInterface,
 		templateArray: TemplateStringsArray,
-	): TemplateSteps;
+	): TemplateResults;
 }
 
 class TemplateBit {
 	component: TaggedTmplComponent | TmplComponent;
-	results: TemplateSteps;
-	stackDepth: number;
+	template: TemplateResults;
 
-	index = 0;
+	//
+	stackDepth: number;
+	injIndex = 0;
 
 	constructor(
 		component: TaggedTmplComponent | TmplComponent,
-		results: TemplateSteps,
+		results: TemplateResults,
 		stackDepth: number,
 	) {
 		this.component = component;
-		this.results = results;
+		this.template = results;
 		this.stackDepth = stackDepth;
 	}
 }
@@ -62,8 +63,6 @@ function composeString(
 	];
 
 	while (componentStack.length) {
-		// console.log("component stack: \n", componentStack);
-		// console.log("componentStack:\n", componentStack);
 		const cmpntBit = componentStack.pop();
 
 		if (typeof cmpntBit === "string") {
@@ -78,45 +77,39 @@ function composeString(
 					rules,
 					cmpntBit[index],
 				);
-				// componentStack.push(bit);
+				componentStack.push(bit);
 			}
 		}
 
 		if (cmpntBit instanceof TemplateBit) {
 			// increase index
-			let index = cmpntBit.index;
-			cmpntBit.index += 1;
+			let index = cmpntBit.injIndex;
+			cmpntBit.injIndex += 1;
 
 			// add text chunk
-			let currChunk = cmpntBit.results.steps[index];
-			if (currChunk) {
+			let chunk = cmpntBit.template.steps[index];
+			if (chunk) {
 				let templateStr: string;
-				if (component instanceof TmplComponent) {
-					templateStr = component.templateStr;
+				if (cmpntBit.component instanceof TmplComponent) {
+					templateStr = cmpntBit.component.templateStr;
 				}
 				if (templateStr) {
-					composeSteps(rules, results, tagInfoStack, templateStr, currChunk);
+					composeSteps(rules, results, tagInfoStack, templateStr, chunk);
 				}
 			} else {
-				// end of the template, should be balanced
-				console.log("finished a template!");
-				console.log("index:", index);
-				console.log("bit:", cmpntBit);
-				console.log("tagInfoStack:", tagInfoStack);
-				console.log("componentStack:", componentStack);
-				console.log("results", results.join(""));
+				// end of the template, check for balance
 				if (cmpntBit.stackDepth !== tagInfoStack.length) {
 					return [
 						undefined,
 						new Error(`
 Coyote Err: the following template component is imbalanced:
-${currChunk}`),
+${chunk}`),
 					];
 				}
 			}
 
 			// handle injection
-			let injKind = cmpntBit.results.injs[index];
+			let injKind = cmpntBit.template.injs[index];
 			let injection = cmpntBit.component.injections[index];
 			if (injKind && injection) {
 				if ("AttrMapInjection" === injKind) {
@@ -140,7 +133,7 @@ ${currChunk}`),
 			}
 
 			// tail case
-			if (index < cmpntBit.results.steps.length) {
+			if (index < cmpntBit.template.steps.length) {
 				componentStack.push(cmpntBit);
 			}
 		}
@@ -159,8 +152,8 @@ function getStackBitFromComponent(
 		return component;
 
 	if (component instanceof TmplComponent) {
-		let buildResults = builder.build(rules, component.templateStr);
-		return new TemplateBit(component, buildResults, stack.length);
+		let templateSteps = builder.build(rules, component.templateStr);
+		return new TemplateBit(component, templateSteps, stack.length);
 	}
 }
 

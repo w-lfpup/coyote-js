@@ -7,7 +7,7 @@ function submitButton(): Component {
 	return tmplStr('<input type=submit value="yus -_-">', []);
 }
 
-function form(): Component {
+function woofForm(): Component {
 	let attributes = [attrVal("action", "/uwu"), attrVal("method", "post")];
 
 	let descendants: Component[] = [];
@@ -18,7 +18,7 @@ function form(): Component {
 }
 
 function coyote_api() {
-	let template = form();
+	let template = woofForm();
 
 	let expected =
 		'<form action="/uwu" method="post">\n\tyou\'re a boy kisser aren\'t you >:3\n\t<input type=submit value="yus -_-">\n</form>';
