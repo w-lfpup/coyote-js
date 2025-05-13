@@ -17,7 +17,7 @@ function form(): Component {
 	return tmpl`<form ${attributes}>${descendants}</form>`;
 }
 
-function coyote_api() {
+function coyote_api_literal() {
 	let template = form();
 
 	let expected =
@@ -29,7 +29,7 @@ function coyote_api() {
 	return assert(expected, results);
 }
 
-export const tests = [coyote_api];
+export const tests = [coyote_api_literal];
 
 export const options = {
 	title: import.meta.url,
