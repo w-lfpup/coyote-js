@@ -5,11 +5,7 @@ import type { StepKind } from "./routes.ts";
 import { route } from "./routes.js";
 import { SlidingWindow } from "./sliding_window.js";
 
-export type { StepKind, StepInterface, Results };
-
-export { route, parseStr, getTextFromStep, isInjectionKind };
-
-interface StepInterface {
+export interface StepInterface {
 	kind: StepKind;
 	origin: number;
 	target: number;
@@ -27,9 +23,7 @@ class Step implements StepInterface {
 	}
 }
 
-type Results = StepInterface[];
-
-function parseStr(
+export function parseStr(
 	sieve: RulesetInterface,
 	templateStr: string,
 	initialKind: StepKind,
@@ -100,7 +94,10 @@ function parseStr(
 	return steps;
 }
 
-function getTextFromStep(templateStr: string, step: StepInterface): string {
+export function getTextFromStep(
+	templateStr: string,
+	step: StepInterface,
+): string {
 	return templateStr.slice(step.origin, step.target);
 }
 

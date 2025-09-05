@@ -1,12 +1,8 @@
 import type { RulesetInterface } from "./rulesets.ts";
 
-export type { TagInfoInterface, TextFormat };
+export type TextFormat = "Block" | "Initial" | "Inline" | "Root";
 
-export { TagInfo, from };
-
-type TextFormat = "Block" | "Initial" | "Inline" | "Root";
-
-interface TagInfoInterface {
+export interface TagInfoInterface {
 	namespace: string;
 	tag: string;
 	textFormat: TextFormat;
@@ -17,7 +13,7 @@ interface TagInfoInterface {
 	bannedPath: boolean;
 }
 
-class TagInfo implements TagInfoInterface {
+export class TagInfo implements TagInfoInterface {
 	namespace: string;
 	tag: string;
 	textFormat: TextFormat;
@@ -42,7 +38,7 @@ class TagInfo implements TagInfoInterface {
 	}
 }
 
-function from(
+export function from(
 	rules: RulesetInterface,
 	prevTagInfo: TagInfoInterface,
 	tag: string,

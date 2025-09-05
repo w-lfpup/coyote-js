@@ -1,19 +1,16 @@
-import type { StepInterface, StepKind } from "./parse_str.js";
+import type { StepKind } from "./routes";
+import type { StepInterface } from "./parse_str.js";
 import type { RulesetInterface } from "./rulesets.js";
 
-import { parseStr, route } from "./parse_str.js";
+import { parseStr } from "./parse_str.js";
+import { route } from "./routes";
 
-export type { ResultsInterface };
-
-// export { Results, compose, composeTemplateArr };
-export { Results, compose, composeTemplateArr };
-
-interface ResultsInterface {
+export interface ResultsInterface {
 	steps: StepInterface[][];
 	injs: (StepKind | undefined)[];
 }
 
-class Results implements ResultsInterface {
+export class Results implements ResultsInterface {
 	steps: StepInterface[][] = [[]];
 	injs: (StepKind | undefined)[] = [];
 }
@@ -22,7 +19,7 @@ function isInjection(kind: StepKind): boolean {
 	return "AttrMapInjection" === kind || "DescendantInjection" === kind;
 }
 
-function compose(
+export function compose(
 	ruleset: RulesetInterface,
 	templateStr: string,
 ): ResultsInterface {
@@ -40,7 +37,7 @@ function compose(
 	return results;
 }
 
-function composeTemplateArr(
+export function composeTemplateArr(
 	ruleset: RulesetInterface,
 	templateStrArr: TemplateStringsArray,
 ): ResultsInterface {

@@ -1,8 +1,4 @@
-export type { RulesetInterface };
-
-export { ClientRules, ServerRules, XmlRules };
-
-interface RulesetInterface {
+export interface RulesetInterface {
 	getInitialNamespace(): string;
 	tagIsAtributeless(tag: string): boolean;
 	getCloseSequenceFromAltTextTag(tag: string): string | undefined;
@@ -87,7 +83,7 @@ let voidElements = new Set([
 	"wbr",
 ]);
 
-class ServerRules implements RulesetInterface {
+export class ServerRules implements RulesetInterface {
 	getInitialNamespace(): string {
 		return "html";
 	}
@@ -120,7 +116,7 @@ class ServerRules implements RulesetInterface {
 	}
 }
 
-class ClientRules implements RulesetInterface {
+export class ClientRules implements RulesetInterface {
 	getInitialNamespace(): string {
 		return "html";
 	}
@@ -159,7 +155,7 @@ class ClientRules implements RulesetInterface {
 	}
 }
 
-class XmlRules implements RulesetInterface {
+export class XmlRules implements RulesetInterface {
 	getInitialNamespace(): string {
 		return "xml";
 	}

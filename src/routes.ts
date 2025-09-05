@@ -1,8 +1,4 @@
-export type { StepKind };
-
-export { route };
-
-type StepKind =
+export type StepKind =
 	| "AttrQuoteClosed"
 	| "AttrQuote"
 	| "AttrMapInjection"
@@ -49,13 +45,20 @@ let glyphGraph = new Map<StepKind, Router>([
 	["TailTag", getKindFromTailTag],
 ]);
 
-function route(glyph: string, prevKind: StepKind) {
-	let router = glyphGraph.get(prevKind) ?? getKindFromInitial;
-	return router(glyph);
+export function route(glyph: string, prevKind: StepKind) {
+	let glyphRoute = glyphGraph.get(prevKind) ?? getKindFromInitial;
+	return glyphRoute(glyph);
 }
 
 function isSpace(glyph: string) {
 	return glyph.length !== glyph.trim().length;
+}
+
+function getKindFromInitial(glyph: string): StepKind {
+	if ("<" === glyph) return "Element";
+	if ("{" === glyph) return "DescendantInjection";
+
+	return "Text";
 }
 
 function getKindFromAttribute(glyph: string): StepKind {
@@ -158,11 +161,4 @@ function getKindFromTailTag(glyph: string): StepKind {
 	if (isSpace(glyph)) return "TailElementSpace";
 
 	return "TailTag";
-}
-
-function getKindFromInitial(glyph: string): StepKind {
-	if ("<" === glyph) return "Element";
-	if ("{" === glyph) return "DescendantInjection";
-
-	return "Text";
 }
