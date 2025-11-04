@@ -35,7 +35,7 @@ export function parseStr(
 	let slidingWindow: SlidingWindowInterface | undefined;
 
 	for (let index = 0; index < templateStr.length; index++) {
-		let glyph = templateStr.charAt(index);
+		let glyph = templateStr[index];
 		if (slidingWindow) {
 			if (!slidingWindow.slide(glyph)) continue;
 			if (!addAltElementText(sieve, steps, tag, index)) return steps;

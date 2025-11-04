@@ -1,24 +1,24 @@
-import type { Component } from "../mod.js";
+import type { Component } from "../dist/mod.js";
 
 import { assert } from "./assertion.js";
-import { text, tmplStr, attrVal, Html } from "../mod.js";
+import { tmpl, attrVal, Html } from "../dist/mod.js";
 
 function submitButton(): Component {
-	return tmplStr('<input type=submit value="yus -_-">', []);
+	return tmpl`<input type=submit value="yus -_-">`;
 }
 
-function woofForm(): Component {
+function form(): Component {
 	let attributes = [attrVal("action", "/uwu"), attrVal("method", "post")];
 
 	let descendants: Component[] = [];
-	descendants.push(text("you're a boy kisser aren't you >:3"));
+	descendants.push("you're a boy kisser aren't you >:3");
 	descendants.push(submitButton());
 
-	return tmplStr("<form {}>{}</form>", [attributes, descendants]);
+	return tmpl`<form ${attributes}>${descendants}</form>`;
 }
 
-function coyote_api() {
-	let template = woofForm();
+function coyote_api_literal() {
+	let template = form();
 
 	let expected =
 		'<form action="/uwu" method="post">\n\tyou\'re a boy kisser aren\'t you >:3\n\t<input type=submit value="yus -_-">\n</form>';
@@ -29,7 +29,7 @@ function coyote_api() {
 	return assert(expected, results);
 }
 
-export const tests = [coyote_api];
+export const tests = [coyote_api_literal];
 
 export const options = {
 	title: import.meta.url,

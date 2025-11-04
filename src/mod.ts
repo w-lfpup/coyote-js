@@ -8,5 +8,5 @@
 
 export type { Component } from "./components.ts";
 
-export { attr, attrVal, text, tmpl, tmplStr } from "./components.js";
+export { attr, attrVal, tmpl, tmplStr } from "./components.js";
 export { ClientHtml, Html, Xml } from "./document_builders.js";

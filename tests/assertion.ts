@@ -1,4 +1,4 @@
-import type { Results } from "../component_string.js";
+import type { Results } from "../dist/component_string.js";
 
 export { assert };
 

@@ -1,9 +1,9 @@
-import type { StepKind } from "./routes";
-import type { StepInterface } from "./parse_str.js";
-import type { RulesetInterface } from "./rulesets.js";
+import type { StepKind } from "./routes.ts";
+import type { StepInterface } from "./parse_str.ts";
+import type { RulesetInterface } from "./rulesets.ts";
 
 import { parseStr } from "./parse_str.js";
-import { route } from "./routes";
+import { route } from "./routes.js";
 
 export interface ResultsInterface {
 	steps: StepInterface[][];

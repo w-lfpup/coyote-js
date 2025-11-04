@@ -1,5 +1,5 @@
 import { assert } from "./assertion.js";
-import { tmplStr, ClientHtml } from "../mod.js";
+import { tmplStr, ClientHtml } from "../dist/mod.js";
 
 function textElement() {
 	let template = tmplStr(
