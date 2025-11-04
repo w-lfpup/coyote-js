@@ -97,7 +97,13 @@ function composeString(
 					templateStr = cmpntBit.component.templateArr[index];
 				}
 				if (templateStr) {
-					composeSteps(rules, results, tagInfoStack, templateStr, chunk);
+					composeSteps(
+						rules,
+						results,
+						tagInfoStack,
+						templateStr,
+						chunk,
+					);
 				}
 			} else {
 				// end of the template, check for balance

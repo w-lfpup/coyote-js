@@ -129,7 +129,8 @@ function nestedVoidElementsWithSibling() {
 		[],
 	);
 
-	let expected = "<section>\n\t<input>\n\t<p>\n\t\thai :3\n\t</p>\n</section>";
+	let expected =
+		"<section>\n\t<input>\n\t<p>\n\t\thai :3\n\t</p>\n</section>";
 
 	let html = new Html();
 	let results = html.build(template);

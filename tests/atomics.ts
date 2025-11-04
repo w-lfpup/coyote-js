@@ -166,7 +166,8 @@ function altTextElement() {
 		[],
 	);
 
-	let expected = "<style>\n\t#woof .bark {\n\t    color: doggo;\n\t}\n</style>";
+	let expected =
+		"<style>\n\t#woof .bark {\n\t    color: doggo;\n\t}\n</style>";
 
 	let html = new Html();
 	let results = html.build(template);

@@ -5,10 +5,10 @@ import * as functionComponentLiteral from "./function_component_literal.js";
 import * as html from "./html.js";
 import * as htmlClient from "./html_client.js";
 export const testModules = [
-    atomics,
-    atomicsClient,
-    functionComponent,
-    functionComponentLiteral,
-    html,
-    htmlClient,
+	atomics,
+	atomicsClient,
+	functionComponent,
+	functionComponentLiteral,
+	html,
+	htmlClient,
 ];

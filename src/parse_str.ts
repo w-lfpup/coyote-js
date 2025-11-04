@@ -102,7 +102,9 @@ export function getTextFromStep(
 }
 
 function isInjectionKind(stepKind: StepKind): boolean {
-	return "AttrMapInjection" === stepKind || "DescendantInjection" === stepKind;
+	return (
+		"AttrMapInjection" === stepKind || "DescendantInjection" === stepKind
+	);
 }
 
 function addAltElementText(
