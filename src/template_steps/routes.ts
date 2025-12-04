@@ -36,9 +36,9 @@ type Router = (glyph: string) => StepKind;
 let glyphGraph = new Map<StepKind, Router>([
 	["Attr", getKindFromAttribute],
 	["AttrMapInjection", getKindFromInjection],
+	["AttrSetter", getKindFromAttributeSetter],
 	["AttrValueDoubleQuote", getKindFromAttributeQuote],
 	["AttrValueDoubleQuoteClosed", getKindFromAttributeQuoteClosed],
-	["AttrSetter", getKindFromAttributeSetter],
 	["AttrValueDoubleQuoted", getKindFromAttributeQuote],
 	["AttrValueUnquoted", getKindFromAttributeValueUnquoted],
 	["DescendantInjection", getKindFromInjection],

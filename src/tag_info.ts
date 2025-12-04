@@ -1,10 +1,6 @@
 import type { RulesetInterface } from "./rulesets.ts";
 
-export type TextFormat =
-	| "Initial"
-    | "LineSpace"
-    | "Space"
-    | "Text";
+export type TextFormat = "Initial" | "LineSpace" | "Space" | "Text";
 
 export interface TagInfoInterface {
 	bannedPath: boolean;
