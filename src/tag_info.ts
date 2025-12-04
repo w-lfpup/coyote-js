@@ -1,16 +1,20 @@
 import type { RulesetInterface } from "./rulesets.ts";
 
-export type TextFormat = "Block" | "Initial" | "Inline" | "Root";
+export type TextFormat =
+	| "Initial"
+    | "LineSpace"
+    | "Space"
+    | "Text";
 
 export interface TagInfoInterface {
+	bannedPath: boolean;
+	indentCount: number;
+	inlineEl: boolean;
 	namespace: string;
+	preservedTextPath: boolean;
 	tag: string;
 	textFormat: TextFormat;
-	indentCount: number;
 	voidEl: boolean;
-	inlineEl: boolean;
-	preservedTextPath: boolean;
-	bannedPath: boolean;
 }
 
 export class TagInfo implements TagInfoInterface {
@@ -28,13 +32,13 @@ export class TagInfo implements TagInfoInterface {
 			? rules.getInitialNamespace()
 			: tag;
 
-		this.tag = tag;
-		this.textFormat = "Root";
+		this.bannedPath = rules.tagIsBannedEl(tag);
 		this.indentCount = 0;
-		this.voidEl = rules.tagIsVoidEl(tag);
 		this.inlineEl = rules.tagIsInlineEl(tag);
 		this.preservedTextPath = rules.tagIsPreservedTextEl(tag);
-		this.bannedPath = rules.tagIsBannedEl(tag);
+		this.tag = tag;
+		this.textFormat = "Initial";
+		this.voidEl = rules.tagIsVoidEl(tag);
 	}
 }
 
@@ -47,7 +51,7 @@ export function from(
 
 	tagInfo.namespace = prevTagInfo.namespace;
 	tagInfo.indentCount = prevTagInfo.indentCount;
-	tagInfo.textFormat = "Initial";
+	tagInfo.textFormat = "Text";
 
 	if (rules.tagIsNamespaceEl(tag)) {
 		tagInfo.namespace = tag;

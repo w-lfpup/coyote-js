@@ -24,14 +24,8 @@ function hai(): Component {
 | -------------------- | ------------------------------------------------------------------------ | --------------------------------------------------------------- |
 | Attribute            | an element attribute                                                     | `attr(name: string): Component`                                 |
 | Attribute with value | an element and attribute and value pair                                  | `attrVal(name: string, value: string): Component`               |
-| Text                 | text with escaped HTML glyphs like `<` of `{`                            | `text(words: string): Component`                                |
 | Template             | a document fragment described by a tagged template literal               | `tmpl(template: string, injections: ...Component): Component`   |
 | TemplateString       | a document fragment described by a string template and a list injections | `tmplStr(template: string, injections: Component[]): Component` |
-
-Coyote also supports:
-
-- vanilla text for unescaped text purposes
-- arrays for lists of components
 
 ## Template Syntax
 
@@ -67,28 +61,9 @@ There are only two valid _injections_ in a `tmpl` component:
 
 Likewise there are only two valid injection locations in a `tmpl` component.
 
-Any other instance of `{}` in a template component will not be considered an injection (read as a string).
-
-### Strings
-
-The following examples show how to create a template component from a string.
-
-```ts
-function strInjectionStory(): Component {
-    let attribute = attr("uwu");
-    let descendant = text("hai! :3");
-
-    return tmplStr("
-        <article {}>
-            {}
-        </article>
-    ", [attribute, descendant]);
-}
-```
-
 ### Tagged Template Literals
 
-Tagged template literals are great for javascript-first templates.
+Tagged template literals are perfect for javascript-first templates.
 
 The following examples show how to create a template component from a tagged template literal.
 
@@ -102,6 +77,29 @@ function templateLiteralInjectionStory(): Component {
             ${descendant}
         </article>
     `;
+}
+```
+
+### Strings
+
+The following examples show how to create a template component from a string.
+
+Strings are more beneficial when templates are dynamic, remote, or stored on disk.
+
+Strings use brackets `{}` to define injections.
+
+Any other instance of `{}` in a template component will not be considered an injection (read as a string).
+
+```ts
+function strInjectionStory(): Component {
+    let attribute = attr("uwu");
+    let descendant = text("hai! :3");
+
+    return tmplStr("
+        <article {}>
+            {}
+        </article>
+    ", [attribute, descendant]);
 }
 ```
 

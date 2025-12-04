@@ -1,11 +1,11 @@
 export type StepKind =
 	| "Attr"
-	| "AttrDoubleQuote"
-	| "AttrDoubleQuoteClosed"
 	| "AttrMapInjection"
 	| "AttrSetter"
 	| "AttrSingleQuote"
 	| "AttrSingleQuoteClosed"
+	| "AttrValueDoubleQuote"
+	| "AttrValueDoubleQuoteClosed"
 	| "AttrValueDoubleQuoted"
 	| "AttrValueSingleQuoted"
 	| "AttrValueUnquoted"
@@ -36,13 +36,14 @@ type Router = (glyph: string) => StepKind;
 let glyphGraph = new Map<StepKind, Router>([
 	["Attr", getKindFromAttribute],
 	["AttrMapInjection", getKindFromInjection],
-	["AttrDoubleQuote", getKindFromAttributeQuote],
-	["AttrDoubleQuoteClosed", getKindFromAttributeQuoteClosed],
+	["AttrValueDoubleQuote", getKindFromAttributeQuote],
+	["AttrValueDoubleQuoteClosed", getKindFromAttributeQuoteClosed],
 	["AttrSetter", getKindFromAttributeSetter],
 	["AttrValueDoubleQuoted", getKindFromAttributeQuote],
 	["AttrValueUnquoted", getKindFromAttributeValueUnquoted],
 	["DescendantInjection", getKindFromInjection],
 	["Element", getKindFromElement],
+	["ElementLineSpace", getKindFromElementSpace],
 	["ElementSpace", getKindFromElementSpace],
 	["EmptyElement", getKindFromEmptyElement],
 	["InjectionSpace", getKindFromInjection],
