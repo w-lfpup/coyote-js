@@ -1,10 +1,10 @@
-import type { StepKind } from "./routes";
-import type { StepInterface } from "./parse_str.ts";
-import type { RulesetInterface } from "./rulesets.ts";
+import type { StepKind } from "../template_steps/routes.ts";
+import type { StepInterface } from "../template_steps/parse_str.ts";
+import type { RulesetInterface } from "../template_steps/rulesets";
 import type { TagInfoInterface } from "./tag_info.ts";
 
 import { TagInfo, from } from "./tag_info.js";
-import { getTextFromStep } from "./parse_str.js";
+import { getTextFromStep } from "../template_steps/parse_str.js";
 
 export {
 	composeSteps,

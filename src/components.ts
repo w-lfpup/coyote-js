@@ -70,27 +70,15 @@ export class TaggedTmplComponent extends CoyoteComponent {
 	}
 }
 
-export class DangerousTextComponent extends CoyoteComponent {
-	#text: string;
-	constructor(text: string) {
-		super();
-		this.#text = text;
-	}
-
-	get text() {
-		return this.#text;
-	}
-}
-
-export function tmplStr(txt: string, injections: Component[]): TmplComponent {
-	return new TmplComponent(txt, injections);
-}
-
 export function tmpl(
 	txts: TemplateStringsArray,
 	...injections: Component[]
 ): TaggedTmplComponent {
 	return new TaggedTmplComponent(txts, injections);
+}
+
+export function tmplStr(txt: string, injections: Component[]): TmplComponent {
+	return new TmplComponent(txt, injections);
 }
 
 export function attr(attrStr: string): AttrComponent {
@@ -99,8 +87,4 @@ export function attr(attrStr: string): AttrComponent {
 
 export function attrVal(attr: string, val: string): AttrValComponent {
 	return new AttrValComponent(attr, val);
-}
-
-export function dangerously_unescaped_text(text: string) {
-	return new DangerousTextComponent(text);
 }

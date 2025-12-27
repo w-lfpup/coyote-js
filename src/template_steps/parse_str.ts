@@ -1,4 +1,4 @@
-import type { RulesetInterface } from "./rulesets.ts";
+import type { RulesetInterface } from "./rulesets.js";
 import type { SlidingWindowInterface } from "./sliding_window.ts";
 import type { StepKind } from "./routes.ts";
 

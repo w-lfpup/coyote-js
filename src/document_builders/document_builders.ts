@@ -1,7 +1,7 @@
-import type { Results } from "./component_string.js";
-import type { Component } from "./components.js";
+import type { Results } from "../documents/component_string.js";
+import type { Component } from "../components.js";
 
-import { composeString } from "./component_string.js";
+import { composeString } from "../documents/component_string.js";
 import { ClientRules, ServerRules, XmlRules } from "./rulesets.js";
 import { Builder } from "./template_builders.js";
 

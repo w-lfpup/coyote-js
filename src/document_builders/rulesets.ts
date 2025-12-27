@@ -1,18 +1,3 @@
-export interface RulesetInterface {
-	getAltTextTagFromCloseSequence(close_sequence: string): string | undefined;
-	getCloseSequenceFromAltTextTag(tag: string): string | undefined;
-	getCloseSequenceFromContentlessTag(tag: string): string | undefined;
-	getContentlessTagFromCloseSequence(tag: string): string | undefined;
-	getInitialNamespace(): string;
-	respectIndentation(): boolean;
-	tagIsBannedEl(tag: string): boolean;
-	tagIsInlineEl(tag: string): boolean;
-	tagIsNamespaceEl(tag: string): boolean;
-	tagIsPrefixOfContentless(tag: string): boolean;
-	tagIsPreservedTextEl(tag: string): boolean;
-	tagIsVoidEl(tag: string): boolean;
-}
-
 let bannedElements = new Set([
 	"acronym",
 	"big",

@@ -1,13 +1,13 @@
-import type { Component } from "./components.js";
-import type { RulesetInterface } from "./rulesets.ts";
-import type { Results as TemplateResults } from "./template_steps.js";
+import type { Component } from "../components.js";
+import type { RulesetInterface } from "../template_steps/rulesets.js";
+import type { Results as TemplateResults } from "../template_steps.js";
 
 import {
 	TmplComponent,
 	TaggedTmplComponent,
 	AttrComponent,
 	AttrValComponent,
-} from "./components.js";
+} from "../components.js";
 import { TagInfo } from "./tag_info.js";
 import {
 	composeSteps,

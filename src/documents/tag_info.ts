@@ -1,4 +1,4 @@
-import type { RulesetInterface } from "./rulesets.ts";
+import type { RulesetInterface } from "../template_steps/rulesets.js";
 
 export type TextFormat = "Initial" | "LineSpace" | "Space" | "Text";
 
