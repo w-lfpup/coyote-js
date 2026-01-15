@@ -65,7 +65,8 @@ export function composeTemplateArr(
 		pushInjection(results, injStepKind);
 
 		if ("DescendantInjection" === injStepKind) stepKind = "Initial";
-		if ("AttrMapInjection" === injStepKind) stepKind = "ElementSpace";
+		// breaking or non-breaking space
+		if ("AttrMapInjection" === injStepKind) stepKind = "NonBreakingSpace";
 	}
 
 	return results;
