@@ -24,62 +24,93 @@ class Step implements StepInterface {
 }
 
 export function parseStr(
-	sieve: RulesetInterface,
+	rules: RulesetInterface,
 	templateStr: string,
 	initialKind: StepKind,
 ): StepInterface[] {
 	let steps = [new Step(initialKind)];
 
 	let tag = "";
-	let prevInjKind = initialKind;
+	let injectionKind = initialKind;
 	let slidingWindow: SlidingWindowInterface | undefined;
+	let contentless = false;
 
 	for (let index = 0; index < templateStr.length; index++) {
+		let nextStepOrigin = index;
+
+		// <!--comment_edge_case-->
+		if (contentless) {
+			contentless = false;
+			// pushContentlessStepsEdge(rules, steps, tag, index);
+		}
+
 		let glyph = templateStr[index];
 		if (slidingWindow) {
 			if (!slidingWindow.slide(glyph)) continue;
-			if (!addAltElementText(sieve, steps, tag, index)) return steps;
+
+			if (rules.getCloseSequenceFromContentlessTag(tag)) {
+				// pushContentlessSteps(rules, steps, tag, index);
+			}
+
+			if (rules.getCloseSequenceFromAltTextTag(tag)) {
+				pushAltElementSteps(rules, steps, tag, index);
+			}
 
 			slidingWindow = undefined;
 			continue;
 		}
 
-		let step = steps[steps.length - 1];
-		if (step === undefined) return steps;
-		step.target = index;
+		// route next step
+		let end_step = steps[steps.length - 1];
+		if (end_step === undefined) return steps;
+		// mark progression
+		end_step.target = index;
 
 		let currKind =
-			"InjectionConfirmed" === step.kind
-				? route(glyph, prevInjKind)
-				: route(glyph, step.kind);
+			"InjectionConfirmed" === end_step.kind
+				? route(glyph, injectionKind)
+				: route(glyph, end_step.kind);
 
-		if (currKind === step.kind) continue;
+		if (currKind === end_step.kind) continue;
 
-		if (isInjectionKind(currKind)) {
-			prevInjKind = step.kind;
-		}
+		if (isInjectionKind(currKind)) injectionKind = end_step.kind;
 
-		if ("Tag" === step.kind) {
-			tag = getTextFromStep(templateStr, step);
-
-			if (sieve.tagIsAtributeless(tag)) {
-				let closeSequence = sieve.getCloseSequenceFromAltTextTag(tag);
-				if (closeSequence) {
-					let slider = new SlidingWindow(closeSequence);
-					slider.slide(glyph);
-					slidingWindow = slider;
-					currKind = "Text";
-				}
-			}
-		}
-
-		if ("ElementClosed" === step.kind) {
-			let closeSequence = sieve.getCloseSequenceFromAltTextTag(tag);
+		// edge case ALT ELEMENTS
+		if ("TagClosed" === end_step.kind) {
+			let closeSequence = rules.getCloseSequenceFromAltTextTag(tag);
 			if (closeSequence) {
 				let slider = new SlidingWindow(closeSequence);
 				slider.slide(glyph);
 				slidingWindow = slider;
-				currKind = "Text";
+				currKind = "TextAlt";
+			}
+		}
+
+		// edge case COMMENTS
+		if ("Tag" === end_step.kind) {
+			tag = getTextFromStep(templateStr, end_step);
+
+			let prefix = rules.tagIsPrefixOfContentlessEl(tag);
+			if (prefix) {
+				let diff = tag.slice(prefix.length);
+				tag = prefix;
+
+				end_step.target = end_step.origin + prefix.length;
+				nextStepOrigin = end_step.target;
+
+				let closeSequence = rules.getCloseSequenceFromAltTextTag(tag);
+				if (closeSequence) {
+					currKind = "TextAlt";
+
+					let slider = new SlidingWindow(closeSequence);
+					for (let glypher of diff) {
+						slider.slide(glypher);
+					}
+
+					slider.slide(glyph)
+						? (contentless = true)
+						: (slidingWindow = slider);
+				}
 			}
 		}
 
@@ -107,16 +138,16 @@ function isInjectionKind(stepKind: StepKind): boolean {
 	);
 }
 
-function addAltElementText(
-	sieve: RulesetInterface,
+function pushAltElementSteps(
+	rules: RulesetInterface,
 	steps: Step[],
 	tag: string,
 	index: number,
-): boolean {
+) {
 	let step = steps[steps.length - 1];
-	if (step === undefined) return false;
+	if (step === undefined) return;
 
-	let closingSequence = sieve.getCloseSequenceFromAltTextTag(tag);
+	let closingSequence = rules.getCloseSequenceFromAltTextTag(tag);
 	if (closingSequence) {
 		step.target = index - (closingSequence.length - 1);
 		steps.push(
@@ -127,6 +158,4 @@ function addAltElementText(
 			),
 		);
 	}
-
-	return true;
 }

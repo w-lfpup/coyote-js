@@ -8,7 +8,7 @@ export interface RulesetInterface {
 	tagIsBannedEl(tag: string): boolean;
 	tagIsInlineEl(tag: string): boolean;
 	tagIsNamespaceEl(tag: string): boolean;
-	tagIsPrefixOfContentless(tag: string): boolean;
+	tagIsPrefixOfContentlessEl(tag: string): string | undefined;
 	tagIsPreservedTextEl(tag: string): boolean;
 	tagIsVoidEl(tag: string): boolean;
 }
