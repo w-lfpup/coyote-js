@@ -29,15 +29,15 @@ export type StepKind =
 	| "TailTagSolidus"
 	| "TailTagSpace"
 	| "Text"
-	| "TextAlt"
+	| "TextAlt";
 
 type Router = (glyph: string) => StepKind;
 
 let glyphGraph = new Map<StepKind, Router>([
 	["Attr", getKindFromAttribute],
-	// ["AttrMapInjection", getKindFromInjection],
-	// ["AttrSetter", getKindFromAttributeSetter],
-	// ["AttrValueDoubleQuoteClosed", getKindFromAttributeQuoteClosed],
+	["AttrMapInjection", getKindFromInjection],
+	["AttrSetter", getKindFromAttributeSetter],
+	["AttrValueDoubleQuoteClosed", getKindFromAttributeQuoteClosed],
 	// ["AttrValueDoubleQuoted", getKindFromAttributeQuote],
 	// // ["AttrValueDoubleQuote", getKindFromAttributeQuote],
 	// ["AttrValueUnquoted", getKindFromAttributeValueUnquoted],
@@ -68,8 +68,31 @@ function getKindFromText(glyph: string): StepKind {
 	if ("\n" === glyph) return "BreakingSpace";
 
 	if (isSpace(glyph)) return "NonBreakingSpace";
-	
+
 	return "Text";
+}
+
+function getKindFromInjection(glyph: string): StepKind {
+	if ("}" === glyph) return "InjectionConfirmed";
+
+	return "InjectionSpace";
+}
+
+function getKindFromAttributeSetter(glyph: string): StepKind {
+	if ("'" === glyph) return "AttrValueSingleQuoteOpened";
+	if ('"' === glyph) return "AttrValueDoubleQuoteOpened";
+	if (isSpace(glyph)) return "AttrSetter";
+
+	return "AttrValueUnquoted";
+}
+
+function getKindFromAttributeQuoteClosed(glyph: string): StepKind {
+	if ("\n" === glyph) return "TagBreakingSpace";
+	if (">" === glyph) return "TagClosed";
+	if ("/" === glyph) return "TagSolidus";
+	if (isSpace(glyph)) return "TagNonBreakingSpace";
+
+	return "Attr";
 }
 
 function getKindFromAttribute(glyph: string): StepKind {
@@ -83,31 +106,10 @@ function getKindFromAttribute(glyph: string): StepKind {
 	return "Attr";
 }
 
-function getKindFromInjection(glyph: string): StepKind {
-	if ("}" === glyph) return "InjectionConfirmed";
-
-	return "InjectionSpace";
-}
-
 function getKindFromAttributeQuote(glyph: string): StepKind {
 	if ('"' === glyph) return "AttrValueQuoteClosed";
 
 	return "AttrValue";
-}
-
-function getKindFromAttributeQuoteClosed(glyph: string): StepKind {
-	if (">" === glyph) return "ElementClosed";
-	if ("/" === glyph) return "EmptyElement";
-
-	return "ElementSpace";
-}
-
-function getKindFromAttributeSetter(glyph: string): StepKind {
-	if ('"' === glyph) return "AttrQuote";
-
-	if (isSpace(glyph)) return "AttrSetter";
-
-	return "AttrValueUnquoted";
 }
 
 function getKindFromAttributeValueUnquoted(glyph: string): StepKind {
