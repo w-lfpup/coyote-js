@@ -5,12 +5,12 @@ import type { RulesetInterface } from "./rulesets.ts";
 import { parseStr } from "./parse_str.js";
 import { route } from "./routes.js";
 
-export interface ResultsInterface {
+export interface TemplateStepsInterface {
 	steps: StepInterface[][];
 	injs: (StepKind | undefined)[];
 }
 
-export class Results implements ResultsInterface {
+export class TemplateSteps implements TemplateStepsInterface {
 	steps: StepInterface[][] = [[]];
 	injs: (StepKind | undefined)[] = [];
 }
@@ -22,8 +22,8 @@ function isInjection(kind: StepKind): boolean {
 export function compose(
 	ruleset: RulesetInterface,
 	templateStr: string,
-): ResultsInterface {
-	let results = new Results();
+): TemplateStepsInterface {
+	let results = new TemplateSteps();
 
 	for (let step of parseStr(ruleset, templateStr, "Initial")) {
 		if (isInjection(step.kind)) {
@@ -40,8 +40,8 @@ export function compose(
 export function composeTemplateArr(
 	ruleset: RulesetInterface,
 	templateStrArr: TemplateStringsArray,
-): ResultsInterface {
-	let results = new Results();
+): TemplateStepsInterface {
+	let results = new TemplateSteps();
 
 	let stepKind: StepKind = "Initial";
 
@@ -71,11 +71,11 @@ export function composeTemplateArr(
 	return results;
 }
 
-function pushStep(results: ResultsInterface, step: StepInterface) {
+function pushStep(results: TemplateStepsInterface, step: StepInterface) {
 	results.steps[results.steps.length - 1]?.push(step);
 }
 
-function pushInjection(results: ResultsInterface, stepKind: StepKind) {
+function pushInjection(results: TemplateStepsInterface, stepKind: StepKind) {
 	results.steps.push([]);
 	results.injs.push(stepKind);
 }

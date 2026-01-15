@@ -11,7 +11,7 @@ export class SlidingWindow implements SlidingWindow {
 	}
 
 	slide(glyph: string): boolean {
-		if (this.#target.charAt(this.#index - 1) !== glyph) {
+		if (this.#target[this.#index - 1] !== glyph) {
 			this.#index = 0;
 		}
 

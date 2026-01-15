@@ -2,59 +2,59 @@ export type StepKind =
 	| "Attr"
 	| "AttrMapInjection"
 	| "AttrSetter"
-	| "AttrSingleQuote"
-	| "AttrSingleQuoteClosed"
-	| "AttrValueDoubleQuote"
 	| "AttrValueDoubleQuoteClosed"
 	| "AttrValueDoubleQuoted"
+	| "AttrValueDoubleQuoteOpened"
+	| "AttrValueSingleQuoteClosed"
 	| "AttrValueSingleQuoted"
+	| "AttrValueSingleQuoteOpened"
 	| "AttrValueUnquoted"
+	| "BreakingSpace"
 	| "DescendantInjection"
-	| "Element"
-	| "ElementClosed"
-	| "ElementLineSpace"
-	| "ElementSpace"
-	| "EmptyElement"
-	| "EmptyElementClosed"
 	| "Fragment"
 	| "FragmentClosed"
 	| "Initial"
 	| "InjectionConfirmed"
 	| "InjectionSpace"
+	| "NonBreakingSpace"
 	| "Tag"
-	| "TailElementClosed"
-	| "TailElementSolidus"
-	| "TailElementSpace"
+	| "TagBreakingSpace"
+	| "TagClosed"
+	| "TagClosedEmpty"
+	| "TagNonBreakingSpace"
+	| "TagOpened"
+	| "TagSolidus"
 	| "TailTag"
+	| "TailTagClosed"
+	| "TailTagSolidus"
+	| "TailTagSpace"
 	| "Text"
 	| "TextAlt"
-	| "TextLineSpace"
-	| "TextSpace";
 
 type Router = (glyph: string) => StepKind;
 
 let glyphGraph = new Map<StepKind, Router>([
 	["Attr", getKindFromAttribute],
-	["AttrMapInjection", getKindFromInjection],
-	["AttrSetter", getKindFromAttributeSetter],
-	["AttrValueDoubleQuote", getKindFromAttributeQuote],
-	["AttrValueDoubleQuoteClosed", getKindFromAttributeQuoteClosed],
-	["AttrValueDoubleQuoted", getKindFromAttributeQuote],
-	["AttrValueUnquoted", getKindFromAttributeValueUnquoted],
-	["DescendantInjection", getKindFromInjection],
-	["Element", getKindFromElement],
-	["ElementLineSpace", getKindFromElementSpace],
-	["ElementSpace", getKindFromElementSpace],
-	["EmptyElement", getKindFromEmptyElement],
-	["InjectionSpace", getKindFromInjection],
-	["Tag", getKindFromTag],
-	["TailElementSolidus", getKindFromTailElementSolidus],
-	["TailElementSpace", getKindFromTailElementSpace],
-	["TailTag", getKindFromTailTag],
+	// ["AttrMapInjection", getKindFromInjection],
+	// ["AttrSetter", getKindFromAttributeSetter],
+	// ["AttrValueDoubleQuoteClosed", getKindFromAttributeQuoteClosed],
+	// ["AttrValueDoubleQuoted", getKindFromAttributeQuote],
+	// // ["AttrValueDoubleQuote", getKindFromAttributeQuote],
+	// ["AttrValueUnquoted", getKindFromAttributeValueUnquoted],
+	// ["DescendantInjection", getKindFromInjection],
+	// ["Tag", getKindFromElement],
+	// ["TagLineSpace", getKindFromElementSpace],
+	// ["TagSpace", getKindFromElementSpace],
+	// ["EmptyElement", getKindFromEmptyElement],
+	// ["InjectionSpace", getKindFromInjection],
+	// ["Tag", getKindFromTag],
+	// ["TailElementSolidus", getKindFromTailElementSolidus],
+	// ["TailElementSpace", getKindFromTailElementSpace],
+	// ["TailTag", getKindFromTailTag],
 ]);
 
 export function route(glyph: string, prevKind: StepKind) {
-	let glyphRoute = glyphGraph.get(prevKind) ?? getKindFromInitial;
+	let glyphRoute = glyphGraph.get(prevKind) ?? getKindFromText;
 	return glyphRoute(glyph);
 }
 
@@ -62,10 +62,13 @@ function isSpace(glyph: string) {
 	return glyph.length !== glyph.trim().length;
 }
 
-function getKindFromInitial(glyph: string): StepKind {
-	if ("<" === glyph) return "Element";
+function getKindFromText(glyph: string): StepKind {
+	if ("<" === glyph) return "TagOpened";
 	if ("{" === glyph) return "DescendantInjection";
+	if ("\n" === glyph) return "BreakingSpace";
 
+	if (isSpace(glyph)) return "NonBreakingSpace";
+	
 	return "Text";
 }
 
@@ -87,7 +90,7 @@ function getKindFromInjection(glyph: string): StepKind {
 }
 
 function getKindFromAttributeQuote(glyph: string): StepKind {
-	if ('"' === glyph) return "AttrQuoteClosed";
+	if ('"' === glyph) return "AttrValueQuoteClosed";
 
 	return "AttrValue";
 }
