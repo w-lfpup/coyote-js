@@ -38,19 +38,22 @@ let glyphGraph = new Map<StepKind, Router>([
 	["AttrMapInjection", getKindFromInjection],
 	["AttrSetter", getKindFromAttributeSetter],
 	["AttrValueDoubleQuoteClosed", getKindFromAttributeQuoteClosed],
-	// ["AttrValueDoubleQuoted", getKindFromAttributeQuote],
-	// // ["AttrValueDoubleQuote", getKindFromAttributeQuote],
-	// ["AttrValueUnquoted", getKindFromAttributeValueUnquoted],
-	// ["DescendantInjection", getKindFromInjection],
-	// ["Tag", getKindFromElement],
-	// ["TagLineSpace", getKindFromElementSpace],
-	// ["TagSpace", getKindFromElementSpace],
-	// ["EmptyElement", getKindFromEmptyElement],
-	// ["InjectionSpace", getKindFromInjection],
-	// ["Tag", getKindFromTag],
-	// ["TailElementSolidus", getKindFromTailElementSolidus],
-	// ["TailElementSpace", getKindFromTailElementSpace],
-	// ["TailTag", getKindFromTailTag],
+	["AttrValueDoubleQuoted", getKindFromAttributeDoubleQuoted],
+	["AttrValueDoubleQuoteOpened", getKindFromAttributeDoubleQuoted],
+	["AttrValueSingleQuoteClosed", getKindFromAttributeQuoteClosed],
+	["AttrValueSingleQuoted", getKindFromAttributeSingleQuoted],
+	["AttrValueDoubleQuoteOpened", getKindFromAttributeSingleQuoted],
+	["AttrValueUnquoted", getKindFromAttributeValueUnquoted],
+	["DescendantInjection", getKindFromInjection],
+	["InjectionSpace", getKindFromInjection],
+	["Tag", getKindFromTag],
+	["TagBreakingSpace", getKindFromTagSpace],
+	["TagNonBreakingSpace", getKindFromTagSpace],
+	["TagOpened", getKindFromTag],
+	["TagSolidus", getKindFromEmptyTag],
+	["TailTag", getKindFromTailTag],
+	["TailTagSolidus", getKindFromTailTagSolidus],
+	["TailTagSpace", getKindFromTailTagSpace],
 ]);
 
 export function route(glyph: string, prevKind: StepKind) {
@@ -62,14 +65,16 @@ function isSpace(glyph: string) {
 	return glyph.length !== glyph.trim().length;
 }
 
-function getKindFromText(glyph: string): StepKind {
-	if ("<" === glyph) return "TagOpened";
-	if ("{" === glyph) return "DescendantInjection";
-	if ("\n" === glyph) return "BreakingSpace";
+function getKindFromAttribute(glyph: string): StepKind {
+	if ("=" === glyph) return "AttrSetter";
+	if ("{" === glyph) return "AttrMapInjection";
+	if ("\n" === glyph) return "TagBreakingSpace";
+	if (">" === glyph) return "TagClosed";
+	if ("/" === glyph) return "TagSolidus";
 
-	if (isSpace(glyph)) return "NonBreakingSpace";
+	if (isSpace(glyph)) return "TagNonBreakingSpace";
 
-	return "Text";
+	return "Attr";
 }
 
 function getKindFromInjection(glyph: string): StepKind {
@@ -95,83 +100,82 @@ function getKindFromAttributeQuoteClosed(glyph: string): StepKind {
 	return "Attr";
 }
 
-function getKindFromAttribute(glyph: string): StepKind {
-	if ("=" === glyph) return "AttrSetter";
-	if (">" === glyph) return "ElementClosed";
-	if ("/" === glyph) return "EmptyElement";
-	if ("{" === glyph) return "AttrMapInjection";
+function getKindFromAttributeDoubleQuoted(glyph: string): StepKind {
+	if ('"' === glyph) return "AttrValueDoubleQuoteClosed";
 
-	if (isSpace(glyph)) return "ElementSpace";
-
-	return "Attr";
+	return "AttrValueDoubleQuoted";
 }
 
-function getKindFromAttributeQuote(glyph: string): StepKind {
-	if ('"' === glyph) return "AttrValueQuoteClosed";
+function getKindFromAttributeSingleQuoted(glyph: string): StepKind {
+	if ('"' === glyph) return "AttrValueSingleQuoteClosed";
 
-	return "AttrValue";
+	return "AttrValueSingleQuoted";
 }
 
 function getKindFromAttributeValueUnquoted(glyph: string): StepKind {
-	if (">" === glyph) return "ElementClosed";
+	if (">" === glyph) return "TagClosed";
+	if ("\n" === glyph) return "TagBreakingSpace";
 
-	if (isSpace(glyph)) return "ElementSpace";
+	if (isSpace(glyph)) return "TagNonBreakingSpace";
 
 	return "AttrValueUnquoted";
 }
 
-function getKindFromElement(glyph: string): StepKind {
-	if ("/" === glyph) return "TailElementSolidus";
-	if (">" === glyph) return "Fragment";
+function getKindFromTag(glyph: string): StepKind {
+	if (">" === glyph) return "TagClosed";
+	if ("/" === glyph) return "TagSolidus";
+	if ("\n" === glyph) return "TagBreakingSpace";
 
-	if (isSpace(glyph)) return "Element";
+	if (isSpace(glyph)) return "TagNonBreakingSpace";
 
 	return "Tag";
 }
 
-function getKindFromElementSpace(glyph: string): StepKind {
-	if (">" === glyph) return "ElementClosed";
-	if ("/" === glyph) return "EmptyElement";
+function getKindFromTagSpace(glyph: string): StepKind {
+	if (">" === glyph) return "TagClosed";
+	if ("/" === glyph) return "TagSolidus";
 	if ("{" === glyph) return "AttrMapInjection";
+	if ("\n" === glyph) return "TagBreakingSpace";
 
-	if (isSpace(glyph)) return "ElementSpace";
+	if (isSpace(glyph)) return "TagNonBreakingSpace";
 
 	return "Attr";
 }
 
-function getKindFromEmptyElement(glyph: string): StepKind {
-	if (">" === glyph) return "EmptyElementClosed";
+function getKindFromEmptyTag(glyph: string): StepKind {
+	if (">" === glyph) return "TagClosedEmpty";
 
-	return "EmptyElement";
-}
-
-function getKindFromTag(glyph: string): StepKind {
-	if (">" === glyph) return "ElementClosed";
-	if ("/" === glyph) return "EmptyElement";
-
-	if (isSpace(glyph)) return "ElementSpace";
-
-	return "Tag";
-}
-
-function getKindFromTailElementSolidus(glyph: string): StepKind {
-	if (">" === glyph) return "FragmentClosed";
-
-	if (isSpace(glyph)) return "TailElementSolidus";
-
-	return "TailTag";
-}
-
-function getKindFromTailElementSpace(glyph: string): StepKind {
-	if (">" === glyph) return "TailElementClosed";
-
-	return "TailElementSpace";
+	return "TagSolidus";
 }
 
 function getKindFromTailTag(glyph: string): StepKind {
-	if (">" === glyph) return "TailElementClosed";
+	if (">" === glyph) return "FragmentClosed";
 
-	if (isSpace(glyph)) return "TailElementSpace";
+	if (isSpace(glyph)) return "TailTagSolidus";
 
 	return "TailTag";
+}
+
+function getKindFromTailTagSolidus(glyph: string): StepKind {
+	if (">" === glyph) return "FragmentClosed";
+
+	if (isSpace(glyph)) return "TailTagSolidus";
+
+	return "TailTag";
+}
+
+function getKindFromTailTagSpace(glyph: string): StepKind {
+	if (">" === glyph) return "TailTagClosed";
+
+	return "TailTagSpace";
+}
+
+function getKindFromText(glyph: string): StepKind {
+	if ("<" === glyph) return "TagOpened";
+	if ("{" === glyph) return "DescendantInjection";
+	if ("\n" === glyph) return "BreakingSpace";
+
+	if (isSpace(glyph)) return "NonBreakingSpace";
+
+	return "Text";
 }
