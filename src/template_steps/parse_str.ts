@@ -13,8 +13,8 @@ export interface StepInterface {
 
 class Step implements StepInterface {
 	kind: StepKind = "Initial";
-	origin: number = 0;
-	target: number = 0;
+	origin: number;
+	target: number;
 
 	constructor(kind: StepKind, origin: number = 0, target: number = 0) {
 		this.kind = kind;
@@ -41,7 +41,7 @@ export function parseStr(
 		// <!--comment_edge_case-->
 		if (contentless) {
 			contentless = false;
-			// pushContentlessStepsEdge(rules, steps, tag, index);
+			pushContentlessStepsEdge(rules, steps, tag, index);
 		}
 
 		let glyph = templateStr[index];
@@ -49,7 +49,7 @@ export function parseStr(
 			if (!slidingWindow.slide(glyph)) continue;
 
 			if (rules.getCloseSequenceFromContentlessTag(tag)) {
-				// pushContentlessSteps(rules, steps, tag, index);
+				pushContentlessSteps(rules, steps, tag, index);
 			}
 
 			if (rules.getCloseSequenceFromAltTextTag(tag)) {
@@ -158,4 +158,55 @@ function pushAltElementSteps(
 			),
 		);
 	}
+}
+
+function pushContentlessSteps(
+	rules: RulesetInterface,
+	steps: Step[],
+	tag: string,
+	index: number,
+) {
+	let closingSequence = rules.getCloseSequenceFromAltTextTag(tag);
+	if (!closingSequence) return;
+
+	let step = steps[steps.length - 1];
+	if (step === undefined) return;
+
+	step.target = index - (closingSequence.length - 1);
+	steps.push(
+		new Step(
+			"TailTag",
+			index - (closingSequence.length - 1),
+			index - closingSequence.length,
+		),
+	);
+	steps.push(new Step("TailTagClosed", index, index));
+}
+
+function pushContentlessStepsEdge(
+	rules: RulesetInterface,
+	steps: Step[],
+	tag: string,
+	index: number,
+) {
+	let closingSequence = rules.getCloseSequenceFromAltTextTag(tag);
+	if (!closingSequence) return;
+
+	let step = steps[steps.length - 1];
+	if (step === undefined) return;
+
+	let { target } = step;
+
+	step.target = step.target - closingSequence.length + 1;
+	let next_origin = step.target;
+	let next_target = step.target + closingSequence.length - 1;
+
+	if (step.target === step.origin) {
+		step.kind = "TailTag";
+		step.target = next_target;
+	} else {
+		steps.push(new Step("TailTag", next_origin, next_target));
+	}
+
+	steps.push(new Step("TailTagClosed", target, index));
 }
