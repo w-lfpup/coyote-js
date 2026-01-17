@@ -1,41 +1,31 @@
-import type { RulesetInterface } from "./rulesets.ts";
+import type { RulesetInterface } from "../template_steps/rulesets.js";
 
 export type TextFormat = "Initial" | "LineSpace" | "Space" | "Text";
 
 export interface TagInfoInterface {
+	bannedAttr: boolean;
 	bannedPath: boolean;
 	indentCount: number;
 	inlineEl: boolean;
-	namespace: string;
-	preservedTextPath: boolean;
+	embedded_content: string;
+	preformattedTextPath: boolean;
 	tag: string;
 	textFormat: TextFormat;
 	voidEl: boolean;
 }
 
-export class TagInfo implements TagInfoInterface {
-	namespace: string;
-	tag: string;
-	textFormat: TextFormat;
-	indentCount = 0;
-	voidEl: boolean;
-	inlineEl: boolean;
-	preservedTextPath: boolean;
-	bannedPath: boolean;
-
-	constructor(rules: RulesetInterface, tag: string) {
-		this.namespace = !rules.tagIsNamespaceEl(tag)
-			? rules.getInitialNamespace()
-			: tag;
-
-		this.bannedPath = rules.tagIsBannedEl(tag);
-		this.indentCount = 0;
-		this.inlineEl = rules.tagIsInlineEl(tag);
-		this.preservedTextPath = rules.tagIsPreservedTextEl(tag);
-		this.tag = tag;
-		this.textFormat = "Initial";
-		this.voidEl = rules.tagIsVoidEl(tag);
-	}
+export function getRoot(rules: RulesetInterface): TagInfoInterface {
+	return {
+		bannedAttr: false,
+		bannedPath: false,
+		indentCount: 0,
+		inlineEl: true,
+		embedded_content: rules.getInitialEmbeddedContent(),
+		preformattedTextPath: false,
+		tag: ":root",
+		textFormat: "Initial",
+		voidEl: false,
+	};
 }
 
 export function from(
@@ -43,25 +33,30 @@ export function from(
 	prevTagInfo: TagInfoInterface,
 	tag: string,
 ): TagInfoInterface {
-	let tagInfo = new TagInfo(rules, tag);
+	let tagInfo: TagInfoInterface = { ...prevTagInfo };
 
-	tagInfo.namespace = prevTagInfo.namespace;
-	tagInfo.indentCount = prevTagInfo.indentCount;
+	tagInfo.tag = tag;
+	tagInfo.voidEl = rules.tagIsVoidEl(tag);
+	tagInfo.inlineEl = rules.tagIsInlineEl(tag);
 	tagInfo.textFormat = "Text";
 
-	if (rules.tagIsNamespaceEl(tag)) {
-		tagInfo.namespace = tag;
+	if (rules.tagIsEmbeddedContentEl(tag)) {
+		tagInfo.embedded_content = tag;
 	}
 
-	if (rules.tagIsPreservedTextEl(prevTagInfo.tag)) {
-		tagInfo.preservedTextPath = true;
+	if (rules.tagIsPreformattedTextEl(prevTagInfo.tag)) {
+		tagInfo.preformattedTextPath = true;
 	}
 
 	if (rules.tagIsBannedEl(tag)) {
 		tagInfo.bannedPath = true;
 	}
 
-	if (!rules.tagIsVoidEl(prevTagInfo.tag) && !rules.tagIsInlineEl(tag)) {
+	if (
+		rules.respectIndentation() &&
+		!rules.tagIsVoidEl(prevTagInfo.tag) &&
+		!rules.tagIsInlineEl(tag)
+	) {
 		tagInfo.indentCount += 1;
 	}
 

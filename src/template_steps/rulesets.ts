@@ -3,13 +3,13 @@ export interface RulesetInterface {
 	getCloseSequenceFromAltTextTag(tag: string): string | undefined;
 	getCloseSequenceFromContentlessTag(tag: string): string | undefined;
 	getContentlessTagFromCloseSequence(tag: string): string | undefined;
-	getInitialNamespace(): string;
+	getInitialEmbeddedContent(): string;
 	respectIndentation(): boolean;
 	tagIsBannedEl(tag: string): boolean;
 	tagIsInlineEl(tag: string): boolean;
-	tagIsNamespaceEl(tag: string): boolean;
+	tagIsEmbeddedContentEl(tag: string): boolean;
 	tagIsPrefixOfContentlessEl(tag: string): string | undefined;
-	tagIsPreservedTextEl(tag: string): boolean;
+	tagIsPreformattedTextEl(tag: string): boolean;
 	tagIsVoidEl(tag: string): boolean;
 }
 

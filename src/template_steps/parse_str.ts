@@ -33,17 +33,8 @@ export function parseStr(
 	let tag = "";
 	let injectionKind = initialKind;
 	let slidingWindow: SlidingWindowInterface | undefined;
-	let contentless = false;
 
 	for (let index = 0; index < templateStr.length; index++) {
-		let nextStepOrigin = index;
-
-		// <!--comment_edge_case-->
-		if (contentless) {
-			contentless = false;
-			pushContentlessStepsEdge(rules, steps, tag, index);
-		}
-
 		let glyph = templateStr[index];
 		if (slidingWindow) {
 			if (!slidingWindow.slide(glyph)) continue;
@@ -87,6 +78,9 @@ export function parseStr(
 		}
 
 		// edge case COMMENTS
+		let nextStepOrigin = index;
+		let contentless = false;
+
 		if ("Tag" === end_step.kind) {
 			tag = getTextFromStep(templateStr, end_step);
 
@@ -114,7 +108,10 @@ export function parseStr(
 			}
 		}
 
+		// Add CURRENT STEP
 		steps.push(new Step(currKind, index, index));
+		// <!--comment_edge_case-->
+		if (contentless) pushContentlessStepsEdge(rules, steps, tag, index);
 	}
 
 	let step = steps[steps.length - 1];
