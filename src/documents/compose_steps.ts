@@ -4,7 +4,7 @@ import type { RulesetInterface } from "../template_steps/rulesets.ts";
 import type { TagInfoInterface } from "./tag_info.ts";
 
 import { getRoot, from } from "./tag_info.js";
-import { spaceCharCodes } from "./text_component.js";
+import { pushMultilineAttribtue, spaceCharCodes } from "./text_component.js";
 
 import { getTextFromStep } from "../template_steps/parse_str.js";
 
@@ -16,7 +16,14 @@ type Router = (
 	step: StepInterface,
 ) => void;
 
-const htmlRoutes = new Map<StepKind, Router>([["Attr", pushAttr]]);
+const htmlRoutes = new Map<StepKind, Router>([
+	["Attr", pushAttr],
+	["AttrValueDoubleQuoted", pushAttrValueDoubleQuoted],
+	["AttrValueSingleQuoted", pushAttrValueSingleQuoted],
+	["AttrValueUnquoted", pushAttrValueUnquoted],
+	["BreakingSpace", pushTextSpace],
+	["NonBreakingSpace", pushTextSpace],
+]);
 
 export function composeSteps(
 	rules: RulesetInterface,
@@ -74,6 +81,88 @@ function pushAttr(
 	results.push(attr);
 
 	tagInfo.textFormat = "Text";
+}
+
+function pushAttrValueDoubleQuoted(
+	results: string[],
+	stack: TagInfoInterface[],
+	rules: RulesetInterface,
+	templateStr: string,
+	step: StepInterface,
+) {
+	let tagInfo = stack[stack.length - 1];
+	if (!tagInfo) return;
+
+	if (tagInfo.bannedPath || tagInfo.bannedAttr) return;
+
+	let text = getTextFromStep(templateStr, step);
+	results.push('="');
+	pushMultilineAttribtue(results, rules, text, tagInfo);
+	results.push('"');
+}
+
+function pushAttrValueSingleQuoted(
+	results: string[],
+	stack: TagInfoInterface[],
+	rules: RulesetInterface,
+	templateStr: string,
+	step: StepInterface,
+) {
+	let tagInfo = stack[stack.length - 1];
+	if (!tagInfo) return;
+
+	if (tagInfo.bannedPath || tagInfo.bannedAttr) return;
+
+	let text = getTextFromStep(templateStr, step);
+	results.push("='");
+	pushMultilineAttribtue(results, rules, text, tagInfo);
+	results.push("'");
+}
+
+function pushAttrValueUnquoted(
+	results: string[],
+	stack: TagInfoInterface[],
+	rules: RulesetInterface,
+	templateStr: string,
+	step: StepInterface,
+) {
+	let tagInfo = stack[stack.length - 1];
+	if (!tagInfo) return;
+
+	if (tagInfo.bannedPath || tagInfo.bannedAttr) return;
+
+	let text = getTextFromStep(templateStr, step);
+	results.push("=");
+	results.push(text);
+}
+
+function pushTextSpace(
+	results: string[],
+	stack: TagInfoInterface[],
+	rules: RulesetInterface,
+	templateStr: string,
+	step: StepInterface,
+) {
+	let tagInfo = stack[stack.length - 1];
+	if (!tagInfo) return;
+
+	if (tagInfo.bannedPath) return;
+
+	if (tagInfo.preformattedTextPath) {
+		let text = getTextFromStep(templateStr, step);
+		results.push(text);
+	}
+
+	if (
+		"Initial" === tagInfo.textFormat ||
+		"BreakingSpace" === tagInfo.textFormat
+	) {
+		return;
+	}
+
+	tagInfo.textFormat = "NonBreakingSpace";
+	if ("TagBreakingSpace" === step.kind || "BreakingSpace" === step.kind)
+		tagInfo.textFormat = "BreakingSpace";
 }
 
 // function pushElement(
