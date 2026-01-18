@@ -6,7 +6,7 @@ export interface BuilderInterface {
 		rules: RulesetInterface,
 		templateStr: string,
 	): TemplateStepsInterface;
-	composeTemplateLiteral(
+	composeTemplateStringsArray(
 		rules: RulesetInterface,
 		templateArray: TemplateStringsArray,
 	): TemplateStepsInterface;

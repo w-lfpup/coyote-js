@@ -16,15 +16,17 @@ function getIndexOfFirstChar(text: string): number {
 }
 
 function getLargestCommonSpaceIndex(text: string): number {
+	let texts = text.split("\n");
+
 	let spaceIndex = text.length;
 	let prevLine = "";
 
-	let texts = text.split("\n");
-
 	let index = 0;
 	while (index < texts.length) {
-		let line = texts[index];
 		index += 1;
+
+		let line = texts[index];
+		if (0 === line.length) continue;
 
 		spaceIndex = getIndexOfFirstChar(line);
 		prevLine = line;
@@ -32,10 +34,28 @@ function getLargestCommonSpaceIndex(text: string): number {
 	}
 
 	while (index < texts.length) {
-		let line = texts[index];
 		index += 1;
 
+		let line = texts[index];
+		if (0 === line.length) continue;
+
+		let nextSpaceIndex = 0;
+		for (let glyphIndex = 0; glyphIndex < line.length; glyphIndex++) {
+			nextSpaceIndex = glyphIndex;
+
+			let targetGlyph = line[glyphIndex];
+			if (!targetGlyph) break;
+
+			let originGlyph = line[glyphIndex];
+			if (
+				originGlyph !== targetGlyph ||
+				spaceCharCodes.has(originGlyph.charCodeAt(0))
+			)
+				break;
+		}
+
 		prevLine = line;
+		spaceIndex = Math.min(nextSpaceIndex, spaceIndex);
 	}
 
 	return spaceIndex;
