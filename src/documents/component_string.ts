@@ -1,20 +1,15 @@
-import type { Component } from "./components.js";
-import type { RulesetInterface } from "./rulesets.ts";
-import type { Results as TemplateResults } from "./template_steps.js";
+import type { Component } from "../components.ts";
+import type { RulesetInterface } from "../template_steps/rulesets.ts";
+import type { Results as TemplateResults } from "./template_steps.ts";
 
 import {
 	TmplComponent,
 	TaggedTmplComponent,
 	AttrComponent,
 	AttrValComponent,
-} from "./components.js";
-import { TagInfo } from "./tag_info.js";
-import {
-	composeSteps,
-	pushTextComponent,
-	pushAttrComponent,
-	pushAttrValueComponent,
-} from "./compose_steps.js";
+} from "../components.js";
+import { getRoot, type TagInfoInterface } from "./tag_info.js";
+import { composeSteps } from "./compose_steps.js";
 
 export type { BuilderInterface, Results };
 export { composeString };
@@ -57,7 +52,7 @@ function composeString(
 ): Results {
 	let results: string[] = [];
 
-	let tagInfoStack: TagInfo[] = [new TagInfo(rules, ":root")];
+	let tagInfoStack: TagInfoInterface[] = [getRoot(rules)];
 	let componentStack = [
 		getStackBitFromComponent(tagInfoStack, builder, rules, component),
 	];
@@ -152,7 +147,7 @@ ${chunk}`),
 }
 
 function getStackBitFromComponent(
-	stack: TagInfo[],
+	stack: TagInfoInterface[],
 	builder: BuilderInterface,
 	rules: RulesetInterface,
 	component: Component,
@@ -174,7 +169,11 @@ function getStackBitFromComponent(
 	}
 }
 
-function addAttrInj(stack: TagInfo[], results: string[], component: Component) {
+function addAttrInj(
+	stack: TagInfoInterface[],
+	results: string[],
+	component: Component,
+) {
 	if (component instanceof AttrComponent)
 		return pushAttrComponent(results, stack, component.attr);
 	if (component instanceof AttrValComponent) {
