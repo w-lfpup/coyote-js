@@ -24,6 +24,13 @@ const htmlRoutes = new Map<StepKind, Router>([
 	["BreakingSpace", pushTextSpace],
 	["NonBreakingSpace", pushTextSpace],
 	["Tag", pushElement],
+	["TagBreakingSpace", pushElementSpace],
+
+
+
+	["TagNonBreakingSpace", pushElementSpace],
+	["TailTagSpace", pushElementSpace],
+
 ]);
 
 export function composeSteps(
@@ -189,6 +196,32 @@ function pushElement(
 
 	stack.push(nextTagInfo);
 }
+
+
+function pushElementSpace(
+	results: string[],
+	stack: TagInfoInterface[],
+	rules: RulesetInterface,
+	templateStr: string,
+	step: StepInterface,
+) {
+	let tagInfo = stack[stack.length - 1];
+	if (!tagInfo) return;
+
+	if (tagInfo.bannedPath) return;
+
+	if (
+		"Initial" === tagInfo.textFormat ||
+		"BreakingSpace" === tagInfo.textFormat
+	) {
+		return;
+	}
+
+	tagInfo.textFormat = "NonBreakingSpace";
+	if ("TagBreakingSpace" === step.kind || "BreakingSpace" === step.kind)
+		tagInfo.textFormat = "BreakingSpace";
+}
+
 
 // function pushElement(
 // 	results: string[],
