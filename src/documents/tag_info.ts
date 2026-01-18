@@ -1,6 +1,10 @@
 import type { RulesetInterface } from "../template_steps/rulesets.js";
 
-export type TextFormat = "Initial" | "LineSpace" | "Space" | "Text";
+export type TextFormat =
+	| "Initial"
+	| "BreakingSpace"
+	| "NonBreakingSpace"
+	| "Text";
 
 export interface TagInfoInterface {
 	bannedAttr: boolean;

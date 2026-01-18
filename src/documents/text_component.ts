@@ -15,10 +15,8 @@ function getIndexOfFirstChar(text: string): number {
 	return text.length;
 }
 
-function getLargestCommonSpaceIndex(text: string): number {
-	let texts = text.split("\n");
-
-	let spaceIndex = text.length;
+function getLargestCommonSpaceIndex(texts: string[]): number {
+	let spaceIndex = 0;
 	let prevLine = "";
 
 	let index = 0;
@@ -61,8 +59,66 @@ function getLargestCommonSpaceIndex(text: string): number {
 	return spaceIndex;
 }
 
-export function pushAltTextComponent() {}
+export function pushAltTextComponent(
+	results: string[],
+	rules: RulesetInterface,
+	text: string,
+	tagInfo: TagInfoInterface,
+) {
+	if (tagInfo.bannedAttr) return;
 
-function pushLineOfText() {}
+	if (tagInfo.preformattedTextPath) return results.push(text);
+
+	let texts = text.split("\n");
+	if (0 === texts.length) return;
+
+	results.push(texts[0]);
+	if (1 === texts.length) return;
+
+	let middle = texts.slice(1, -1);
+	let commonSpaceIndex = getLargestCommonSpaceIndex(middle);
+
+	for (const line of middle) {
+		results.push("\n");
+
+		if (0 != line.length) {
+			results.push("\t".repeat(tagInfo.indentCount));
+			results.push(line.slice(commonSpaceIndex));
+		}
+	}
+
+	// last
+	results.push("\n");
+
+	if (rules.respectIndentation()) {
+		let indentOffset = tagInfo.indentCount;
+		if (!tagInfo.inlineEl) {
+			Math.max(0, indentOffset - 1);
+		}
+
+		results.push("\t".repeat(indentOffset));
+	}
+
+	let last = texts[-1].trim();
+	results.push(last);
+}
+
+function pushLineOfText(results: string[], line: string) {
+	let state: TextFormat = "Text";
+
+	for (const glyph of line) {
+		if (spaceCharCodes.has(glyph.charCodeAt(0))) {
+			state = "NonBreakingSpace";
+			continue;
+		}
+
+		if (state === "NonBreakingSpace") {
+			results.push(" ");
+		}
+
+		state = "Text";
+		results.push(glyph);
+	}
+}
 
 export function pushTextComponent() {}
