@@ -38,7 +38,7 @@ function getLargestCommonSpaceIndex(texts: string[]): number {
 		if (0 === line.length) continue;
 
 		let nextSpaceIndex = 0;
-		for (let glyphIndex = 0; glyphIndex < line.length; glyphIndex++) {
+		for (let glyphIndex = 0; glyphIndex < prevLine.length; glyphIndex++) {
 			nextSpaceIndex = glyphIndex;
 
 			let targetGlyph = line[glyphIndex];
@@ -121,4 +121,85 @@ function pushLineOfText(results: string[], line: string) {
 	}
 }
 
-export function pushTextComponent() {}
+export function pushTextComponent(
+	results: string[],
+	text: string,
+	tagInfo: TagInfoInterface,
+) {
+	if (tagInfo.bannedAttr) return;
+
+	if (tagInfo.preformattedTextPath) return results.push(text);
+
+	let texts = text.split("\n");
+	if (0 === texts.length) return;
+
+	let commonSpaceIndex = getLargestCommonSpaceIndex(texts);
+
+	// first line
+	let firstLine = texts[0];
+	let foundIndex = getIndexOfFirstChar(firstLine);
+	if ("BreakingSpace" === tagInfo.textFormat) {
+		results.push("\n");
+		if (firstLine.length !== foundIndex)
+			results.push("\t".repeat(tagInfo.indentCount));
+	}
+
+	if ("NonBreakingSpace" === tagInfo.textFormat) {
+		if (firstLine.length !== foundIndex) {
+			results.push(" ");
+		}
+	}
+	pushLineOfText(results, firstLine);
+
+	// the rest of the lines
+	let middle = texts.slice(1);
+	for (const line of middle) {
+		results.push("\n");
+
+		let foundIndex = getIndexOfFirstChar(line);
+		if (line.length === foundIndex) continue;
+
+		results.push("\t".repeat(tagInfo.indentCount));
+		results.push(line.slice(commonSpaceIndex));
+	}
+}
+
+export function pushMultilineAttribtue(
+	results: string[],
+	rules: RulesetInterface,
+	text: string,
+	tagInfo: TagInfoInterface,
+) {
+	if (tagInfo.bannedPath) return;
+
+	let texts = text.split("\n");
+	if (0 === texts.length) return;
+
+	// first line
+	pushLineOfText(results, texts[0]);
+	if (1 === texts.length) return;
+
+	// middle
+	let middleLines = texts.slice(1, -1);
+	let commonSpaceIndex = getLargestCommonSpaceIndex(middleLines);
+
+	let indentCount = tagInfo.indentCount;
+	if (rules.respectIndentation() && !tagInfo.inlineEl) {
+		indentCount += 1;
+	}
+
+	for (const line of middleLines) {
+		results.push("/n");
+
+		if (0 === line.length) return;
+
+		results.push("\t".repeat(indentCount));
+		pushLineOfText(results, line.slice(commonSpaceIndex));
+	}
+
+	// last
+	results.push("\n");
+	results.push("\t".repeat(tagInfo.indentCount));
+	let last = texts[texts.length - 1].trim();
+	results.push(last);
+}
