@@ -1,6 +1,6 @@
-import type { Component } from "../components.ts";
-import type { RulesetInterface } from "../template_steps/rulesets.ts";
-import type { Results as TemplateResults } from "./template_steps.ts";
+import type { Component } from "../components.js";
+import type { RulesetInterface } from "../template_steps/rulesets.js";
+import type { TemplateStepsInterface } from "../template_steps/template_steps.js";
 
 import {
 	TmplComponent,
@@ -8,23 +8,25 @@ import {
 	AttrComponent,
 	AttrValComponent,
 } from "../components.js";
-import { getRoot, type TagInfoInterface } from "./tag_info.js";
-import { composeSteps } from "./compose_steps.js";
+
+import { getTagInfoRoot, type TagInfoInterface } from "./tag_info.js";
+import { composeSteps, pushFormattedSpace } from "./compose_steps.js";
+import { pushMultilineAttribtue, pushTextComponent } from "./text_component.js";
 
 export type { BuilderInterface, Results };
 export { composeString };
 
 interface BuilderInterface {
-	build(rules: RulesetInterface, templateStr: string): TemplateResults;
+	build(rules: RulesetInterface, templateStr: string): TemplateStepsInterface;
 	buildTemplateLiteral(
 		rules: RulesetInterface,
 		templateArray: TemplateStringsArray,
-	): TemplateResults;
+	): TemplateStepsInterface;
 }
 
 class TemplateBit {
 	component: TaggedTmplComponent | TmplComponent;
-	template: TemplateResults;
+	template: TemplateStepsInterface;
 
 	//
 	stackDepth: number;
@@ -32,7 +34,7 @@ class TemplateBit {
 
 	constructor(
 		component: TaggedTmplComponent | TmplComponent,
-		results: TemplateResults,
+		results: TemplateStepsInterface,
 		stackDepth: number,
 	) {
 		this.component = component;
@@ -45,6 +47,8 @@ type StackBit = Component | TemplateBit;
 
 type Results = [string?, Error?];
 
+let forbiddenAttrGlyphs = new Set(["<", "=", '"', "'", "/", ">", "{"]);
+
 function composeString(
 	builder: BuilderInterface,
 	rules: RulesetInterface,
@@ -52,7 +56,7 @@ function composeString(
 ): Results {
 	let results: string[] = [];
 
-	let tagInfoStack: TagInfoInterface[] = [getRoot(rules)];
+	let tagInfoStack: TagInfoInterface[] = [getTagInfoRoot(rules)];
 	let componentStack = [
 		getStackBitFromComponent(tagInfoStack, builder, rules, component),
 	];
@@ -61,7 +65,8 @@ function composeString(
 		const cmpntBit = componentStack.pop();
 
 		if (typeof cmpntBit === "string") {
-			pushTextComponent(results, tagInfoStack, rules, cmpntBit);
+			let escaped = removeTemplateGlyphs(cmpntBit);
+			pushTextComponentInjection(results, tagInfoStack, escaped);
 		}
 
 		if (Array.isArray(cmpntBit)) {
@@ -117,7 +122,7 @@ ${chunk}`),
 			let injection = cmpntBit.component.injections[index];
 			if (injKind && injection) {
 				if ("AttrMapInjection" === injKind) {
-					addAttrInj(tagInfoStack, results, injection);
+					addAttrInj(tagInfoStack, results, rules, injection);
 				}
 
 				if ("DescendantInjection" === injKind) {
@@ -172,23 +177,107 @@ function getStackBitFromComponent(
 function addAttrInj(
 	stack: TagInfoInterface[],
 	results: string[],
+	rules: RulesetInterface,
 	component: Component,
-) {
-	if (component instanceof AttrComponent)
-		return pushAttrComponent(results, stack, component.attr);
+): Error | undefined {
+	let tagInfo = stack[stack.length - 1];
+	if (!tagInfo) return;
+
+	if (tagInfo.bannedPath) return;
+
+	if (component instanceof AttrComponent) {
+		let err = pushAttrComponent(results, rules, tagInfo, component.attr);
+		if (err) return err;
+	}
+
 	if (component instanceof AttrValComponent) {
-		pushAttrComponent(results, stack, component.attr);
-		return pushAttrValueComponent(results, stack, component.value);
+		let { attr, value } = component;
+		let err = pushAttrValueComponent(results, rules, tagInfo, attr, value);
+		if (err) return err;
 	}
 
 	if (Array.isArray(component)) {
 		for (const cmpnt of component) {
-			if (cmpnt instanceof AttrComponent)
-				pushAttrComponent(results, stack, cmpnt.attr);
+			if (cmpnt instanceof AttrComponent) {
+				let err = pushAttrComponent(
+					results,
+					rules,
+					tagInfo,
+					cmpnt.attr,
+				);
+				if (err) return err;
+			}
+
 			if (cmpnt instanceof AttrValComponent) {
-				pushAttrComponent(results, stack, cmpnt.attr);
-				pushAttrValueComponent(results, stack, cmpnt.value);
+				let { attr, value } = cmpnt;
+				let err = pushAttrValueComponent(
+					results,
+					rules,
+					tagInfo,
+					attr,
+					value,
+				);
+				if (err) return err;
 			}
 		}
 	}
+
+	tagInfo.textFormat = "Text";
+}
+
+function removeTemplateGlyphs(text: string): string {
+	return text.replaceAll("<", "&lt;").replaceAll("{", "&123;");
+}
+
+function pushAttrComponent(
+	results: string[],
+	rules: RulesetInterface,
+	tagInfo: TagInfoInterface,
+	attr: string,
+) {
+	if (rules.attrIsBanned(attr)) return;
+	let err = attrIsValid(attr);
+	if (err) return err;
+
+	pushFormattedSpace(results, tagInfo);
+	results.push(attr);
+}
+
+function pushAttrValueComponent(
+	results: string[],
+	rules: RulesetInterface,
+	tagInfo: TagInfoInterface,
+	attr: string,
+	val: string,
+): Error | undefined {
+	if (rules.attrIsBanned(attr)) return;
+	let err = attrIsValid(attr);
+	if (err) return err;
+
+	pushFormattedSpace(results, tagInfo);
+	results.push(attr);
+	results.push('="');
+	let escaped = val.replace('"', "&quot;").replace("'", "&apos");
+	pushMultilineAttribtue(results, rules, escaped, tagInfo);
+}
+
+function attrIsValid(attr: string): Error | undefined {
+	for (let index = 0; index < attr.length; index++) {
+		let glyph = attr[index];
+		if (forbiddenAttrGlyphs.has(glyph))
+			return new Error(`InvalidAttribute: ${attr}`);
+	}
+}
+
+function pushTextComponentInjection(
+	results: string[],
+	stack: TagInfoInterface[],
+	text: string,
+) {
+	let tagInfo = stack[stack.length - 1];
+	if (!tagInfo) return;
+
+	pushTextComponent(results, text, tagInfo);
+
+	tagInfo.textFormat = "Text";
 }
