@@ -25,12 +25,13 @@ const htmlRoutes = new Map<StepKind, Router>([
 	["NonBreakingSpace", pushTextSpace],
 	["Tag", pushElement],
 	["TagBreakingSpace", pushElementSpace],
-
-
-
+	["TagClosed", closeElement],
+	["TagClosedEmpty", closeEmptyElement],
 	["TagNonBreakingSpace", pushElementSpace],
+	["TailTag", popElement],
+	["TailTagClosed", closeTailTag],
 	["TailTagSpace", pushElementSpace],
-
+	["Text", pushText],
 ]);
 
 export function composeSteps(
@@ -197,7 +198,6 @@ function pushElement(
 	stack.push(nextTagInfo);
 }
 
-
 function pushElementSpace(
 	results: string[],
 	stack: TagInfoInterface[],
@@ -222,6 +222,175 @@ function pushElementSpace(
 		tagInfo.textFormat = "BreakingSpace";
 }
 
+function closeElement(
+	results: string[],
+	stack: TagInfoInterface[],
+	rules: RulesetInterface,
+	templateStr: string,
+	step: StepInterface,
+) {
+	let tagInfo = stack[stack.length - 1];
+	if (!tagInfo) return;
+
+	if (!tagInfo.bannedPath) {
+		if ("BreakingSpace" === tagInfo.textFormat) {
+			results.push("\n");
+
+			if (rules.respectIndentation()) {
+				let indentOffset = tagInfo.inlineEl
+					? tagInfo.indentCount
+					: tagInfo.indentCount - 1;
+
+				results.push("\t".repeat(indentOffset));
+			}
+		}
+		results.push(">");
+	}
+
+	tagInfo.textFormat = "Text";
+
+	if (!tagInfo.voidEl) return;
+
+	stack.pop();
+	let prevTagInfo = stack[stack.length - 1];
+	if (prevTagInfo) prevTagInfo.textFormat = "Text";
+}
+
+// Self-closing logic requires a sieve between HTML elements and non-html elements.
+// Html elements are also allowed in embedded elements (like a link around svg text).
+//
+// So for now
+// - xml elements can self close
+// - html, svg, mathml elements that self-close like <tag/>
+//   expand into <tag></tag> and remain valid
+function closeEmptyElement(
+	results: string[],
+	stack: TagInfoInterface[],
+	rules: RulesetInterface,
+	templateStr: string,
+	step: StepInterface,
+) {
+	let tagInfo = stack.pop();
+	if (!tagInfo) return;
+
+	if (!tagInfo.bannedPath) {
+		if ("xml" === tagInfo.embedded_content) {
+			results.push("/>");
+		} else {
+			if (tagInfo.voidEl) {
+				results.push(">");
+			} else {
+				results.push("></");
+				results.push(tagInfo.tag);
+				results.push(">");
+			}
+		}
+	}
+
+	let prevTagInfo = stack[stack.length - 1];
+	if (prevTagInfo) prevTagInfo.textFormat = "Text";
+}
+
+function pushSpaceOnPop(
+	results: string[],
+	prevTagInfo: TagInfoInterface,
+	tagInfo: TagInfoInterface,
+) {
+	if (tagInfo.preformattedTextPath) return;
+
+	if ("NonBreakingSpace" === tagInfo.textFormat) results.push(" ");
+	if ("BreakingSpace" === tagInfo.textFormat)
+		results.push("\n", "\t".repeat(prevTagInfo.indentCount));
+}
+
+function popElement(
+	results: string[],
+	stack: TagInfoInterface[],
+	rules: RulesetInterface,
+	templateStr: string,
+	step: StepInterface,
+) {
+	let tagInfo = stack[stack.length - 1];
+	if (!tagInfo) return;
+
+	if (tagInfo.bannedPath || tagInfo.voidEl) return;
+
+	let tag = getTextFromStep(templateStr, step);
+
+	let closedTag = tag;
+	let altClosedTag = rules.getAltTextTagFromCloseSequence(tag);
+	if (altClosedTag) closedTag = altClosedTag;
+
+	let contentlessTag = rules.getContentlessTagFromCloseSequence(tag);
+	if (contentlessTag) closedTag = contentlessTag;
+
+	if (closedTag !== tagInfo.tag) return;
+
+	if (!altClosedTag && !contentlessTag) {
+		let prevTagInfo = stack[stack.length - 2];
+		if (prevTagInfo) pushSpaceOnPop(results, prevTagInfo, tagInfo);
+	}
+
+	if (tag === closedTag) {
+		results.push("</");
+	}
+
+	results.push(tag);
+}
+
+function closeTailTag(
+	results: string[],
+	stack: TagInfoInterface[],
+	rules: RulesetInterface,
+	templateStr: string,
+	step: StepInterface,
+) {
+	let tagInfo = stack.pop();
+	if (!tagInfo) return;
+
+	if (!tagInfo.bannedPath) results.push(">");
+
+	let prevTagInfo = stack[stack.length - 1];
+	if (prevTagInfo) prevTagInfo.textFormat = "Text";
+}
+
+function pushText(
+	results: string[],
+	stack: TagInfoInterface[],
+	rules: RulesetInterface,
+	templateStr: string,
+	step: StepInterface,
+) {
+	let tagInfo = stack[stack.length - 1];
+	if (!tagInfo) return;
+
+	if (tagInfo.bannedPath) return;
+
+	if (!tagInfo.preformattedTextPath) pushFormattedSpace(results, tagInfo);
+
+	let text = getTextFromStep(templateStr, step);
+	results.push(text);
+
+	tagInfo.textFormat = "Text";
+}
+
+function pushAltText(
+	results: string[],
+	stack: TagInfoInterface[],
+	rules: RulesetInterface,
+	templateStr: string,
+	step: StepInterface,
+) {
+	let tagInfo = stack[stack.length - 1];
+	if (!tagInfo) return;
+
+	if (tagInfo.bannedPath) return;
+
+	let text = getTextFromStep(templateStr, step);
+	results.push(text);
+
+	tagInfo.textFormat = "Text";
+}
 
 // function pushElement(
 // 	results: string[],
