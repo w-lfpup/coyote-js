@@ -32,6 +32,7 @@ const htmlRoutes = new Map<StepKind, Router>([
 	["TailTagClosed", closeTailTag],
 	["TailTagSpace", pushElementSpace],
 	["Text", pushText],
+	["TextAlt", pushAltText],
 ]);
 
 export function composeSteps(
