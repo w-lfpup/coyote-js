@@ -18,7 +18,7 @@ export interface TagInfoInterface {
 	voidEl: boolean;
 }
 
-export function getRoot(rules: RulesetInterface): TagInfoInterface {
+export function getTagInfoRoot(rules: RulesetInterface): TagInfoInterface {
 	return {
 		bannedAttr: false,
 		bannedPath: false,
@@ -32,7 +32,7 @@ export function getRoot(rules: RulesetInterface): TagInfoInterface {
 	};
 }
 
-export function from(
+export function getTagInfoFrom(
 	rules: RulesetInterface,
 	prevTagInfo: TagInfoInterface,
 	tag: string,
