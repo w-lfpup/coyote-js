@@ -9,8 +9,8 @@
 export type { Component } from "./components.ts";
 
 export { attr, attrVal, tmpl, tmplStr } from "./components.js";
-export {
-	ClientHtml,
-	Html,
-	Xml,
-} from "./document_builders/document_builders.js";
+export { Coyote } from "./document_builders/coyote.js";
+export * from "document_builders/html.js";
+export * from "document_builders/html_only.js";
+export * from "document_builders/html_css_only.js";
+export * from "document_builders/xml.js";

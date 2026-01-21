@@ -84,7 +84,7 @@ export function parseStr(
 		if ("Tag" === end_step.kind) {
 			tag = getTextFromStep(templateStr, end_step);
 
-			let prefix = rules.tagIsPrefixOfContentlessEl(tag);
+			let prefix = rules.getPrefixOfContentlessEl(tag);
 			if (prefix) {
 				let diff = tag.slice(prefix.length);
 				tag = prefix;

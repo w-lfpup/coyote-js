@@ -1,6 +1,7 @@
-import type { Component } from "../components.js";
-import type { RulesetInterface } from "../template_steps/rulesets.js";
-import type { TemplateStepsInterface } from "../template_steps/template_steps.js";
+import type { Component } from "../components.ts";
+import type { RulesetInterface } from "../template_steps/rulesets.ts";
+import type { TemplateStepsInterface } from "../template_steps/template_steps.ts";
+import type { BuilderInterface } from "./template_builders.ts";
 
 import {
 	TmplComponent,
@@ -12,17 +13,6 @@ import {
 import { getTagInfoRoot, type TagInfoInterface } from "./tag_info.js";
 import { composeSteps, pushFormattedSpace } from "./compose_steps.js";
 import { pushMultilineAttribtue, pushTextComponent } from "./text_component.js";
-
-export type { BuilderInterface, Results };
-export { composeString };
-
-interface BuilderInterface {
-	build(rules: RulesetInterface, templateStr: string): TemplateStepsInterface;
-	buildTemplateLiteral(
-		rules: RulesetInterface,
-		templateArray: TemplateStringsArray,
-	): TemplateStepsInterface;
-}
 
 class TemplateBit {
 	component: TaggedTmplComponent | TmplComponent;
@@ -45,11 +35,11 @@ class TemplateBit {
 
 type StackBit = Component | TemplateBit;
 
-type Results = [string?, Error?];
+export type Results = [string, Error?];
 
 let forbiddenAttrGlyphs = new Set(["<", "=", '"', "'", "/", ">", "{"]);
 
-function composeString(
+export function composeString(
 	builder: BuilderInterface,
 	rules: RulesetInterface,
 	component: Component,
@@ -109,7 +99,7 @@ function composeString(
 				// end of the template, check for balance
 				if (cmpntBit.stackDepth !== tagInfoStack.length) {
 					return [
-						undefined,
+						results.join(""),
 						new Error(`
 Coyote Err: the following template component is imbalanced:
 ${chunk}`),
@@ -161,12 +151,12 @@ function getStackBitFromComponent(
 		return component;
 
 	if (component instanceof TmplComponent) {
-		let templateSteps = builder.build(rules, component.templateStr);
+		let templateSteps = builder.compose(rules, component.templateStr);
 		return new TemplateBit(component, templateSteps, stack.length);
 	}
 
 	if (component instanceof TaggedTmplComponent) {
-		let templateSteps = builder.buildTemplateLiteral(
+		let templateSteps = builder.composeTemplateStringsArray(
 			rules,
 			component.templateArr,
 		);
