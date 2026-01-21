@@ -1,4 +1,9 @@
 import type { RulesetInterface } from "../template_steps/rulesets.js";
+import {
+	isNamespaceEl,
+	isPreservedTextEl,
+	getAltTextTagFromCloseSequence,
+} from "./flyweight.js";
 
 export class HtmlRules implements RulesetInterface {
 	attrIsBanned(attr: string): boolean {

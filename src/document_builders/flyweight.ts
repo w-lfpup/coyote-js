@@ -1,4 +1,4 @@
-let bannedElements = new Set([
+export const bannedElements = new Set([
 	"acronym",
 	"big",
 	"center",
@@ -23,7 +23,7 @@ let bannedElements = new Set([
 	"xmp",
 ]);
 
-let inlineElements = new Set([
+export const inlineElements = new Set([
 	"abbr",
 	"b",
 	"bdi",
@@ -52,7 +52,7 @@ let inlineElements = new Set([
 	"var",
 ]);
 
-let voidElements = new Set([
+export const voidElements = new Set([
 	"!DOCTYPE",
 	"area",
 	"base",
@@ -70,26 +70,30 @@ let voidElements = new Set([
 	"wbr",
 ]);
 
-function isAtributeless(tag: string): boolean {
+export function isAtributeless(tag: string): boolean {
 	return "!--" === tag;
 }
 
-function getCloseSequenceFromAltTextTag(tag: string): string | undefined {
+export function getCloseSequenceFromAltTextTag(
+	tag: string,
+): string | undefined {
 	if ("!--" === tag) return "--";
 	if ("script" === tag) return "</script";
 	if ("style" === tag) return "</style";
 }
 
-function getAltTextTagFromCloseSequence(tag: string): string | undefined {
+export function getAltTextTagFromCloseSequence(
+	tag: string,
+): string | undefined {
 	if ("--" === tag) return "!--";
 	if ("</script" === tag) return "script";
 	if ("</style" === tag) return "style";
 }
 
-function isNameSpaceEl(tag: string): boolean {
+export function isNameSpaceEl(tag: string): boolean {
 	return "html" === tag || "svg" === tag || "math" === tag;
 }
 
-function isPreservedTextEl(tag: string): boolean {
+export function isPreservedTextEl(tag: string): boolean {
 	return "pre" === tag;
 }
