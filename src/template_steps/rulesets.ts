@@ -1,7 +1,6 @@
 export interface RulesetInterface {
 	attrIsBanned(attr: string): boolean;
-	// memory limit not needed bceause javascript doesn't handle memory
-	// getDocumentMemoryLimit(): number;
+	getDocumentMemoryLimit(): number;
 	getCacheMemoryLimit(): number;
 	getAltTextTagFromCloseSequence(close_sequence: string): string | undefined;
 	getCloseSequenceFromAltTextTag(tag: string): string | undefined;

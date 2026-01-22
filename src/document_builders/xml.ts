@@ -1,46 +1,65 @@
 import type { RulesetInterface } from "../template_steps/rulesets.js";
+import type { DocumentParams } from "./flyweight.js";
+
+import * as fw from "./flyweight.js";
+
+const fallbackParams: DocumentParams = {
+	cacheMemoryLimit: 1024,
+	documentMemoryLimit: 5242880, // 5mb
+	embeddedContent: "html",
+	respectIndentation: true,
+};
 
 export class XmlRules implements RulesetInterface {
+	#params: DocumentParams;
+
+	constructor(params: DocumentParams = fallbackParams) {
+		this.#params = params;
+	}
+
 	attrIsBanned(attr: string): boolean {
-		return false;
+		return attr.startsWith("on");
 	}
 	getCacheMemoryLimit(): number {
-		return 1024;
+		return this.#params.cacheMemoryLimit;
+	}
+	getDocumentMemoryLimit(): number {
+		return this.#params.documentMemoryLimit;
 	}
 	getAltTextTagFromCloseSequence(tag: string): string | undefined {
-		return getAltTextTagFromCloseSequence(tag);
-	}
-	getCloseSequenceFromAltTextTag(tag: string): string | undefined {
-		return getCloseSequenceFromAltTextTag(tag);
-	}
-	getCloseSequenceFromContentlessTag(tag: string): string | undefined {
 		return;
 	}
+	getCloseSequenceFromAltTextTag(tag: string): string | undefined {
+		return;
+	}
+	getCloseSequenceFromContentlessTag(tag: string): string | undefined {
+		if ("!--" === tag) return "-->";
+	}
 	getContentlessTagFromCloseSequence(tag: string): string | undefined {
-		return getAltTextTagFromCloseSequence(tag);
+		if ("--" === tag) return "!--";
 	}
 	getInitialEmbeddedContentEl(): string {
 		return "html";
 	}
 	getPrefixOfContentlessEl(tag: string): string | undefined {
-		return;
+		if (tag.startsWith("!--")) return "!--";
 	}
 	respectIndentation(): boolean {
-		return true;
+		return this.#params.respectIndentation;
 	}
 	tagIsBannedEl(tag: string): boolean {
-		return bannedElements.has(tag);
+		return false;
 	}
 	tagIsInlineEl(tag: string): boolean {
-		return inlineElements.has(tag);
+		return false;
 	}
 	tagIsEmbeddedContentEl(tag: string): boolean {
-		return isNameSpaceEl(tag);
+		return false;
 	}
 	tagIsPreformattedTextEl(tag: string): boolean {
-		return isPreservedTextEl(tag);
+		return "!CDATA[[" === tag;
 	}
 	tagIsVoidEl(tag: string): boolean {
-		return voidElements.has(tag);
+		return false;
 	}
 }

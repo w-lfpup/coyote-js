@@ -1,3 +1,10 @@
+export interface DocumentParams {
+	cacheMemoryLimit: number;
+	documentMemoryLimit: number;
+	embeddedContent: string;
+	respectIndentation: boolean;
+}
+
 export const bannedElements = new Set([
 	"acronym",
 	"big",
@@ -21,6 +28,24 @@ export const bannedElements = new Set([
 	"strike",
 	"tt",
 	"xmp",
+]);
+
+export const voidElements = new Set([
+	"!DOCTYPE",
+	"area",
+	"base",
+	"br",
+	"col",
+	"embed",
+	"hr",
+	"img",
+	"input",
+	"link",
+	"meta",
+	"param",
+	"source",
+	"track",
+	"wbr",
 ]);
 
 export const inlineElements = new Set([
@@ -52,26 +77,12 @@ export const inlineElements = new Set([
 	"var",
 ]);
 
-export const voidElements = new Set([
-	"!DOCTYPE",
-	"area",
-	"base",
-	"br",
-	"col",
-	"embed",
-	"hr",
-	"img",
-	"input",
-	"link",
-	"meta",
-	"param",
-	"source",
-	"track",
-	"wbr",
-]);
+export function isEmbeddedContentEl(tag: string): boolean {
+	return "html" === tag || "svg" === tag || "math" === tag;
+}
 
-export function isAtributeless(tag: string): boolean {
-	return "!--" === tag;
+export function isPreformattedTextEl(tag: string): boolean {
+	return "pre" === tag;
 }
 
 export function getCloseSequenceFromAltTextTag(
@@ -88,12 +99,4 @@ export function getAltTextTagFromCloseSequence(
 	if ("--" === tag) return "!--";
 	if ("</script" === tag) return "script";
 	if ("</style" === tag) return "style";
-}
-
-export function isNameSpaceEl(tag: string): boolean {
-	return "html" === tag || "svg" === tag || "math" === tag;
-}
-
-export function isPreservedTextEl(tag: string): boolean {
-	return "pre" === tag;
 }

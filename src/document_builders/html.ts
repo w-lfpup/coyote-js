@@ -1,51 +1,71 @@
 import type { RulesetInterface } from "../template_steps/rulesets.js";
-import {
-	isNamespaceEl,
-	isPreservedTextEl,
-	getAltTextTagFromCloseSequence,
-} from "./flyweight.js";
+import type { DocumentParams } from "./flyweight.js";
+
+import * as fw from "./flyweight.js";
+
+const fallbackParams: DocumentParams = {
+	cacheMemoryLimit: 1024,
+	documentMemoryLimit: 5242880, // 5mb
+	embeddedContent: "html",
+	respectIndentation: true,
+};
 
 export class HtmlRules implements RulesetInterface {
+	#params: DocumentParams;
+
+	constructor(params: DocumentParams = fallbackParams) {
+		this.#params = params;
+	}
+
 	attrIsBanned(attr: string): boolean {
 		return false;
 	}
 	getCacheMemoryLimit(): number {
-		return 1024;
+		return this.#params.cacheMemoryLimit;
+	}
+	getDocumentMemoryLimit(): number {
+		return this.#params.documentMemoryLimit;
 	}
 	getAltTextTagFromCloseSequence(tag: string): string | undefined {
-		return getAltTextTagFromCloseSequence(tag);
-	}
-	getCloseSequenceFromAltTextTag(tag: string): string | undefined {
-		return getCloseSequenceFromAltTextTag(tag);
-	}
-	getCloseSequenceFromContentlessTag(tag: string): string | undefined {
 		return;
 	}
+	getCloseSequenceFromAltTextTag(tag: string): string | undefined {
+		return;
+	}
+	getCloseSequenceFromContentlessTag(tag: string): string | undefined {
+		if ("?" === tag) return "?>";
+		if ("!--" === tag) return "-->";
+		if ("![CDATA[" === tag) return "]]>";
+	}
 	getContentlessTagFromCloseSequence(tag: string): string | undefined {
-		return getAltTextTagFromCloseSequence(tag);
+		if ("?" === tag) return "?";
+		if ("--" === tag) return "!--";
+		if ("]]" === tag) return "![CDATA[";
 	}
 	getInitialEmbeddedContentEl(): string {
 		return "html";
 	}
 	getPrefixOfContentlessEl(tag: string): string | undefined {
-		return;
+		if (tag.startsWith("?")) return "?";
+		if (tag.startsWith("!--")) return "!--";
+		if (tag.startsWith("![CDATA[")) return "![CDATA[";
 	}
 	respectIndentation(): boolean {
-		return true;
+		return this.#params.respectIndentation;
 	}
 	tagIsBannedEl(tag: string): boolean {
-		return bannedElements.has(tag);
+		return fw.bannedElements.has(tag);
 	}
 	tagIsInlineEl(tag: string): boolean {
-		return inlineElements.has(tag);
+		return fw.inlineElements.has(tag);
 	}
 	tagIsEmbeddedContentEl(tag: string): boolean {
-		return isNameSpaceEl(tag);
+		return fw.isEmbeddedContentEl(tag);
 	}
 	tagIsPreformattedTextEl(tag: string): boolean {
-		return isPreservedTextEl(tag);
+		return fw.isPreformattedTextEl(tag);
 	}
 	tagIsVoidEl(tag: string): boolean {
-		return voidElements.has(tag);
+		return fw.voidElements.has(tag);
 	}
 }

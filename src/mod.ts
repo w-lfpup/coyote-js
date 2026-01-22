@@ -7,6 +7,7 @@
 //
 
 export type { Component } from "./components.ts";
+export type { DocumentParams } from "document_builders/flyweight.js";
 
 export { attr, attrVal, tmpl, tmplStr } from "./components.js";
 export { Coyote } from "./document_builders/coyote.js";

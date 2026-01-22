@@ -10,7 +10,7 @@ export class Coyote {
 	#rules: RulesetInterface = new HtmlRules();
 	#builder = new Builder();
 
-	constructor(ruleset: RulesetInterface) {
+	constructor(ruleset: RulesetInterface = new HtmlRules()) {
 		this.#rules = ruleset;
 	}
 
