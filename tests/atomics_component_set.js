@@ -1,6 +1,5 @@
-import { Component, tmplStr } from "@w-lfpup/coyote";
-
-export function text_element(): Component {
+import { tmplStr } from "@w-lfpup/coyote";
+export function text_element() {
 	return tmplStr(
 		`
 
@@ -11,8 +10,7 @@ export function text_element(): Component {
 		[],
 	);
 }
-
-export function empty_element(): Component {
+export function empty_element() {
 	return tmplStr(
 		`
 		<p>
@@ -21,8 +19,7 @@ export function empty_element(): Component {
 		[],
 	);
 }
-
-export function fragment(): Component {
+export function fragment() {
 	return tmplStr(
 		`
 		<>
@@ -31,8 +28,7 @@ export function fragment(): Component {
 		[],
 	);
 }
-
-export function block_element_with_text(): Component {
+export function block_element_with_text() {
 	return tmplStr(
 		`
 		<p>
@@ -42,8 +38,7 @@ export function block_element_with_text(): Component {
 		[],
 	);
 }
-
-export function block_element_with_text_for_string(): Component {
+export function block_element_with_text_for_string() {
 	return tmplStr(
 		`
 		<p>
@@ -53,8 +48,7 @@ export function block_element_with_text_for_string(): Component {
 		[],
 	);
 }
-
-export function inline_element_with_text(): Component {
+export function inline_element_with_text() {
 	return tmplStr(
 		`
 		<b> hello! </b>
@@ -62,8 +56,7 @@ export function inline_element_with_text(): Component {
 		[],
 	);
 }
-
-export function void_element(): Component {
+export function void_element() {
 	return tmplStr(
 		`
 		<input>
@@ -71,8 +64,7 @@ export function void_element(): Component {
 		[],
 	);
 }
-
-export function void_element_with_self_closing(): Component {
+export function void_element_with_self_closing() {
 	return tmplStr(
 		`
 		<input />
@@ -80,8 +72,7 @@ export function void_element_with_self_closing(): Component {
 		[],
 	);
 }
-
-export function non_void_element(): Component {
+export function non_void_element() {
 	return tmplStr(
 		`
 		<p />
@@ -89,9 +80,8 @@ export function non_void_element(): Component {
 		[],
 	);
 }
-
 // needs updating
-export function comment_element(): Component {
+export function comment_element() {
 	return tmplStr(
 		`
 		<!-- Hello! -->
@@ -99,8 +89,7 @@ export function comment_element(): Component {
 		[],
 	);
 }
-
-export function alt_text_element(): Component {
+export function alt_text_element() {
 	return tmplStr(
 		`<style>#woof .bark {
 			color: doggo;
@@ -108,8 +97,7 @@ export function alt_text_element(): Component {
 		[],
 	);
 }
-
-export function alt_element_has_no_descendants(): Component {
+export function alt_element_has_no_descendants() {
 	return tmplStr(
 		`
 		<script>
@@ -119,8 +107,7 @@ export function alt_element_has_no_descendants(): Component {
 		[],
 	);
 }
-
-export function preserved_text_element_retains_spacing(): Component {
+export function preserved_text_element_retains_spacing() {
 	return tmplStr(
 		`
 <pre>
@@ -131,36 +118,28 @@ export function preserved_text_element_retains_spacing(): Component {
 		[],
 	);
 }
-
-export function attribute(): Component {
+export function attribute() {
 	return tmplStr("<span hai>UwU</span>", []);
 }
-
-export function attribute_with_single_quote(): Component {
+export function attribute_with_single_quote() {
 	return tmplStr("<span hai=''>UwU</span>", []);
 }
-
-export function attribute_with_double_quote(): Component {
+export function attribute_with_double_quote() {
 	return tmplStr('<span hai="">UwU</span>', []);
 }
-
-export function attribute_with_single_quote_value(): Component {
+export function attribute_with_single_quote_value() {
 	return tmplStr("<span hai='hewoo'>UwU</span>", []);
 }
-
-export function attribute_with_double_quote_value(): Component {
+export function attribute_with_double_quote_value() {
 	return tmplStr('<span hai="hewoo">UwU</span>', []);
 }
-
-export function banned_attribute(): Component {
+export function banned_attribute() {
 	return tmplStr("<span onkeypress>UwU</span>", []);
 }
-
-export function banned_attribute_quoted(): Component {
+export function banned_attribute_quoted() {
 	return tmplStr("<span onclick=\"console.log('danger!')\">UwU</span>", []);
 }
-
-export function banned_attribute_single_quoted(): Component {
+export function banned_attribute_single_quoted() {
 	return tmplStr(
 		`<span onbegonia='\nconsole.log(\"BEGONIA!\")\n'>UwU</span>`,
 		[],

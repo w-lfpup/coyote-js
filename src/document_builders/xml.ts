@@ -1,12 +1,10 @@
 import type { RulesetInterface } from "../template_steps/rulesets.js";
 import type { DocumentParams } from "./flyweight.js";
 
-import * as fw from "./flyweight.js";
-
 const fallbackParams: DocumentParams = {
 	cacheMemoryLimit: 1024,
 	documentMemoryLimit: 5242880, // 5mb
-	embeddedContent: "html",
+	embeddedContent: "xml",
 	respectIndentation: true,
 };
 

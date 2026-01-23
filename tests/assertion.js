@@ -1,5 +1,4 @@
-export { assert };
-function assert(expected, results) {
+export function assert(expected, results) {
 	let [document, error] = results;
 	if (error) {
 		return error;

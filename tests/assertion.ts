@@ -1,8 +1,6 @@
-import type { Results } from "../dist/component_string.js";
+import type { Results } from "@w-lfpup/coyote";
 
-export { assert };
-
-function assert(
+export function assert(
 	expected: string,
 	results: Results,
 ): { toString: Object["toString"] } {
