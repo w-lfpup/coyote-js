@@ -1,170 +1,128 @@
 import type { Component } from "../dist/mod.js";
 
-import { tmplStr } from "../dist/mod.js";
+import { tmpl, tmplStr } from "../dist/mod.js";
 
 export function text_element(): Component {
-	return tmplStr(
-		`
+	return tmpl`
 
 			Beasts tread
 				softly   underfoot.
 
-		`,
-		[],
-	);
+	`;
 }
 
 export function empty_element(): Component {
-	return tmplStr(
-		` 
+	return tmpl` 
 		<p>
 		</p>
-		`,
-		[],
-	);
+		`;
 }
 
 export function fragment(): Component {
-	return tmplStr(
-		`
+	return tmpl`
 		<>
 		</>
-		`,
-		[],
-	);
+		`;
 }
 
 export function block_element_with_text(): Component {
-	return tmplStr(
-		`
+	return tmpl`
 		<p>
 			hello!
 		</p>
-		`,
-		[],
-	);
+		`;
 }
 
 export function block_element_with_text_for_string(): Component {
-	return tmplStr(
-		`
+	return tmpl`
 		<p>
 			hello!
 		</p>
-		`,
-		[],
-	);
+		`;
 }
 
 export function inline_element_with_text(): Component {
-	return tmplStr(
-		`
+	return tmpl`
 		<b> hello! </b>
-		`,
-		[],
-	);
+		`;
 }
 
 export function void_element(): Component {
-	return tmplStr(
-		`
+	return tmpl`
 		<input>
-		`,
-		[],
-	);
+		`;
 }
 
 export function void_element_with_self_closing(): Component {
-	return tmplStr(
-		`
+	return tmpl`
 		<input />
-		`,
-		[],
-	);
+		`;
 }
 
 export function non_void_element(): Component {
-	return tmplStr(
-		`
+	return tmpl`
 		<p />
-		`,
-		[],
-	);
+		`;
 }
 
 // needs updating
 export function comment_element(): Component {
-	return tmplStr(
-		`
+	return tmpl`
 		<!-- Hello! -->
-		`,
-		[],
-	);
+		`;
 }
 
 export function alt_text_element(): Component {
-	return tmplStr(
-		`<style>#woof .bark {
+	return tmpl`<style>#woof .bark {
 			color: doggo;
-		}</style>`,
-		[],
-	);
+		}</style>`;
 }
 
 export function alt_element_has_no_descendants(): Component {
-	return tmplStr(
-		`
+	return tmpl`
 		<script>
 			{}
 		</script>
-		`,
-		[],
-	);
+		`;
 }
 
 export function preserved_text_element_retains_spacing(): Component {
-	return tmplStr(
-		`
+	return tmpl`
 <pre>
 	U w U
 	  woof woof!
 </pre>
-		`,
-		[],
-	);
+		`;
 }
 
 export function attribute(): Component {
-	return tmplStr("<span hai>UwU</span>", []);
+	return tmpl`<span hai>UwU</span>`;
 }
 
 export function attribute_with_single_quote(): Component {
-	return tmplStr("<span hai=''>UwU</span>", []);
+	return tmpl`<span hai=''>UwU</span>`;
 }
 
 export function attribute_with_double_quote(): Component {
-	return tmplStr('<span hai="">UwU</span>', []);
+	return tmpl`<span hai="">UwU</span>`;
 }
 
 export function attribute_with_single_quote_value(): Component {
-	return tmplStr("<span hai='hewoo'>UwU</span>", []);
+	return tmpl`<span hai='hewoo'>UwU</span>`;
 }
 
 export function attribute_with_double_quote_value(): Component {
-	return tmplStr('<span hai="hewoo">UwU</span>', []);
+	return tmpl`<span hai="hewoo">UwU</span>`;
 }
 
 export function banned_attribute(): Component {
-	return tmplStr("<span onkeypress>UwU</span>", []);
+	return tmpl`<span onkeypress>UwU</span>`;
 }
 
 export function banned_attribute_quoted(): Component {
-	return tmplStr("<span onclick=\"console.log('danger!')\">UwU</span>", []);
+	return tmpl`<span onclick=\"console.log('danger!')\">UwU</span>`;
 }
 
 export function banned_attribute_single_quoted(): Component {
-	return tmplStr(
-		`<span onbegonia='\nconsole.log(\"BEGONIA!\")\n'>UwU</span>`,
-		[],
-	);
+	return tmpl`<span onbegonia='\nconsole.log(\"BEGONIA!\")\n'>UwU</span>`;
 }

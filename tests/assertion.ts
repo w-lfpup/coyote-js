@@ -1,4 +1,4 @@
-import type { Results } from "@w-lfpup/coyote";
+import type { Results } from "../dist/mod.js";
 
 export function assert(
 	expected: string,
