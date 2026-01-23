@@ -6,17 +6,15 @@ import * as acsl from "./atomics_component_literals_set.js";
 const coyote = new Coyote();
 
 function text_element() {
-	let template = acs.text_element();
-	let literal = acsl.text_element();
-
 	let expected = "Beasts tread\nsoftly underfoot.";
 
-	let results = coyote.render(template);
-	let literal_results = coyote.render(literal);
-
 	let assertions = [];
+
+	let results = coyote.render(acs.text_element());
 	let templateAssertion = assert(expected, results);
 	if (templateAssertion) assertions.push(templateAssertion);
+
+	let literal_results = coyote.render(acsl.text_element());
 	let literalAssertion = assert(expected, literal_results);
 	if (literalAssertion) assertions.push(literalAssertion);
 
@@ -25,7 +23,6 @@ function text_element() {
 
 	return assertions;
 }
-
 
 // function empty_element() {
 //     let template = acs::empty_element();
@@ -233,4 +230,4 @@ export const tests = [text_element];
 
 export const options = {
 	title: import.meta.url,
-}
+};

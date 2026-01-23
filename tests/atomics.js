@@ -4,21 +4,21 @@ import * as acs from "./atomics_component_set.js";
 import * as acsl from "./atomics_component_literals_set.js";
 const coyote = new Coyote();
 function text_element() {
-    let template = acs.text_element();
-    let literal = acsl.text_element();
-    let expected = "Beasts tread\nsoftly underfoot.";
-    let results = coyote.render(template);
-    let literal_results = coyote.render(literal);
-    let assertions = [];
-    let templateAssertion = assert(expected, results);
-    if (templateAssertion)
-        assertions.push(templateAssertion);
-    let literalAssertion = assert(expected, literal_results);
-    if (literalAssertion)
-        assertions.push(literalAssertion);
-    if (results[0] !== literal_results[0])
-        assertions.push(`literal does not match string`);
-    return assertions;
+	let template = acs.text_element();
+	let literal = acsl.text_element();
+	let expected = "Beasts tread\nsoftly underfoot.";
+	let results = coyote.render(template);
+	let literal_results = coyote.render(literal);
+	let assertions = [];
+	let templateAssertion = assert(expected, results);
+	if (templateAssertion) assertions.push(templateAssertion);
+	let literalAssertion = assert(expected, literal_results);
+	if (literalAssertion) assertions.push(literalAssertion);
+	if (results[0] !== literal_results[0])
+		assertions.push(`literal does not match string`);
+	console.log(results[0]);
+	console.log(literal_results[0]);
+	return assertions;
 }
 // function empty_element() {
 //     let template = acs::empty_element();
@@ -163,5 +163,5 @@ function text_element() {
 // }
 export const tests = [text_element];
 export const options = {
-    title: import.meta.url,
+	title: import.meta.url,
 };
