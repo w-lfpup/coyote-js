@@ -47,10 +47,10 @@ let glyphGraph = new Map<StepKind, Router>([
 	["DescendantInjection", getKindFromInjection],
 	["InjectionSpace", getKindFromInjection],
 	["Tag", getKindFromTag],
-	["TagBreakingSpace", getKindFromTagSpace],
-	["TagNonBreakingSpace", getKindFromTagSpace],
-	["TagOpened", getKindFromTag],
-	["TagSolidus", getKindFromEmptyTag],
+	["TagBreakingSpace", getKindFromElementSpace],
+	["TagNonBreakingSpace", getKindFromElementSpace],
+	["TagOpened", getKindFromElement],
+	["TagSolidus", getKindFromEmptyElement],
 	["TailTag", getKindFromTailTag],
 	["TailTagSolidus", getKindFromTailTagSolidus],
 	["TailTagSpace", getKindFromTailTagSpace],
@@ -107,7 +107,7 @@ function getKindFromAttributeDoubleQuoted(glyph: string): StepKind {
 }
 
 function getKindFromAttributeSingleQuoted(glyph: string): StepKind {
-	if ('"' === glyph) return "AttrValueSingleQuoteClosed";
+	if ("'" === glyph) return "AttrValueSingleQuoteClosed";
 
 	return "AttrValueSingleQuoted";
 }
@@ -131,7 +131,7 @@ function getKindFromTag(glyph: string): StepKind {
 	return "Tag";
 }
 
-function getKindFromTagSpace(glyph: string): StepKind {
+function getKindFromElementSpace(glyph: string): StepKind {
 	if (">" === glyph) return "TagClosed";
 	if ("/" === glyph) return "TagSolidus";
 	if ("{" === glyph) return "AttrMapInjection";
@@ -142,14 +142,25 @@ function getKindFromTagSpace(glyph: string): StepKind {
 	return "Attr";
 }
 
-function getKindFromEmptyTag(glyph: string): StepKind {
+function getKindFromElement(glyph: string): StepKind {
+	if (">" === glyph) return "Fragment";
+	if ("/" === glyph) return "TailTagSolidus";
+	if ("{" === glyph) return "AttrMapInjection";
+	if ("\n" === glyph) return "TagBreakingSpace";
+
+	if (isSpace(glyph)) return "TagNonBreakingSpace";
+
+	return "Tag";
+}
+
+function getKindFromEmptyElement(glyph: string): StepKind {
 	if (">" === glyph) return "TagClosedEmpty";
 
 	return "TagSolidus";
 }
 
 function getKindFromTailTag(glyph: string): StepKind {
-	if (">" === glyph) return "FragmentClosed";
+	if (">" === glyph) return "TailTagClosed";
 
 	if (isSpace(glyph)) return "TailTagSolidus";
 

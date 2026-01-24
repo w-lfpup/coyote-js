@@ -24,209 +24,162 @@ function text_element() {
 	return assertions;
 }
 
-// function empty_element() {
-//     let template = acs::empty_element();
-//     let expected = "<p>\n</p>";
+function empty_element() {
+	let expected = "<p>\n</p>";
 
-//     let mut html = Html::new();
-//     let results = html.render(&template);
+	let assertions = [];
 
-//     assert_eq!(Ok(expected.to_string()), results);
-// }
+	let results = coyote.render(acs.empty_element());
+	let templateAssertion = assert(expected, results);
+	if (templateAssertion) assertions.push(templateAssertion);
 
-// function fragment() {
-//     let template = acs::fragment();
-//     let expected = "";
+	let literal_results = coyote.render(acsl.empty_element());
+	let literalAssertion = assert(expected, literal_results);
+	if (literalAssertion) assertions.push(literalAssertion);
 
-//     let mut html = Html::new();
-//     let results = html.render(&template);
+	if (results[0] !== literal_results[0])
+		assertions.push(`literal does not match string`);
 
-//     assert_eq!(Ok(expected.to_string()), results);
-// }
+	return assertions;
+}
 
-// function block_element_with_text() {
-//     let template = acs::block_element_with_text();
-//     let expected = "<p>\n\thello!\n</p>";
+function fragment() {
+	let expected = "";
+	let assertions = [];
 
-//     let mut html = Html::new();
-//     let results = html.render(&template);
+	let results = coyote.render(acs.fragment());
+	let templateAssertion = assert(expected, results);
+	if (templateAssertion) assertions.push(templateAssertion);
 
-//     assert_eq!(Ok(expected.to_string()), results);
-// }
+	let literal_results = coyote.render(acsl.fragment());
+	let literalAssertion = assert(expected, literal_results);
+	if (literalAssertion) assertions.push(literalAssertion);
 
-// function block_element_with_text_for_string() {
-//     let template = acs::block_element_with_text_for_string();
-//     let expected = "<p>\n\thello!\n</p>";
+	if (results[0] !== literal_results[0])
+		assertions.push(`literal does not match string`);
 
-//     let mut html = Html::new();
-//     let results = html.render(&template);
+	return assertions;
+}
 
-//     assert_eq!(Ok(expected.to_string()), results);
-// }
+function block_element_with_text() {
+	let expected = "<p>\n\thello!\n</p>";
+	let assertions = [];
 
-// function inline_element_with_text() {
-//     let template = acs::inline_element_with_text();
-//     let expected = "<b> hello! </b>";
+	let results = coyote.render(acs.block_element_with_text());
+	let templateAssertion = assert(expected, results);
+	if (templateAssertion) assertions.push(templateAssertion);
 
-//     let mut html = Html::new();
-//     let results = html.render(&template);
+	let literal_results = coyote.render(acsl.block_element_with_text());
+	let literalAssertion = assert(expected, literal_results);
+	if (literalAssertion) assertions.push(literalAssertion);
 
-//     assert_eq!(Ok(expected.to_string()), results);
-// }
+	if (results[0] !== literal_results[0])
+		assertions.push(`literal does not match string`);
 
-// function void_element() {
-//     let template = acs::void_element();
-//     let expected = "<input>";
+	return assertions;
+}
 
-//     let mut html = Html::new();
-//     let results = html.render(&template);
+function inline_element_with_text() {
+	let expected = "<b> hello! </b>";
+	let assertions = [];
 
-//     assert_eq!(Ok(expected.to_string()), results);
-// }
+	let results = coyote.render(acs.inline_element_with_text());
+	let templateAssertion = assert(expected, results);
+	if (templateAssertion) assertions.push(templateAssertion);
 
-// function void_element_with_self_closing() {
-//     let template = acs::void_element_with_self_closing();
-//     let expected = "<input>";
+	let literal_results = coyote.render(acsl.inline_element_with_text());
+	let literalAssertion = assert(expected, literal_results);
+	if (literalAssertion) assertions.push(literalAssertion);
 
-//     let mut html = Html::new();
-//     let results = html.render(&template);
+	if (results[0] !== literal_results[0])
+		assertions.push(`literal does not match string`);
 
-//     assert_eq!(Ok(expected.to_string()), results);
-// }
+	return assertions;
+}
 
-// function non_void_element() {
-//     let template = acs::non_void_element();
-//     let expected = "<p></p>";
+function void_element() {
+	let expected = "<input>";
+	let assertions = [];
 
-//     let mut html = Html::new();
-//     let results = html.render(&template);
+	let results = coyote.render(acs.void_element());
+	let templateAssertion = assert(expected, results);
+	if (templateAssertion) assertions.push(templateAssertion);
 
-//     assert_eq!(Ok(expected.to_string()), results);
-// }
+	let literal_results = coyote.render(acsl.void_element());
+	let literalAssertion = assert(expected, literal_results);
+	if (literalAssertion) assertions.push(literalAssertion);
 
-// // needs updating
-// function comment_element() {
-//     let template = acs::comment_element();
-//     let expected = "<!-- Hello! -->";
+	if (results[0] !== literal_results[0])
+		assertions.push(`literal does not match string`);
 
-//     let mut html = Html::new();
-//     let results = html.render(&template);
+	return assertions;
+}
 
-//     assert_eq!(Ok(expected.to_string()), results);
-// }
+function void_element_with_self_closing() {
+	let expected = "<input>";
+	let assertions = [];
 
-// function alt_text_element() {
-//     let template = acs::alt_text_element();
-//     let expected = "<style>#woof .bark {\n\tcolor: doggo;\n}</style>";
+	let results = coyote.render(acs.void_element_with_self_closing());
+	let templateAssertion = assert(expected, results);
+	if (templateAssertion) assertions.push(templateAssertion);
 
-//     let mut html = Html::new();
-//     let results = html.render(&template);
+	let literal_results = coyote.render(acsl.void_element_with_self_closing());
+	let literalAssertion = assert(expected, literal_results);
+	if (literalAssertion) assertions.push(literalAssertion);
 
-//     assert_eq!(Ok(expected.to_string()), results);
-// }
+	if (results[0] !== literal_results[0])
+		assertions.push(`literal does not match string`);
 
-// function alt_element_has_no_descendants() {
-//     let template = acs::alt_element_has_no_descendants();
-//     let expected = "<script>\n\t{}\n</script>";
+	return assertions;
+}
 
-//     let mut html = Html::new();
-//     let results = html.render(&template);
+function non_void_element() {
+	let expected = "<p></p>";
+	let assertions = [];
 
-//     assert_eq!(Ok(expected.to_string()), results);
-// }
+	let results = coyote.render(acs.non_void_element());
+	let templateAssertion = assert(expected, results);
+	if (templateAssertion) assertions.push(templateAssertion);
 
-// function preserved_text_element_retains_spacing() {
-//     let template = acs::preserved_text_element_retains_spacing();
+	let literal_results = coyote.render(acsl.non_void_element());
+	let literalAssertion = assert(expected, literal_results);
+	if (literalAssertion) assertions.push(literalAssertion);
 
-//     let expected = "<pre>\n\tU w U\n\t  woof woof!\n</pre>";
+	if (results[0] !== literal_results[0])
+		assertions.push(`literal does not match string`);
 
-//     let mut html = Html::new();
-//     let results = html.render(&template);
+	return assertions;
+}
 
-//     assert_eq!(Ok(expected.to_string()), results);
-// }
+function comment_element() {
+	let expected = "<!-- Hello! -->";
+	let assertions = [];
 
-// function attribute() {
-//     let template = acs::attribute();
-//     let expected = "<span hai>UwU</span>";
+	let results = coyote.render(acs.comment_element());
+	let templateAssertion = assert(expected, results);
+	if (templateAssertion) assertions.push(templateAssertion);
 
-//     let mut html = Html::new();
-//     let results = html.render(&template);
+	let literal_results = coyote.render(acsl.comment_element());
+	let literalAssertion = assert(expected, literal_results);
+	if (literalAssertion) assertions.push(literalAssertion);
 
-//     assert_eq!(Ok(expected.to_string()), results);
-// }
+	if (results[0] !== literal_results[0])
+		assertions.push(`literal does not match string`);
 
-// function attribute_with_single_quote() {
-//     let template = acs::attribute_with_single_quote();
-//     let expected = "<span hai>UwU</span>";
+	return assertions;
+}
 
-//     let mut html = Html::new();
-//     let results = html.render(&template);
-
-//     assert_eq!(Ok(expected.to_string()), results);
-// }
-
-// function attribute_with_double_quote() {
-//     let template = acs::attribute_with_double_quote();
-//     let expected = "<span hai>UwU</span>";
-
-//     let mut html = Html::new();
-//     let results = html.render(&template);
-
-//     assert_eq!(Ok(expected.to_string()), results);
-// }
-
-// function attribute_with_single_quote_value() {
-//     let template = acs::attribute_with_single_quote_value();
-//     let expected = "<span hai='hewoo'>UwU</span>";
-
-//     let mut html = Html::new();
-//     let results = html.render(&template);
-
-//     assert_eq!(Ok(expected.to_string()), results);
-// }
-
-// function attribute_with_double_quote_value() {
-//     let template = acs::attribute_with_double_quote_value();
-//     let expected = "<span hai=\"hewoo\">UwU</span>";
-
-//     let mut html = Html::new();
-//     let results = html.render(&template);
-
-//     assert_eq!(Ok(expected.to_string()), results);
-// }
-
-// function banned_attribute() {
-//     let template = acs::banned_attribute();
-//     let expected = "<span>UwU</span>";
-
-//     let mut html = Html::new();
-//     let results = html.render(&template);
-
-//     assert_eq!(Ok(expected.to_string()), results);
-// }
-
-// function banned_attribute_quoted() {
-//     let template = acs::banned_attribute_quoted();
-//     let expected = "<span>UwU</span>";
-
-//     let mut html = Html::new();
-//     let results = html.render(&template);
-
-//     assert_eq!(Ok(expected.to_string()), results);
-// }
-
-// function banned_attribute_single_quoted() {
-//     let template = acs::banned_attribute_single_quoted();
-//     let expected = "<span>UwU</span>";
-
-//     let mut html = Html::new();
-//     let results = html.render(&template);
-
-//     assert_eq!(Ok(expected.to_string()), results);
-// }
-
-export const tests = [text_element];
+export const tests = [
+	text_element,
+	empty_element,
+	fragment,
+	block_element_with_text,
+	inline_element_with_text,
+	void_element,
+	void_element_with_self_closing,
+	non_void_element,
+	comment_element,
+];
 
 export const options = {
 	title: import.meta.url,
