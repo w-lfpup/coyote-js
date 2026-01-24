@@ -1,6 +1,6 @@
 import type { Component } from "../dist/mod.js";
 
-import { tmpl, tmplStr } from "../dist/mod.js";
+import { tmpl } from "../dist/mod.js";
 
 export function text_element(): Component {
 	return tmpl`
