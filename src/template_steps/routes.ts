@@ -162,7 +162,7 @@ function getKindFromEmptyElement(glyph: string): StepKind {
 function getKindFromTailTag(glyph: string): StepKind {
 	if (">" === glyph) return "TailTagClosed";
 
-	if (isSpace(glyph)) return "TailTagSolidus";
+	if (isSpace(glyph)) return "TailTagSpace";
 
 	return "TailTag";
 }
