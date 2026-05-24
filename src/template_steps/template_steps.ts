@@ -58,10 +58,12 @@ export function composeTemplateArr(
 		// if last template str stop
 		if (index > templateStrArr.length - 1) continue;
 
-		let injStepKind = route("{", stepKind);
+		let injStepKind: StepKind | undefined = route("{", stepKind);
 		if (!isInjection(injStepKind)) {
 			injStepKind = undefined;
+			continue;
 		}
+		
 		pushInjection(results, injStepKind);
 
 		if ("DescendantInjection" === injStepKind) stepKind = "Initial";

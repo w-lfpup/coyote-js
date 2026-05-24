@@ -79,7 +79,7 @@ export function composeString(
 			// add text chunk
 			let chunk = cmpntBit.template.steps[index];
 			if (chunk) {
-				let templateStr: string;
+				let templateStr: string | undefined;
 				if (cmpntBit.component instanceof TmplComponent) {
 					templateStr = cmpntBit.component.templateStr;
 				}

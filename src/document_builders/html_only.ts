@@ -55,6 +55,8 @@ export class HtmlOnlyRules implements RulesetInterface {
 		if ("link" === tag) return true;
 		if ("script" === tag) return true;
 		if ("style" === tag) return true;
+
+		return false;
 	}
 	tagIsEmbeddedContentEl(tag: string): boolean {
 		return fw.isEmbeddedContentEl(tag);

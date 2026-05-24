@@ -12,11 +12,11 @@ export interface StepInterface {
 }
 
 class Step implements StepInterface {
-	kind: StepKind = "Initial";
+	kind: StepKind;
 	origin: number;
 	target: number;
 
-	constructor(kind: StepKind, origin: number = 0, target: number = 0) {
+	constructor(kind: StepKind = "Initial", origin: number = 0, target: number = 0) {
 		this.kind = kind;
 		this.origin = origin;
 		this.target = target;
@@ -28,7 +28,7 @@ export function parseStr(
 	templateStr: string,
 	initialKind: StepKind,
 ): StepInterface[] {
-	let steps = [new Step(initialKind)];
+	let steps = [new Step()];
 
 	let tag = "";
 	let injectionKind = initialKind;

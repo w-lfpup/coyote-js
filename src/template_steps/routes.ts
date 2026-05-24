@@ -145,10 +145,8 @@ function getKindFromElementSpace(glyph: string): StepKind {
 function getKindFromElement(glyph: string): StepKind {
 	if (">" === glyph) return "Fragment";
 	if ("/" === glyph) return "TailTagSolidus";
-	if ("{" === glyph) return "AttrMapInjection";
-	if ("\n" === glyph) return "TagBreakingSpace";
 
-	if (isSpace(glyph)) return "TagNonBreakingSpace";
+	if (isSpace(glyph)) return "TagOpened";
 
 	return "Tag";
 }
