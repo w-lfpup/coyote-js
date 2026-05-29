@@ -15,10 +15,6 @@ export class XmlRules implements RulesetInterface {
 		this.#params = params;
 	}
 
-	attrIsBanned(attr: string): boolean {
-		return attr.startsWith("on");
-	}
-
 	getCacheMemoryLimit(): number {
 		return this.#params.cacheMemoryLimit;
 	}
@@ -27,44 +23,12 @@ export class XmlRules implements RulesetInterface {
 		return this.#params.documentMemoryLimit;
 	}
 
-	getAltTextTagFromCloseSequence(tag: string): string | undefined {
-		if ("</script" === tag) return "script";
-		if ("</style" === tag) return "style";
-	}
-
-	getCloseSequenceFromAltTextTag(tag: string): string | undefined {
-		if ("script" === tag) return "</script";
-		if ("style" === tag) return "</style";
-	}
-
-	getCloseSequenceFromContentlessTag(tag: string): string | undefined {
-		if ("?" === tag) return "?";
-		if ("!--" === tag) return "-->";
-		if ("![CDATA[" === tag) return "]]>";
-	}
-
-	getContentlessTagFromCloseSequence(tag: string): string | undefined {
-		if ("?" === tag) return "?";
-		if ("--" === tag) return "!--";
-		if ("]]" === tag) return "![CDATA[";
-	}
-
 	getInitialEmbeddedContent(): string {
 		return this.#params.embeddedContent;
 	}
 
-	tagIsPrefixOfContentlessEl(tag: string): string | undefined {
-		if (tag.startsWith("?")) return "?";
-		if (tag.startsWith("!--")) return "!--";
-		if (tag.startsWith("![CDATA[")) return "![CDATA[";
-	}
-
 	respectIndentation(): boolean {
 		return this.#params.respectIndentation;
-	}
-
-	tagIsBannedEl(_tag: string): boolean {
-		return false;
 	}
 
 	tagIsInlineEl(_tag: string): boolean {
@@ -81,5 +45,39 @@ export class XmlRules implements RulesetInterface {
 
 	tagIsVoidEl(_tag: string): boolean {
 		return false;
+	}
+
+	tagIsBannedEl(_tag: string): boolean {
+		return false;
+	}
+
+	attrIsBanned(attr: string): boolean {
+		return attr.startsWith("on");
+	}
+
+	getAltTextTagFromCloseSequence(_tag: string): string | undefined {
+		return;
+	}
+
+	getCloseSequenceFromAltTextTag(tag: string): string | undefined {
+		return;
+	}
+
+	getCloseSequenceFromContentlessTag(tag: string): string | undefined {
+		if ("?" === tag) return "?";
+		if ("!--" === tag) return "-->";
+		if ("![CDATA[" === tag) return "]]>";
+	}
+
+	getContentlessTagFromCloseSequence(tag: string): string | undefined {
+		if ("?" === tag) return "?";
+		if ("--" === tag) return "!--";
+		if ("]]" === tag) return "![CDATA[";
+	}
+
+	tagIsPrefixOfContentlessEl(tag: string): string | undefined {
+		if (tag.startsWith("?")) return "?";
+		if (tag.startsWith("!--")) return "!--";
+		if (tag.startsWith("![CDATA[")) return "![CDATA[";
 	}
 }

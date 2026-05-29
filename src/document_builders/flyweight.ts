@@ -13,7 +13,7 @@ export const bannedElements = new Set([
 	"dir",
 	"font",
 	"frame",
-	"framset",
+	"frameset",
 	"image",
 	"marquee",
 	"menuitem",
@@ -49,6 +49,7 @@ export const voidElements = new Set([
 ]);
 
 export const inlineElements = new Set([
+	"a",
 	"abbr",
 	"b",
 	"bdi",
@@ -83,20 +84,4 @@ export function isEmbeddedContentEl(tag: string): boolean {
 
 export function isPreformattedTextEl(tag: string): boolean {
 	return "pre" === tag;
-}
-
-export function getCloseSequenceFromAltTextTag(
-	tag: string,
-): string | undefined {
-	if ("!--" === tag) return "--";
-	if ("script" === tag) return "</script";
-	if ("style" === tag) return "</style";
-}
-
-export function getAltTextTagFromCloseSequence(
-	tag: string,
-): string | undefined {
-	if ("--" === tag) return "!--";
-	if ("</script" === tag) return "script";
-	if ("</style" === tag) return "style";
 }
