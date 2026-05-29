@@ -94,7 +94,9 @@ export function parseStr(
 		if ("Tag" === end_step.kind) {
 			tag = getTextFromStep(templateStr, end_step);
 
+			console.log("TAG", tag);
 			let prefix = rules.tagIsPrefixOfContentlessEl(tag);
+			console.log("prefix", prefix);
 			if (prefix) {
 				let diff = tag.slice(prefix.length);
 				tag = prefix;
@@ -102,8 +104,10 @@ export function parseStr(
 				end_step.target = end_step.origin + prefix.length;
 				nextStepOrigin = end_step.target;
 
-				let closeSequence = rules.getCloseSequenceFromAltTextTag(tag);
+				let closeSequence =
+					rules.getCloseSequenceFromContentlessTag(prefix);
 				if (closeSequence) {
+					console.log("close seq:", closeSequence);
 					currKind = "TextAlt";
 
 					let slider = new SlidingWindow(closeSequence);
@@ -119,7 +123,9 @@ export function parseStr(
 		}
 
 		// Add CURRENT STEP
-		steps.push(new Step(currKind, nextStepOrigin, index));
+		let step = new Step(currKind, nextStepOrigin, index);
+		steps.push(step);
+		console.log("text from step:", getTextFromStep(templateStr, step));
 		// <!--comment_edge_case-->
 		// if (contentless) pushContentlessStepsEdge(rules, steps, tag, index);
 	}
@@ -181,11 +187,7 @@ function pushContentlessSteps(
 
 	step.target = index - (closingSequence.length - 1);
 	steps.push(
-		new Step(
-			"TailTag",
-			index - (closingSequence.length - 1),
-			index - closingSequence.length,
-		),
+		new Step("TailTag", index - (closingSequence.length - 1), index),
 	);
 	steps.push(new Step("TailTagClosed", index, index));
 }
