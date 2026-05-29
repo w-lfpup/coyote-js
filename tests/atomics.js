@@ -1,17 +1,26 @@
-import { Coyote, HtmlRules } from "../dist/mod.js";
+import { Coyote, tmpl, tmplStr } from "../dist/mod.js";
 import { assert } from "./assertion.js";
 import * as acs from "./atomics_component_set.js";
 import * as acsl from "./atomics_component_literals_set.js";
-import { compose } from "../dist/template_steps/template_steps.js";
 const coyote = new Coyote();
 function text_element() {
     let expected = "Beasts tread\nsoftly underfoot.";
     let assertions = [];
-    let results = coyote.render(acs.text_element());
+    let results = coyote.render(tmplStr(`
+
+			Beasts tread
+				softly   underfoot.
+
+		`, []));
     let templateAssertion = assert(expected, results);
     if (templateAssertion)
         assertions.push(templateAssertion);
-    let literal_results = coyote.render(acsl.text_element());
+    let literal_results = coyote.render(tmpl `
+	
+			Beasts tread
+				softly   underfoot.
+
+		`);
     let literalAssertion = assert(expected, literal_results);
     if (literalAssertion)
         assertions.push(literalAssertion);
@@ -127,12 +136,6 @@ function non_void_element() {
 function comment_element() {
     let expected = "<!-- Hello! -->";
     let assertions = [];
-    let steps = compose(new HtmlRules(), `
-		<!-- Hello! -->
-		`);
-    for (let step of steps.steps) {
-        console.log("step:", step);
-    }
     let results = coyote.render(acs.comment_element());
     let templateAssertion = assert(expected, results);
     if (templateAssertion)
