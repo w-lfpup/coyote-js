@@ -20,50 +20,64 @@ export class HtmlOnlyRules implements RulesetInterface {
 	attrIsBanned(attr: string): boolean {
 		return attr.startsWith("on");
 	}
+
 	getCacheMemoryLimit(): number {
 		return this.#params.cacheMemoryLimit;
 	}
+
 	getDocumentMemoryLimit(): number {
 		return this.#params.documentMemoryLimit;
 	}
+
 	getAltTextTagFromCloseSequence(tag: string): string | undefined {
-		return fw.getAltTextTagFromCloseSequence(tag);
+		if ("</script" === tag) return "script";
+		if ("</style" === tag) return "style";
 	}
+
 	getCloseSequenceFromAltTextTag(tag: string): string | undefined {
-		return fw.getCloseSequenceFromAltTextTag(tag);
+		if ("script" === tag) return "</script";
+		if ("style" === tag) return "</style";
 	}
+
 	getCloseSequenceFromContentlessTag(tag: string): string | undefined {
 		if ("!--" === tag) return "-->";
 	}
+
 	getContentlessTagFromCloseSequence(tag: string): string | undefined {
 		if ("--" === tag) return "!--";
 	}
+
 	getInitialEmbeddedContent(): string {
-		return "html";
+		return this.#params.embeddedContent;
 	}
+
 	tagIsPrefixOfContentlessEl(tag: string): string | undefined {
 		if (tag.startsWith("!--")) return "!--";
 	}
+
 	respectIndentation(): boolean {
 		return this.#params.respectIndentation;
 	}
+
 	tagIsBannedEl(tag: string): boolean {
-		return fw.bannedElements.has(tag);
-	}
-	tagIsInlineEl(tag: string): boolean {
-		if (fw.inlineElements.has(tag)) return true;
 		if ("link" === tag) return true;
 		if ("script" === tag) return true;
-		if ("style" === tag) return true;
 
-		return false;
+		return fw.bannedElements.has(tag);
 	}
+
+	tagIsInlineEl(tag: string): boolean {
+		return fw.inlineElements.has(tag);
+	}
+
 	tagIsEmbeddedContentEl(tag: string): boolean {
 		return fw.isEmbeddedContentEl(tag);
 	}
+
 	tagIsPreformattedTextEl(tag: string): boolean {
 		return fw.isPreformattedTextEl(tag);
 	}
+
 	tagIsVoidEl(tag: string): boolean {
 		return fw.voidElements.has(tag);
 	}

@@ -11,32 +11,16 @@ function text_element() {
 
 	let assertions = [];
 
-	let results = coyote.render(
-		tmplStr(
-			`
-
-			Beasts tread
-				softly   underfoot.
-
-		`,
-			[],
-		),
-	);
+	let results = coyote.render(acs.text_element());
 	let templateAssertion = assert(expected, results);
 	if (templateAssertion) assertions.push(templateAssertion);
 
-	let literal_results = coyote.render(
-		tmpl`
-	
-			Beasts tread
-				softly   underfoot.
-
-		`);
+	let literal_results = coyote.render(acsl.text_element());
 	let literalAssertion = assert(expected, literal_results);
 	if (literalAssertion) assertions.push(literalAssertion);
 
 	if (results[0] !== literal_results[0])
-		assertions.push(`literal does not match string`);
+		assertions.push(`string and literal failed to output matching renders`);
 
 	return assertions;
 }

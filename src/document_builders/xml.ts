@@ -18,46 +18,68 @@ export class XmlRules implements RulesetInterface {
 	attrIsBanned(attr: string): boolean {
 		return attr.startsWith("on");
 	}
+
 	getCacheMemoryLimit(): number {
 		return this.#params.cacheMemoryLimit;
 	}
+
 	getDocumentMemoryLimit(): number {
 		return this.#params.documentMemoryLimit;
 	}
+
 	getAltTextTagFromCloseSequence(tag: string): string | undefined {
-		return;
+		if ("</script" === tag) return "script";
+		if ("</style" === tag) return "style";
 	}
+
 	getCloseSequenceFromAltTextTag(tag: string): string | undefined {
-		return;
+		if ("script" === tag) return "</script";
+		if ("style" === tag) return "</style";
 	}
+
 	getCloseSequenceFromContentlessTag(tag: string): string | undefined {
+		if ("?" === tag) return "?";
 		if ("!--" === tag) return "-->";
+		if ("![CDATA[" === tag) return "]]>";
 	}
+
 	getContentlessTagFromCloseSequence(tag: string): string | undefined {
+		if ("?" === tag) return "?";
 		if ("--" === tag) return "!--";
+		if ("]]" === tag) return "![CDATA[";
 	}
+
 	getInitialEmbeddedContent(): string {
-		return "html";
+		return this.#params.embeddedContent;
 	}
+
 	tagIsPrefixOfContentlessEl(tag: string): string | undefined {
+		if (tag.startsWith("?")) return "?";
 		if (tag.startsWith("!--")) return "!--";
+		if (tag.startsWith("![CDATA[")) return "![CDATA[";
 	}
+
 	respectIndentation(): boolean {
 		return this.#params.respectIndentation;
 	}
-	tagIsBannedEl(tag: string): boolean {
+
+	tagIsBannedEl(_tag: string): boolean {
 		return false;
 	}
-	tagIsInlineEl(tag: string): boolean {
+
+	tagIsInlineEl(_tag: string): boolean {
 		return false;
 	}
-	tagIsEmbeddedContentEl(tag: string): boolean {
+
+	tagIsEmbeddedContentEl(_tag: string): boolean {
 		return false;
 	}
+
 	tagIsPreformattedTextEl(tag: string): boolean {
 		return "!CDATA[[" === tag;
 	}
-	tagIsVoidEl(tag: string): boolean {
+
+	tagIsVoidEl(_tag: string): boolean {
 		return false;
 	}
 }

@@ -10,60 +10,76 @@ const fallbackParams: DocumentParams = {
 	respectIndentation: true,
 };
 
-export class HtmlCssOnlyRules implements RulesetInterface {
+export class HtmlCssRules implements RulesetInterface {
 	#params: DocumentParams;
 
 	constructor(params: DocumentParams = fallbackParams) {
 		this.#params = params;
 	}
 
-	attrIsBanned(attr: string): boolean {
-		return attr.startsWith("on");
-	}
 	getCacheMemoryLimit(): number {
 		return this.#params.cacheMemoryLimit;
 	}
+
 	getDocumentMemoryLimit(): number {
 		return this.#params.documentMemoryLimit;
 	}
-	getAltTextTagFromCloseSequence(tag: string): string | undefined {
-		return fw.getAltTextTagFromCloseSequence(tag);
-	}
-	getCloseSequenceFromAltTextTag(tag: string): string | undefined {
-		return fw.getCloseSequenceFromAltTextTag(tag);
-	}
-	getCloseSequenceFromContentlessTag(tag: string): string | undefined {
-		if ("!--" === tag) return "-->";
-	}
-	getContentlessTagFromCloseSequence(tag: string): string | undefined {
-		if ("--" === tag) return "!--";
-	}
+
 	getInitialEmbeddedContent(): string {
-		return "html";
+		return this.#params.embeddedContent;
 	}
-	tagIsPrefixOfContentlessEl(tag: string): string | undefined {
-		if (tag.startsWith("!--")) return "!--";
-	}
+
 	respectIndentation(): boolean {
 		return this.#params.respectIndentation;
 	}
-	tagIsBannedEl(tag: string): boolean {
-		return fw.bannedElements.has(tag);
-	}
-	tagIsInlineEl(tag: string): boolean {
-		if (fw.inlineElements.has(tag)) return true;
-		if ("link" === tag) return true;
-		if ("script" === tag) return true;
 
-		return false;
+	tagIsInlineEl(tag: string): boolean {
+		return fw.inlineElements.has(tag);
 	}
+
 	tagIsEmbeddedContentEl(tag: string): boolean {
 		return fw.isEmbeddedContentEl(tag);
 	}
+
 	tagIsPreformattedTextEl(tag: string): boolean {
 		return fw.isPreformattedTextEl(tag);
 	}
+
 	tagIsVoidEl(tag: string): boolean {
 		return fw.voidElements.has(tag);
+	}
+
+	tagIsBannedEl(tag: string): boolean {
+		if ("link" === tag) return true;
+		if ("script" === tag) return true;
+		if ("style" === tag) return true;
+
+		return fw.bannedElements.has(tag);
+	}
+
+	attrIsBanned(attr: string): boolean {
+		return attr.startsWith("on");
+	}
+
+	getAltTextTagFromCloseSequence(tag: string): string | undefined {
+		if ("</script" === tag) return "script";
+		if ("</style" === tag) return "style";
+	}
+
+	getCloseSequenceFromAltTextTag(tag: string): string | undefined {
+		if ("script" === tag) return "</script";
+		if ("style" === tag) return "</style";
+	}
+
+	getCloseSequenceFromContentlessTag(tag: string): string | undefined {
+		if ("!--" === tag) return "-->";
+	}
+
+	getContentlessTagFromCloseSequence(tag: string): string | undefined {
+		if ("--" === tag) return "!--";
+	}
+
+	tagIsPrefixOfContentlessEl(tag: string): string | undefined {
+		if (tag.startsWith("!--")) return "!--";
 	}
 }
