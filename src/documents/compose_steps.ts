@@ -4,7 +4,11 @@ import type { RulesetInterface } from "../template_steps/rulesets.ts";
 import type { TagInfoInterface } from "./tag_info.ts";
 
 import { getTagInfoFrom } from "./tag_info.js";
-import { pushMultilineAttribtue, spaceCharCodes } from "./text_component.js";
+import {
+	pushAltTextComponent,
+	pushMultilineAttribtue,
+	spaceCharCodes,
+} from "./text_component.js";
 
 import { getTextFromStep } from "../template_steps/parse_str.js";
 
@@ -47,21 +51,6 @@ export function composeSteps(
 		if (route) {
 			route(results, tagInfoStack, rules, templateStr, step);
 		}
-	}
-}
-
-export function pushFormattedSpace(
-	results: string[],
-	tagInfo: TagInfoInterface,
-) {
-	if ("NonBreakingSpace" === tagInfo.textFormat) {
-		results.push(" ");
-		return;
-	}
-
-	if ("BreakingSpace" === tagInfo.textFormat) {
-		results.push("\n");
-		results.push("\t".repeat(tagInfo.indentCount));
 	}
 }
 
@@ -132,7 +121,7 @@ function pushAttrValueSingleQuoted(
 function pushAttrValueUnquoted(
 	results: string[],
 	stack: TagInfoInterface[],
-	rules: RulesetInterface,
+	_rules: RulesetInterface,
 	templateStr: string,
 	step: StepInterface,
 ) {
@@ -149,7 +138,7 @@ function pushAttrValueUnquoted(
 function pushTextSpace(
 	results: string[],
 	stack: TagInfoInterface[],
-	rules: RulesetInterface,
+	_rules: RulesetInterface,
 	templateStr: string,
 	step: StepInterface,
 ) {
@@ -200,10 +189,10 @@ function pushElement(
 }
 
 function pushElementSpace(
-	results: string[],
+	_results: string[],
 	stack: TagInfoInterface[],
-	rules: RulesetInterface,
-	templateStr: string,
+	_rules: RulesetInterface,
+	_templateStr: string,
 	step: StepInterface,
 ) {
 	let tagInfo = stack[stack.length - 1];
@@ -219,16 +208,16 @@ function pushElementSpace(
 	}
 
 	tagInfo.textFormat = "NonBreakingSpace";
-	if ("TagBreakingSpace" === step.kind || "BreakingSpace" === step.kind)
-		tagInfo.textFormat = "BreakingSpace";
+	// descrepency, should only be tag breaking space
+	if ("TagBreakingSpace" === step.kind) tagInfo.textFormat = "BreakingSpace";
 }
 
 function closeElement(
 	results: string[],
 	stack: TagInfoInterface[],
 	rules: RulesetInterface,
-	templateStr: string,
-	step: StepInterface,
+	_templateStr: string,
+	_step: StepInterface,
 ) {
 	let tagInfo = stack[stack.length - 1];
 	if (!tagInfo) return;
@@ -267,9 +256,9 @@ function closeElement(
 function closeEmptyElement(
 	results: string[],
 	stack: TagInfoInterface[],
-	rules: RulesetInterface,
-	templateStr: string,
-	step: StepInterface,
+	_rules: RulesetInterface,
+	_templateStr: string,
+	_step: StepInterface,
 ) {
 	let tagInfo = stack.pop();
 	if (!tagInfo) return;
@@ -290,18 +279,6 @@ function closeEmptyElement(
 
 	let prevTagInfo = stack[stack.length - 1];
 	if (prevTagInfo) prevTagInfo.textFormat = "Text";
-}
-
-function pushSpaceOnPop(
-	results: string[],
-	prevTagInfo: TagInfoInterface,
-	tagInfo: TagInfoInterface,
-) {
-	if (tagInfo.preformattedTextPath) return;
-
-	if ("NonBreakingSpace" === tagInfo.textFormat) results.push(" ");
-	if ("BreakingSpace" === tagInfo.textFormat)
-		results.push("\n", "\t".repeat(prevTagInfo.indentCount));
 }
 
 function popElement(
@@ -342,9 +319,9 @@ function popElement(
 function closeTailTag(
 	results: string[],
 	stack: TagInfoInterface[],
-	rules: RulesetInterface,
-	templateStr: string,
-	step: StepInterface,
+	_rules: RulesetInterface,
+	_templateStr: string,
+	_step: StepInterface,
 ) {
 	let tagInfo = stack.pop();
 	if (!tagInfo) return;
@@ -358,7 +335,7 @@ function closeTailTag(
 function pushText(
 	results: string[],
 	stack: TagInfoInterface[],
-	rules: RulesetInterface,
+	_rules: RulesetInterface,
 	templateStr: string,
 	step: StepInterface,
 ) {
@@ -378,7 +355,7 @@ function pushText(
 function pushAltText(
 	results: string[],
 	stack: TagInfoInterface[],
-	rules: RulesetInterface,
+	_rules: RulesetInterface,
 	templateStr: string,
 	step: StepInterface,
 ) {
@@ -388,7 +365,30 @@ function pushAltText(
 	if (tagInfo.bannedPath) return;
 
 	let text = getTextFromStep(templateStr, step);
-	results.push(text);
+	pushAltTextComponent(results, _rules, text, tagInfo);
 
 	tagInfo.textFormat = "Text";
+}
+
+export function pushFormattedSpace(
+	results: string[],
+	tagInfo: TagInfoInterface,
+) {
+	if ("NonBreakingSpace" === tagInfo.textFormat) return results.push(" ");
+
+	if ("BreakingSpace" === tagInfo.textFormat) {
+		results.push("\n", "\t".repeat(tagInfo.indentCount));
+	}
+}
+
+function pushSpaceOnPop(
+	results: string[],
+	prevTagInfo: TagInfoInterface,
+	tagInfo: TagInfoInterface,
+) {
+	if (tagInfo.preformattedTextPath) return;
+
+	if ("NonBreakingSpace" === tagInfo.textFormat) results.push(" ");
+	if ("BreakingSpace" === tagInfo.textFormat)
+		results.push("\n", "\t".repeat(prevTagInfo.indentCount));
 }
