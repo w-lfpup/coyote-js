@@ -1,5 +1,5 @@
 {
-	"name": "coyote",
+	"name": "@w-lfpup/coyote",
 	"version": "0.1.0",
 	"description": "html templates",
 	"type": "module",
