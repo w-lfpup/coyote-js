@@ -58,7 +58,7 @@ export function getTagInfoFrom(
 
 	if (
 		rules.respectIndentation() &&
-		!rules.tagIsVoidEl(prevTagInfo.tag) &&
+		!rules.tagIsVoidEl(tagInfo.tag) &&
 		!rules.tagIsInlineEl(tag)
 	) {
 		tagInfo.indentCount += 1;
