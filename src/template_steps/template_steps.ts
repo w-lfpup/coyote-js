@@ -63,7 +63,7 @@ export function composeTemplateArr(
 			injStepKind = undefined;
 			continue;
 		}
-		
+
 		pushInjection(results, injStepKind);
 
 		if ("DescendantInjection" === injStepKind) stepKind = "Initial";

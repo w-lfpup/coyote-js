@@ -24,7 +24,7 @@ export function getTagInfoRoot(rules: RulesetInterface): TagInfoInterface {
 		bannedPath: false,
 		indentCount: 0,
 		inlineEl: true,
-		embedded_content: rules.getInitialEmbeddedContentEl(),
+		embedded_content: rules.getInitialEmbeddedContent(),
 		preformattedTextPath: false,
 		tag: ":root",
 		textFormat: "Initial",

@@ -159,7 +159,7 @@ function comment_element() {
 	let templateAssertion = assert(expected, results);
 	if (templateAssertion) assertions.push(templateAssertion);
 
-	let literal_results = coyote.render(acsl.comment_element());
+	// let literal_results = coyote.render(acsl.comment_element());
 	// let literalAssertion = assert(expected, literal_results);
 	// if (literalAssertion) assertions.push(literalAssertion);
 

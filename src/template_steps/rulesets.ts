@@ -6,12 +6,12 @@ export interface RulesetInterface {
 	getCloseSequenceFromAltTextTag(tag: string): string | undefined;
 	getCloseSequenceFromContentlessTag(tag: string): string | undefined;
 	getContentlessTagFromCloseSequence(tag: string): string | undefined;
-	getInitialEmbeddedContentEl(): string;
-	getPrefixOfContentlessEl(tag: string): string | undefined;
+	getInitialEmbeddedContent(): string;
 	respectIndentation(): boolean;
 	tagIsBannedEl(tag: string): boolean;
-	tagIsEmbeddedContentEl(tag: string): boolean;
 	tagIsInlineEl(tag: string): boolean;
+	tagIsEmbeddedContentEl(tag: string): boolean;
+	tagIsPrefixOfContentlessEl(tag: string): string | undefined;
 	tagIsPreformattedTextEl(tag: string): boolean;
 	tagIsVoidEl(tag: string): boolean;
 }

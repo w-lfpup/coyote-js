@@ -18,7 +18,7 @@ export class HtmlRules implements RulesetInterface {
 	}
 
 	attrIsBanned(attr: string): boolean {
-		return false;
+		return attr.startsWith("on");
 	}
 	getCacheMemoryLimit(): number {
 		return this.#params.cacheMemoryLimit;
@@ -33,22 +33,16 @@ export class HtmlRules implements RulesetInterface {
 		return;
 	}
 	getCloseSequenceFromContentlessTag(tag: string): string | undefined {
-		if ("?" === tag) return "?>";
 		if ("!--" === tag) return "-->";
-		if ("![CDATA[" === tag) return "]]>";
 	}
 	getContentlessTagFromCloseSequence(tag: string): string | undefined {
-		if ("?" === tag) return "?";
 		if ("--" === tag) return "!--";
-		if ("]]" === tag) return "![CDATA[";
 	}
-	getInitialEmbeddedContentEl(): string {
-		return "html";
+	getInitialEmbeddedContent(): string {
+		return this.#params.embeddedContent;
 	}
-	getPrefixOfContentlessEl(tag: string): string | undefined {
-		if (tag.startsWith("?")) return "?";
+	tagIsPrefixOfContentlessEl(tag: string): string | undefined {
 		if (tag.startsWith("!--")) return "!--";
-		if (tag.startsWith("![CDATA[")) return "![CDATA[";
 	}
 	respectIndentation(): boolean {
 		return this.#params.respectIndentation;

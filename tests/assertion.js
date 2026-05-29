@@ -1,15 +1,15 @@
 export function assert(expected, results) {
-    let [document, error] = results;
+    let [doc, error] = results;
     if (error) {
         return error;
     }
-    if (expected !== document) {
+    if (expected !== doc) {
         return `
 Expected:
 ${expected}
 
 Results:
-${document}
+${doc}
 
 `;
     }

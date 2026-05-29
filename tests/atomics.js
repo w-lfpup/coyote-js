@@ -1,7 +1,6 @@
 import { Coyote } from "../dist/mod.js";
 import { assert } from "./assertion.js";
 import * as acs from "./atomics_component_set.js";
-import * as acsl from "./atomics_component_literals_set.js";
 const coyote = new Coyote();
 function text_element() {
     let expected = "Beasts tread\nsoftly underfoot.";
@@ -122,7 +121,7 @@ function comment_element() {
     let templateAssertion = assert(expected, results);
     if (templateAssertion)
         assertions.push(templateAssertion);
-    let literal_results = coyote.render(acsl.comment_element());
+    // let literal_results = coyote.render(acsl.comment_element());
     // let literalAssertion = assert(expected, literal_results);
     // if (literalAssertion) assertions.push(literalAssertion);
     // if (results[0] !== literal_results[0])

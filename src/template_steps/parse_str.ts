@@ -16,7 +16,11 @@ class Step implements StepInterface {
 	origin: number;
 	target: number;
 
-	constructor(kind: StepKind = "Initial", origin: number = 0, target: number = 0) {
+	constructor(
+		kind: StepKind = "Initial",
+		origin: number = 0,
+		target: number = 0,
+	) {
 		this.kind = kind;
 		this.origin = origin;
 		this.target = target;
@@ -28,14 +32,21 @@ export function parseStr(
 	templateStr: string,
 	initialKind: StepKind,
 ): StepInterface[] {
-	let steps = [new Step()];
+	let steps = [new Step(initialKind)];
 
 	let tag = "";
 	let injectionKind = initialKind;
 	let slidingWindow: SlidingWindowInterface | undefined;
+	let contentless = false;
 
 	for (let index = 0; index < templateStr.length; index++) {
 		let glyph = templateStr[index];
+
+		if (contentless) {
+			contentless = false;
+			pushContentlessStepsEdge(rules, steps, tag, index);
+		}
+
 		if (slidingWindow) {
 			if (!slidingWindow.slide(glyph)) continue;
 
@@ -79,12 +90,11 @@ export function parseStr(
 
 		// edge case COMMENTS
 		let nextStepOrigin = index;
-		let contentless = false;
 
 		if ("Tag" === end_step.kind) {
 			tag = getTextFromStep(templateStr, end_step);
 
-			let prefix = rules.getPrefixOfContentlessEl(tag);
+			let prefix = rules.tagIsPrefixOfContentlessEl(tag);
 			if (prefix) {
 				let diff = tag.slice(prefix.length);
 				tag = prefix;
@@ -109,9 +119,9 @@ export function parseStr(
 		}
 
 		// Add CURRENT STEP
-		steps.push(new Step(currKind, index, index));
+		steps.push(new Step(currKind, nextStepOrigin, index));
 		// <!--comment_edge_case-->
-		if (contentless) pushContentlessStepsEdge(rules, steps, tag, index);
+		// if (contentless) pushContentlessStepsEdge(rules, steps, tag, index);
 	}
 
 	let step = steps[steps.length - 1];
@@ -163,7 +173,7 @@ function pushContentlessSteps(
 	tag: string,
 	index: number,
 ) {
-	let closingSequence = rules.getCloseSequenceFromAltTextTag(tag);
+	let closingSequence = rules.getCloseSequenceFromContentlessTag(tag);
 	if (!closingSequence) return;
 
 	let step = steps[steps.length - 1];
@@ -186,7 +196,7 @@ function pushContentlessStepsEdge(
 	tag: string,
 	index: number,
 ) {
-	let closingSequence = rules.getCloseSequenceFromAltTextTag(tag);
+	let closingSequence = rules.getCloseSequenceFromContentlessTag(tag);
 	if (!closingSequence) return;
 
 	let step = steps[steps.length - 1];

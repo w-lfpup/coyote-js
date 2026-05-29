@@ -38,10 +38,10 @@ export class HtmlOnlyRules implements RulesetInterface {
 	getContentlessTagFromCloseSequence(tag: string): string | undefined {
 		if ("--" === tag) return "!--";
 	}
-	getInitialEmbeddedContentEl(): string {
+	getInitialEmbeddedContent(): string {
 		return "html";
 	}
-	getPrefixOfContentlessEl(tag: string): string | undefined {
+	tagIsPrefixOfContentlessEl(tag: string): string | undefined {
 		if (tag.startsWith("!--")) return "!--";
 	}
 	respectIndentation(): boolean {
