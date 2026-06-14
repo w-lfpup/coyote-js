@@ -129,7 +129,7 @@ export function nested_void_element_with_siblings_retains_spacing() {
 		<section>
 			<input><p>hai :3</p>
 		</section>
-	`, []);
+		`, []);
 }
 export function nested_elements_and_text_retain_spacing() {
     return tmplStr(`<a><label><input type=woofer>bark!</label><img></a>`, []);

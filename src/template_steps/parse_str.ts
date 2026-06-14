@@ -123,7 +123,7 @@ export function parseStr(
 		let step = new Step(currKind, nextStepOrigin, index);
 		steps.push(step);
 		// <!--comment_edge_case-->
-		// if (contentless) pushContentlessStepsEdge(rules, steps, tag, index);
+		if (contentless) pushContentlessStepsEdge(rules, steps, tag, index);
 	}
 
 	let step = steps[steps.length - 1];

@@ -11,7 +11,7 @@ export function assert(expected: string, results: Results) {
 Expected:
 ${expected}
 
-Results:
+Found:
 ${doc}
 
 `;
