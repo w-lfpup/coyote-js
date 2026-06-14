@@ -2,7 +2,7 @@
 	"extends": "../tsconfig.json",
 	"compilerOptions": {
 		"paths": {
-			"@w-lfpup/coyote": ["../dist/mod.js"]
+			"@w-lfpup/coyote": ["../dist/mod.d.ts"]
 		}
 	}
 }
