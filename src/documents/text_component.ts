@@ -21,10 +21,11 @@ function getLargestCommonSpaceIndex(texts: string[]): number {
 
 	let index = 0;
 	while (index < texts.length) {
-		index += 1;
-
 		let line = texts[index];
-		if (0 === line.length) continue;
+		if (0 === line.length) {
+			index += 1;
+			continue;
+		}
 
 		spaceIndex = getIndexOfFirstChar(line);
 		prevLine = line;
@@ -32,28 +33,32 @@ function getLargestCommonSpaceIndex(texts: string[]): number {
 	}
 
 	while (index < texts.length) {
-		index += 1;
-
 		let line = texts[index];
-		if (0 === line.length) continue;
+		if (line.length) {
+			let nextSpaceIndex = 0;
+			for (
+				let glyphIndex = 0;
+				glyphIndex < prevLine.length;
+				glyphIndex++
+			) {
+				nextSpaceIndex = glyphIndex;
 
-		let nextSpaceIndex = 0;
-		for (let glyphIndex = 0; glyphIndex < prevLine.length; glyphIndex++) {
-			nextSpaceIndex = glyphIndex;
+				let targetGlyph = line[glyphIndex];
+				if (!targetGlyph) break;
 
-			let targetGlyph = line[glyphIndex];
-			if (!targetGlyph) break;
+				let originGlyph = line[glyphIndex];
+				if (
+					originGlyph !== targetGlyph ||
+					!spaceCharCodes.has(originGlyph.charCodeAt(0))
+				)
+					break;
+			}
 
-			let originGlyph = line[glyphIndex];
-			if (
-				originGlyph !== targetGlyph ||
-				spaceCharCodes.has(originGlyph.charCodeAt(0))
-			)
-				break;
+			prevLine = line;
+			spaceIndex = Math.min(nextSpaceIndex, spaceIndex);
 		}
 
-		prevLine = line;
-		spaceIndex = Math.min(nextSpaceIndex, spaceIndex);
+		index += 1;
 	}
 
 	return spaceIndex;
@@ -182,16 +187,15 @@ export function pushMultilineAttribtue(
 	// middle
 	let middleLines = texts.slice(1, -1);
 	let commonSpaceIndex = getLargestCommonSpaceIndex(middleLines);
-
 	let indentCount = tagInfo.indentCount;
 	if (rules.respectIndentation() && !tagInfo.inlineEl) {
 		indentCount += 1;
 	}
+	// console.log("middle lines", commonSpaceIndex, indentCount, middleLines);
 
 	for (const line of middleLines) {
-		results.push("/n");
-
-		if (0 === line.length) return;
+		results.push("\n");
+		if (0 === line.length) continue;
 
 		results.push("\t".repeat(indentCount));
 		pushLineOfText(results, line.slice(commonSpaceIndex));

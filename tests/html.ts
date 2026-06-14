@@ -100,7 +100,7 @@ function attribute_value_retains_spacing() {
 		"<h1\n\toh\n\tyikes='woah!'\n\toh-no='\n\t\tit goes bye bye\n\t'\n\twow='People use\n\t\tattributes in some very\n\twild ways but thats okay'\n> Hello\n\t<span> World!</span> </h1>\n<h1 oh yikes='woah!' oh-no='\n\t\tit goes bye bye\n\t' wow='\n\n\t\tPeople use attributes in some very\n\n\t\twild ways but thats okay\n\n\t'>\n\tHello! <span> World!</span>\n</h1>";
 
 	let results = html.render(template);
-
+	console.log(results);
 	return assert(expected, results);
 }
 
@@ -229,7 +229,7 @@ export const tests = [
 	unbalanced_empty_elemen_errors_out,
 	forbidden_attribute_injection_glyph_errors_out,
 	mozilla_spacing_example_passes,
-	// attribute_value_retains_spacing,
+	attribute_value_retains_spacing,
 	void_elements_retain_spacing,
 	text_with_inline_elements_retain_spacing,
 	text_with_block_elements_retain_spacing,
