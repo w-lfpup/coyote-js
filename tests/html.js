@@ -134,7 +134,6 @@ function banned_attributes_single_quoted() {
     let template = hcs.banned_attributes_single_quoted();
     let expected = "<span\ndash='chase'\nup=down>UwU</span>";
     let results = html.render(template);
-    console.log(results);
     return assert(expected, results);
 }
 export const tests = [
@@ -159,7 +158,7 @@ export const tests = [
     // document_with_alt_text_elements_retains_spacing,
     banned_attributes,
     banned_attributes_quoted,
-    // banned_attributes_single_quoted,
+    banned_attributes_single_quoted,
 ];
 export const options = {
     title: import.meta.url,

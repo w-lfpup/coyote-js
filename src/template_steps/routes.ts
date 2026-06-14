@@ -40,7 +40,7 @@ let glyphGraph = new Map<StepKind, Router>([
 	["AttrValueDoubleQuoteClosed", getKindFromAttributeQuoteClosed],
 	["AttrValueDoubleQuoted", getKindFromAttributeDoubleQuoted],
 	["AttrValueDoubleQuoteOpened", getKindFromAttributeDoubleQuoted],
-	["AttrValueSingleQuoteClosed", getKindFromAttributeSingleQuoted],
+	["AttrValueSingleQuoteClosed", getKindFromAttributeQuoteClosed],
 	["AttrValueSingleQuoted", getKindFromAttributeSingleQuoted],
 	["AttrValueSingleQuoteOpened", getKindFromAttributeSingleQuoted],
 	["AttrValueUnquoted", getKindFromAttributeValueUnquoted],

@@ -131,6 +131,7 @@ export function parseStr(
 		step.target = templateStr.length;
 	}
 
+	// console.log("parstStr: ", steps);
 	return steps;
 }
 
