@@ -191,7 +191,6 @@ export function pushMultilineAttribtue(
 	if (rules.respectIndentation() && !tagInfo.inlineEl) {
 		indentCount += 1;
 	}
-	// console.log("middle lines", commonSpaceIndex, indentCount, middleLines);
 
 	for (const line of middleLines) {
 		results.push("\n");

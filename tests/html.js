@@ -62,7 +62,7 @@ function attribute_value_retains_spacing() {
     let template = hcs.attribute_value_retains_spacing();
     let expected = "<h1\n\toh\n\tyikes='woah!'\n\toh-no='\n\t\tit goes bye bye\n\t'\n\twow='People use\n\t\tattributes in some very\n\twild ways but thats okay'\n> Hello\n\t<span> World!</span> </h1>\n<h1 oh yikes='woah!' oh-no='\n\t\tit goes bye bye\n\t' wow='\n\n\t\tPeople use attributes in some very\n\n\t\twild ways but thats okay\n\n\t'>\n\tHello! <span> World!</span>\n</h1>";
     let results = html.render(template);
-    console.log(results);
+    // console.log(results);
     return assert(expected, results);
 }
 function void_elements_retain_spacing() {
@@ -138,28 +138,28 @@ function banned_attributes_single_quoted() {
     return assert(expected, results);
 }
 export const tests = [
-    // empty_element_retains_spacing,
-    // fragments_dont_exist,
-    // block_element_with_text_retains_spacing,
-    // inline_element_with_text_retains_spacing,
+    empty_element_retains_spacing,
+    fragments_dont_exist,
+    block_element_with_text_retains_spacing,
+    inline_element_with_text_retains_spacing,
     comment_element_retains_spacing,
-    // empty_element_stays_empty,
-    // unbalanced_empty_elemen_errors_out,
-    // forbidden_attribute_injection_glyph_errors_out,
-    // mozilla_spacing_example_passes,
-    // attribute_value_retains_spacing,
-    // void_elements_retain_spacing,
-    // text_with_inline_elements_retain_spacing,
-    // text_with_block_elements_retain_spacing,
-    // void_elements_can_have_attributes,
-    // void_element_with_sibling,
-    // nested_void_element_with_siblings_retains_spacing,
-    // nested_elements_and_text_retain_spacing,
-    // document_retains_spacing,
-    // document_with_alt_text_elements_retains_spacing,
-    // banned_attributes,
-    // banned_attributes_quoted,
-    // banned_attributes_single_quoted,
+    empty_element_stays_empty,
+    unbalanced_empty_elemen_errors_out,
+    forbidden_attribute_injection_glyph_errors_out,
+    mozilla_spacing_example_passes,
+    attribute_value_retains_spacing,
+    void_elements_retain_spacing,
+    text_with_inline_elements_retain_spacing,
+    text_with_block_elements_retain_spacing,
+    void_elements_can_have_attributes,
+    void_element_with_sibling,
+    nested_void_element_with_siblings_retains_spacing,
+    nested_elements_and_text_retain_spacing,
+    document_retains_spacing,
+    document_with_alt_text_elements_retains_spacing,
+    banned_attributes,
+    banned_attributes_quoted,
+    banned_attributes_single_quoted,
 ];
 export const options = {
     title: import.meta.url,
