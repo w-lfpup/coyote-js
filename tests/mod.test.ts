@@ -1,5 +1,8 @@
 import * as atomics from "./atomics.js";
 import * as html from "./html.js";
+import * as functionComponents from "./function_components.js";
 
-export const testModules = [atomics, html];
+export const testModules = [atomics, html, functionComponents];
+
+// export const testModules = [atomics, html];
 // export const testModul es = [html];
