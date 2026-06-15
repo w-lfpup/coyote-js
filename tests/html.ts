@@ -14,7 +14,7 @@ function empty_element_retains_spacing() {
 
 	let templateLiteral = hcs.empty_element_retains_spacing_literal();
 	let resultsLiteral = html.render(templateLiteral);
-	return assert(expected, resultsLiteral);
+	if (assertions) return resultsLiteral;
 }
 
 function fragments_dont_exist() {

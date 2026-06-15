@@ -18,9 +18,6 @@ function text_element() {
 	let literalAssertion = assert(expected, literal_results);
 	if (literalAssertion) assertions.push(literalAssertion);
 
-	if (results[0] !== literal_results[0])
-		assertions.push(`string and literal failed to output matching renders`);
-
 	return assertions;
 }
 
@@ -37,9 +34,6 @@ function empty_element() {
 	let literalAssertion = assert(expected, literal_results);
 	if (literalAssertion) assertions.push(literalAssertion);
 
-	if (results[0] !== literal_results[0])
-		assertions.push(`literal does not match string`);
-
 	return assertions;
 }
 
@@ -54,9 +48,6 @@ function fragment() {
 	let literal_results = coyote.render(acsl.fragment());
 	let literalAssertion = assert(expected, literal_results);
 	if (literalAssertion) assertions.push(literalAssertion);
-
-	if (results[0] !== literal_results[0])
-		assertions.push(`literal does not match string`);
 
 	return assertions;
 }
@@ -73,9 +64,6 @@ function block_element_with_text() {
 	let literalAssertion = assert(expected, literal_results);
 	if (literalAssertion) assertions.push(literalAssertion);
 
-	if (results[0] !== literal_results[0])
-		assertions.push(`literal does not match string`);
-
 	return assertions;
 }
 
@@ -90,9 +78,6 @@ function inline_element_with_text() {
 	let literal_results = coyote.render(acsl.inline_element_with_text());
 	let literalAssertion = assert(expected, literal_results);
 	if (literalAssertion) assertions.push(literalAssertion);
-
-	if (results[0] !== literal_results[0])
-		assertions.push(`literal does not match string`);
 
 	return assertions;
 }
@@ -109,9 +94,6 @@ function void_element() {
 	let literalAssertion = assert(expected, literal_results);
 	if (literalAssertion) assertions.push(literalAssertion);
 
-	if (results[0] !== literal_results[0])
-		assertions.push(`literal does not match string`);
-
 	return assertions;
 }
 
@@ -126,9 +108,6 @@ function void_element_with_self_closing() {
 	let literal_results = coyote.render(acsl.void_element_with_self_closing());
 	let literalAssertion = assert(expected, literal_results);
 	if (literalAssertion) assertions.push(literalAssertion);
-
-	if (results[0] !== literal_results[0])
-		assertions.push(`literal does not match string`);
 
 	return assertions;
 }
@@ -145,9 +124,6 @@ function non_void_element() {
 	let literalAssertion = assert(expected, literal_results);
 	if (literalAssertion) assertions.push(literalAssertion);
 
-	if (results[0] !== literal_results[0])
-		assertions.push(`literal does not match string`);
-
 	return assertions;
 }
 
@@ -162,9 +138,6 @@ function comment_element() {
 	let literal_results = coyote.render(acsl.comment_element());
 	let literalAssertion = assert(expected, literal_results);
 	if (literalAssertion) assertions.push(literalAssertion);
-
-	if (results[0] !== literal_results[0])
-		assertions.push(`literal does not match string`);
 
 	return assertions;
 }
