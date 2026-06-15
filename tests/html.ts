@@ -102,9 +102,13 @@ function unbalanced_empty_element_errors_out() {
 function forbidden_attribute_injection_glyph_errors_out() {
 	let template = hcs.forbidden_attribute_injection_glyph_errors_out();
 
-	let results = html.render(template);
+	let [, error] = html.render(template);
+	if (undefined !== error) return;
 
-	if (undefined === results[1]) return;
+	let templateLiteral =
+		hcs.forbidden_attribute_injection_glyph_errors_out_literal();
+	let [, errorLiteral] = html.render(templateLiteral);
+	if (errorLiteral) return;
 
 	return "forbidden attribute glyph failed to error";
 }

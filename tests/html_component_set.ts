@@ -179,7 +179,7 @@ export function forbidden_attribute_injection_glyph_errors_out(): Component {
 }
 
 export function forbidden_attribute_injection_glyph_errors_out_literal(): Component {
-	return tmpl`<p {}></p>`;
+	return tmpl`<p ${attr("a<b/c'd=e>f")}></p>`;
 }
 
 export function mozilla_spacing_example_passes(): Component {

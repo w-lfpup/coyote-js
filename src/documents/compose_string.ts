@@ -112,7 +112,13 @@ ${chunk}`),
 			let injection = cmpntBit.component.injections[index];
 			if (injKind && injection) {
 				if ("AttrMapInjection" === injKind) {
-					addAttrInj(tagInfoStack, results, rules, injection);
+					let error = addAttrInj(
+						tagInfoStack,
+						results,
+						rules,
+						injection,
+					);
+					if (error) return [results.join(""), error];
 				}
 
 				if ("DescendantInjection" === injKind) {

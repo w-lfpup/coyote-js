@@ -147,7 +147,7 @@ export function forbidden_attribute_injection_glyph_errors_out() {
     return tmplStr(`<p {}></p>`, [attr("a<b/c'd=e>f")]);
 }
 export function forbidden_attribute_injection_glyph_errors_out_literal() {
-    return tmpl `<p {}></p>`;
+    return tmpl `<p ${attr("a<b/c'd=e>f")}></p>`;
 }
 export function mozilla_spacing_example_passes() {
     return tmplStr(`
