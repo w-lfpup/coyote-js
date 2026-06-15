@@ -1,5 +1,5 @@
 import type { Component } from "../dist/mod.js";
-import { tmplStr, attr } from "../dist/mod.js";
+import { tmpl, tmplStr, attr } from "../dist/mod.js";
 
 export function empty_element_retains_spacing(): Component {
 	return tmplStr(
@@ -12,6 +12,14 @@ export function empty_element_retains_spacing(): Component {
 	);
 }
 
+export function empty_element_retains_spacing_literal(): Component {
+	return tmpl`
+		<p></p>
+		<p> </p><p>
+		</p>
+		`;
+}
+
 export function fragments_dont_exist(): Component {
 	return tmplStr(
 		`
@@ -20,6 +28,13 @@ export function fragments_dont_exist(): Component {
 		`,
 		[],
 	);
+}
+
+export function fragments_dont_exist_literal(): Component {
+	return tmpl`
+		<><>
+		</></>
+		`;
 }
 
 export function block_element_with_text_retains_spacing(): Component {
@@ -39,6 +54,22 @@ hello
 		`,
 		[],
 	);
+}
+
+export function block_element_with_text_retains_spacing_literal(): Component {
+	return tmpl`
+		<p>hello!</p>
+		<p> hello! </p>
+		<p>
+			hello
+		</p><p>
+hello
+		</p>
+		<p>hello
+		</p>
+		<p>
+		hello</p>
+		`;
 }
 
 export function inline_element_with_text_retains_spacing(): Component {
@@ -65,6 +96,27 @@ hello
 	);
 }
 
+export function inline_element_with_text_retains_spacing_literal(): Component {
+	return tmpl`
+		<b>hello!</b>
+		<b> hello! </b>
+		<b> hello
+		</b>
+		<b>
+			hello </b>
+		<b>
+hello
+		</b>
+		<b>
+			hello
+		</b>
+		<b>hello
+		</b>
+		<b>
+		hello</b>
+		`;
+}
+
 export function comment_element_retains_spacing(): Component {
 	return tmplStr(
 		`
@@ -87,16 +139,47 @@ export function comment_element_retains_spacing(): Component {
 	);
 }
 
+export function comment_element_retains_spacing_literal(): Component {
+	return tmpl`
+		<!---->
+		<!--Hello!-->
+		<!-- Hello! -->
+		<!--Hello! -->
+		<!-- Hello!-->
+		<!--Hello!
+		-->
+		<!--
+		Hello!-->
+		<!--
+
+		Hello!
+
+		-->
+		`;
+}
+
 export function empty_element_stays_empty(): Component {
 	return tmplStr(`<html></html>`, []);
 }
 
-export function unbalanced_empty_elemen_errors_out(): Component {
+export function empty_element_stays_empty_literal(): Component {
+	return tmpl`<html></html>`;
+}
+
+export function unbalanced_empty_element_errors_out(): Component {
 	return tmplStr(`<html>`, []);
+}
+
+export function unbalanced_empty_element_errors_out_literal(): Component {
+	return tmpl`<html>`;
 }
 
 export function forbidden_attribute_injection_glyph_errors_out(): Component {
 	return tmplStr(`<p {}></p>`, [attr("a<b/c'd=e>f")]);
+}
+
+export function forbidden_attribute_injection_glyph_errors_out_literal(): Component {
+	return tmpl`<p {}></p>`;
 }
 
 export function mozilla_spacing_example_passes(): Component {
@@ -106,6 +189,12 @@ export function mozilla_spacing_example_passes(): Component {
 				<span> World!</span>   </h1>`,
 		[],
 	);
+}
+
+export function mozilla_spacing_example_passes_literal(): Component {
+	return tmpl`
+		<h1>   Hello
+				<span> World!</span>   </h1>`;
 }
 
 export function attribute_value_retains_spacing(): Component {
@@ -138,12 +227,44 @@ export function attribute_value_retains_spacing(): Component {
 	);
 }
 
+export function attribute_value_retains_spacing_literal(): Component {
+	return tmpl`
+		<h1 
+			oh=''
+			yikes='woah!'
+			oh-no='
+				it goes bye bye
+			'
+			wow='People use
+			attributes in some very
+			wild ways but thats okay'
+		> Hello
+				<span> World!</span>   </h1>
+		<h1 oh='' yikes='woah!' oh-no='
+				it goes bye bye
+			' wow='
+
+			People use attributes in some very
+
+			wild ways but thats okay
+
+		'>
+			Hello! <span> World!</span>
+		</h1>
+		`;
+}
+
 export function void_elements_retain_spacing(): Component {
 	return tmplStr(
 		`<input>   <input>
 			<input><input> `,
 		[],
 	);
+}
+
+export function void_elements_retain_spacing_literal(): Component {
+	return tmpl`<input>   <input>
+			<input><input> `;
 }
 
 export function text_with_inline_elements_retain_spacing(): Component {
@@ -153,8 +274,16 @@ export function text_with_inline_elements_retain_spacing(): Component {
 	);
 }
 
+export function text_with_inline_elements_retain_spacing_literal(): Component {
+	return tmpl`beasts <span>	tread		</span>	 softly <span>	underfoot </span>	  .`;
+}
+
 export function text_with_block_elements_retain_spacing(): Component {
 	return tmplStr(`beasts <p>	tread		</p>	 softly <p>	underfoot </p>	  .`, []);
+}
+
+export function text_with_block_elements_retain_spacing_literal(): Component {
+	return tmpl`beasts <p>	tread		</p>	 softly <p>	underfoot </p>	  .`;
 }
 
 export function void_elements_can_have_attributes(): Component {
@@ -166,12 +295,23 @@ export function void_elements_can_have_attributes(): Component {
 	);
 }
 
+export function void_elements_can_have_attributes_literal(): Component {
+	return tmpl`
+		<!DOCTYPE html><input type=checkbox>   <input woof=\"bark\">
+			<input grrr><input> `;
+}
+
 export function void_element_with_sibling(): Component {
 	return tmplStr(
 		`
 			<input><p>hai :3</p>	`,
 		[],
 	);
+}
+
+export function void_element_with_sibling_literal(): Component {
+	return tmpl`
+			<input><p>hai :3</p>	`;
 }
 
 export function nested_void_element_with_siblings_retains_spacing(): Component {
@@ -185,8 +325,20 @@ export function nested_void_element_with_siblings_retains_spacing(): Component {
 	);
 }
 
+export function nested_void_element_with_siblings_retains_spacing_literal(): Component {
+	return tmpl`
+		<section>
+			<input><p>hai :3</p>
+		</section>
+		`;
+}
+
 export function nested_elements_and_text_retain_spacing(): Component {
 	return tmplStr(`<a><label><input type=woofer>bark!</label><img></a>`, []);
+}
+
+export function nested_elements_and_text_retain_spacing_literal(): Component {
+	return tmpl`<a><label><input type=woofer>bark!</label><img></a>`;
 }
 
 export function document_retains_spacing(): Component {
@@ -206,6 +358,22 @@ export function document_retains_spacing(): Component {
 </html>`,
 		[],
 	);
+}
+
+export function document_retains_spacing_literal(): Component {
+	return tmpl`		<!DOCTYPE>
+	<html>
+	<head>
+
+	</head>
+		<body>
+			<article>
+				You're a <span>boy kisser</span> aren't you?
+				Click <a>here</a> and go somewhere else.
+			</article>
+			<footer/>
+		</body>
+</html>`;
 }
 
 export function document_with_alt_text_elements_retains_spacing(): Component {
@@ -233,12 +401,39 @@ export function document_with_alt_text_elements_retains_spacing(): Component {
 	);
 }
 
+export function document_with_alt_text_elements_retains_spacing_literal(): Component {
+	return tmpl`		<!DOCTYPE>
+	<html>
+	<head>
+		<style>
+			#woof .bark {
+				color: doggo;
+			}
+		</style>
+		<script>
+			if 2 < 3 {
+				console.log();
+			}
+		</script>
+	</head>
+		<body>
+			<article></article>
+			<footer/>
+		</body>
+</html>`;
+}
+
 export function banned_attributes(): Component {
 	return tmplStr(
 		`<span onkeypress
     bowow onbowow click>UwU</span>`,
 		[],
 	);
+}
+
+export function banned_attributes_literal(): Component {
+	return tmpl`<span onkeypress
+    bowow onbowow click>UwU</span>`;
 }
 
 export function banned_attributes_quoted(): Component {
@@ -251,6 +446,13 @@ export function banned_attributes_quoted(): Component {
 	);
 }
 
+export function banned_attributes_quoted_literal(): Component {
+	return tmpl`<span onclick=\"
+        console.log('danger!')
+        \" bark bark
+        onbark>UwU</span>`;
+}
+
 export function banned_attributes_single_quoted(): Component {
 	return tmplStr(
 		`<span onbegonia='
@@ -260,4 +462,12 @@ export function banned_attributes_single_quoted(): Component {
             up=down>UwU</span>`,
 		[],
 	);
+}
+
+export function banned_attributes_single_quoted_literal(): Component {
+	return tmpl`<span onbegonia='
+            console.log(\"BEGONIA!\")
+        '
+            dash='chase'
+            up=down>UwU</span>`;
 }

@@ -1,8 +1,6 @@
-import { Coyote, HtmlRules, tmpl, tmplStr } from "../dist/mod.js";
+import { Coyote, HtmlRules } from "../dist/mod.js";
 import { assert } from "./assertion.js";
 import * as fcs from "./function_component_set.js";
-// import * as acsl from "./html_component_set.js_literals_set.js";
-import { compose } from "../dist/template_steps/template_steps.js";
 
 let html = new Coyote(new HtmlRules());
 

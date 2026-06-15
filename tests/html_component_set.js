@@ -1,4 +1,4 @@
-import { tmplStr, attr } from "../dist/mod.js";
+import { tmpl, tmplStr, attr } from "../dist/mod.js";
 export function empty_element_retains_spacing() {
     return tmplStr(`
 		<p></p>
@@ -6,11 +6,24 @@ export function empty_element_retains_spacing() {
 		</p>
 		`, []);
 }
+export function empty_element_retains_spacing_literal() {
+    return tmpl `
+		<p></p>
+		<p> </p><p>
+		</p>
+		`;
+}
 export function fragments_dont_exist() {
     return tmplStr(`
 		<><>
 		</></>
 		`, []);
+}
+export function fragments_dont_exist_literal() {
+    return tmpl `
+		<><>
+		</></>
+		`;
 }
 export function block_element_with_text_retains_spacing() {
     return tmplStr(`
@@ -26,6 +39,21 @@ hello
 		<p>
 		hello</p>
 		`, []);
+}
+export function block_element_with_text_retains_spacing_literal() {
+    return tmpl `
+		<p>hello!</p>
+		<p> hello! </p>
+		<p>
+			hello
+		</p><p>
+hello
+		</p>
+		<p>hello
+		</p>
+		<p>
+		hello</p>
+		`;
 }
 export function inline_element_with_text_retains_spacing() {
     return tmplStr(`
@@ -47,6 +75,26 @@ hello
 		hello</b>
 		`, []);
 }
+export function inline_element_with_text_retains_spacing_literal() {
+    return tmpl `
+		<b>hello!</b>
+		<b> hello! </b>
+		<b> hello
+		</b>
+		<b>
+			hello </b>
+		<b>
+hello
+		</b>
+		<b>
+			hello
+		</b>
+		<b>hello
+		</b>
+		<b>
+		hello</b>
+		`;
+}
 export function comment_element_retains_spacing() {
     return tmplStr(`
 		<!---->
@@ -65,19 +113,51 @@ export function comment_element_retains_spacing() {
 		-->
 		`, []);
 }
+export function comment_element_retains_spacing_literal() {
+    return tmpl `
+		<!---->
+		<!--Hello!-->
+		<!-- Hello! -->
+		<!--Hello! -->
+		<!-- Hello!-->
+		<!--Hello!
+		-->
+		<!--
+		Hello!-->
+		<!--
+
+		Hello!
+
+		-->
+		`;
+}
 export function empty_element_stays_empty() {
     return tmplStr(`<html></html>`, []);
 }
-export function unbalanced_empty_elemen_errors_out() {
+export function empty_element_stays_empty_literal() {
+    return tmpl `<html></html>`;
+}
+export function unbalanced_empty_element_errors_out() {
     return tmplStr(`<html>`, []);
+}
+export function unbalanced_empty_element_errors_out_literal() {
+    return tmpl `<html>`;
 }
 export function forbidden_attribute_injection_glyph_errors_out() {
     return tmplStr(`<p {}></p>`, [attr("a<b/c'd=e>f")]);
+}
+export function forbidden_attribute_injection_glyph_errors_out_literal() {
+    return tmpl `<p {}></p>`;
 }
 export function mozilla_spacing_example_passes() {
     return tmplStr(`
 		<h1>   Hello
 				<span> World!</span>   </h1>`, []);
+}
+export function mozilla_spacing_example_passes_literal() {
+    return tmpl `
+		<h1>   Hello
+				<span> World!</span>   </h1>`;
 }
 export function attribute_value_retains_spacing() {
     return tmplStr(`
@@ -105,24 +185,69 @@ export function attribute_value_retains_spacing() {
 		</h1>
 		`, []);
 }
+export function attribute_value_retains_spacing_literal() {
+    return tmpl `
+		<h1 
+			oh=''
+			yikes='woah!'
+			oh-no='
+				it goes bye bye
+			'
+			wow='People use
+			attributes in some very
+			wild ways but thats okay'
+		> Hello
+				<span> World!</span>   </h1>
+		<h1 oh='' yikes='woah!' oh-no='
+				it goes bye bye
+			' wow='
+
+			People use attributes in some very
+
+			wild ways but thats okay
+
+		'>
+			Hello! <span> World!</span>
+		</h1>
+		`;
+}
 export function void_elements_retain_spacing() {
     return tmplStr(`<input>   <input>
 			<input><input> `, []);
 }
+export function void_elements_retain_spacing_literal() {
+    return tmpl `<input>   <input>
+			<input><input> `;
+}
 export function text_with_inline_elements_retain_spacing() {
     return tmplStr(`beasts <span>	tread		</span>	 softly <span>	underfoot </span>	  .`, []);
 }
+export function text_with_inline_elements_retain_spacing_literal() {
+    return tmpl `beasts <span>	tread		</span>	 softly <span>	underfoot </span>	  .`;
+}
 export function text_with_block_elements_retain_spacing() {
     return tmplStr(`beasts <p>	tread		</p>	 softly <p>	underfoot </p>	  .`, []);
+}
+export function text_with_block_elements_retain_spacing_literal() {
+    return tmpl `beasts <p>	tread		</p>	 softly <p>	underfoot </p>	  .`;
 }
 export function void_elements_can_have_attributes() {
     return tmplStr(`
 		<!DOCTYPE html><input type=checkbox>   <input woof=\"bark\">
 			<input grrr><input> `, []);
 }
+export function void_elements_can_have_attributes_literal() {
+    return tmpl `
+		<!DOCTYPE html><input type=checkbox>   <input woof=\"bark\">
+			<input grrr><input> `;
+}
 export function void_element_with_sibling() {
     return tmplStr(`
 			<input><p>hai :3</p>	`, []);
+}
+export function void_element_with_sibling_literal() {
+    return tmpl `
+			<input><p>hai :3</p>	`;
 }
 export function nested_void_element_with_siblings_retains_spacing() {
     return tmplStr(`
@@ -131,8 +256,18 @@ export function nested_void_element_with_siblings_retains_spacing() {
 		</section>
 		`, []);
 }
+export function nested_void_element_with_siblings_retains_spacing_literal() {
+    return tmpl `
+		<section>
+			<input><p>hai :3</p>
+		</section>
+		`;
+}
 export function nested_elements_and_text_retain_spacing() {
     return tmplStr(`<a><label><input type=woofer>bark!</label><img></a>`, []);
+}
+export function nested_elements_and_text_retain_spacing_literal() {
+    return tmpl `<a><label><input type=woofer>bark!</label><img></a>`;
 }
 export function document_retains_spacing() {
     return tmplStr(`		<!DOCTYPE>
@@ -148,6 +283,21 @@ export function document_retains_spacing() {
 			<footer/>
 		</body>
 </html>`, []);
+}
+export function document_retains_spacing_literal() {
+    return tmpl `		<!DOCTYPE>
+	<html>
+	<head>
+
+	</head>
+		<body>
+			<article>
+				You're a <span>boy kisser</span> aren't you?
+				Click <a>here</a> and go somewhere else.
+			</article>
+			<footer/>
+		</body>
+</html>`;
 }
 export function document_with_alt_text_elements_retains_spacing() {
     return tmplStr(`		<!DOCTYPE>
@@ -170,9 +320,34 @@ export function document_with_alt_text_elements_retains_spacing() {
 		</body>
 </html>`, []);
 }
+export function document_with_alt_text_elements_retains_spacing_literal() {
+    return tmpl `		<!DOCTYPE>
+	<html>
+	<head>
+		<style>
+			#woof .bark {
+				color: doggo;
+			}
+		</style>
+		<script>
+			if 2 < 3 {
+				console.log();
+			}
+		</script>
+	</head>
+		<body>
+			<article></article>
+			<footer/>
+		</body>
+</html>`;
+}
 export function banned_attributes() {
     return tmplStr(`<span onkeypress
     bowow onbowow click>UwU</span>`, []);
+}
+export function banned_attributes_literal() {
+    return tmpl `<span onkeypress
+    bowow onbowow click>UwU</span>`;
 }
 export function banned_attributes_quoted() {
     return tmplStr(`<span onclick=\"
@@ -180,10 +355,23 @@ export function banned_attributes_quoted() {
         \" bark bark
         onbark>UwU</span>`, []);
 }
+export function banned_attributes_quoted_literal() {
+    return tmpl `<span onclick=\"
+        console.log('danger!')
+        \" bark bark
+        onbark>UwU</span>`;
+}
 export function banned_attributes_single_quoted() {
     return tmplStr(`<span onbegonia='
             console.log(\"BEGONIA!\")
         '
             dash='chase'
             up=down>UwU</span>`, []);
+}
+export function banned_attributes_single_quoted_literal() {
+    return tmpl `<span onbegonia='
+            console.log(\"BEGONIA!\")
+        '
+            dash='chase'
+            up=down>UwU</span>`;
 }
