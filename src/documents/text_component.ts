@@ -98,13 +98,13 @@ export function pushAltTextComponent(
 	if (rules.respectIndentation()) {
 		let indentOffset = tagInfo.indentCount;
 		if (!tagInfo.inlineEl) {
-			Math.max(0, indentOffset - 1);
+			indentOffset = Math.max(0, indentOffset - 1);
 		}
 
 		results.push("\t".repeat(indentOffset));
 	}
 
-	let last = texts[-1].trim();
+	let last = texts[texts.length - 1].trim();
 	results.push(last);
 }
 

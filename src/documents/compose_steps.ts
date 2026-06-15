@@ -45,7 +45,7 @@ export function composeSteps(
 	tagInfoStack: TagInfoInterface[],
 	templateStr: string,
 	steps: StepInterface[],
-) {
+): void {
 	for (const step of steps) {
 		let route = htmlRoutes.get(step.kind);
 		if (route) {
@@ -60,7 +60,7 @@ function pushAttr(
 	rules: RulesetInterface,
 	templateStr: string,
 	step: StepInterface,
-) {
+): void {
 	let tagInfo = stack[stack.length - 1];
 	if (!tagInfo) return;
 
@@ -88,7 +88,7 @@ function pushAttrValueDoubleQuoted(
 	rules: RulesetInterface,
 	templateStr: string,
 	step: StepInterface,
-) {
+): void {
 	let tagInfo = stack[stack.length - 1];
 	if (!tagInfo) return;
 
@@ -106,7 +106,7 @@ function pushAttrValueSingleQuoted(
 	rules: RulesetInterface,
 	templateStr: string,
 	step: StepInterface,
-) {
+): void {
 	let tagInfo = stack[stack.length - 1];
 	if (!tagInfo) return;
 
@@ -124,7 +124,7 @@ function pushAttrValueUnquoted(
 	_rules: RulesetInterface,
 	templateStr: string,
 	step: StepInterface,
-) {
+): void {
 	let tagInfo = stack[stack.length - 1];
 	if (!tagInfo) return;
 
@@ -141,7 +141,7 @@ function pushTextSpace(
 	_rules: RulesetInterface,
 	templateStr: string,
 	step: StepInterface,
-) {
+): void {
 	let tagInfo = stack[stack.length - 1];
 	if (!tagInfo) return;
 
@@ -170,7 +170,7 @@ function pushElement(
 	rules: RulesetInterface,
 	templateStr: string,
 	step: StepInterface,
-) {
+): void {
 	let tagInfo = stack[stack.length - 1];
 	if (!tagInfo) return;
 
@@ -194,7 +194,7 @@ function pushElementSpace(
 	_rules: RulesetInterface,
 	_templateStr: string,
 	step: StepInterface,
-) {
+): void {
 	let tagInfo = stack[stack.length - 1];
 	if (!tagInfo) return;
 
@@ -218,7 +218,7 @@ function closeElement(
 	rules: RulesetInterface,
 	_templateStr: string,
 	_step: StepInterface,
-) {
+): void {
 	let tagInfo = stack[stack.length - 1];
 	if (!tagInfo) return;
 
@@ -259,7 +259,7 @@ function closeEmptyElement(
 	_rules: RulesetInterface,
 	_templateStr: string,
 	_step: StepInterface,
-) {
+): void {
 	let tagInfo = stack.pop();
 	if (!tagInfo) return;
 
@@ -287,7 +287,7 @@ function popElement(
 	rules: RulesetInterface,
 	templateStr: string,
 	step: StepInterface,
-) {
+): void {
 	let tagInfo = stack[stack.length - 1];
 	if (!tagInfo) return;
 
@@ -322,7 +322,7 @@ function closeTailTag(
 	_rules: RulesetInterface,
 	_templateStr: string,
 	_step: StepInterface,
-) {
+): void {
 	let tagInfo = stack.pop();
 	if (!tagInfo) return;
 
@@ -338,7 +338,7 @@ function pushText(
 	_rules: RulesetInterface,
 	templateStr: string,
 	step: StepInterface,
-) {
+): void {
 	let tagInfo = stack[stack.length - 1];
 	if (!tagInfo) return;
 
@@ -358,7 +358,7 @@ function pushAltText(
 	_rules: RulesetInterface,
 	templateStr: string,
 	step: StepInterface,
-) {
+): void {
 	let tagInfo = stack[stack.length - 1];
 	if (!tagInfo) return;
 
@@ -373,8 +373,11 @@ function pushAltText(
 export function pushFormattedSpace(
 	results: string[],
 	tagInfo: TagInfoInterface,
-) {
-	if ("NonBreakingSpace" === tagInfo.textFormat) return results.push(" ");
+): void {
+	if ("NonBreakingSpace" === tagInfo.textFormat) {
+		results.push(" ");
+		return;
+	}
 
 	if ("BreakingSpace" === tagInfo.textFormat) {
 		results.push("\n", "\t".repeat(tagInfo.indentCount));
@@ -385,7 +388,7 @@ function pushSpaceOnPop(
 	results: string[],
 	prevTagInfo: TagInfoInterface,
 	tagInfo: TagInfoInterface,
-) {
+): void {
 	if (tagInfo.preformattedTextPath) return;
 
 	if ("NonBreakingSpace" === tagInfo.textFormat) results.push(" ");
