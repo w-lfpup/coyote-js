@@ -1,4 +1,4 @@
-import { Coyote, HtmlRules, HtmlOnlyRules } from "../dist/mod.js";
+import { Coyote, HtmlRules, HtmlOnlyRules } from "../../dist/mod.js";
 import { assert } from "./assertion.js";
 import * as hcs from "./html_component_set.js";
 

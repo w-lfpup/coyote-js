@@ -1,4 +1,4 @@
-import { Coyote } from "../dist/mod.js";
+import { Coyote } from "../../dist/mod.js";
 import { assert } from "./assertion.js";
 import * as acs from "./atomics_component_set.js";
 import * as acsl from "./atomics_component_literals_set.js";

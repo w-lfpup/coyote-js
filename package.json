@@ -1,6 +1,6 @@
 {
 	"name": "@w-lfpup/coyote",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "html templates",
 	"type": "module",
 	"main": "dist/mod.js",
@@ -10,7 +10,9 @@
 		"build:dev": "npx tsc --project src/tsconfig.json",
 		"build:tests": "npx tsc --project tests/tsconfig.json",
 		"format": "npx prettier --write ./",
-		"test": "npx jackrabbit --file ./tests/mod.test.js"
+		"test": "npm run test:nodejs && npm run test:browsers",
+		"test:nodejs": "npx jackrabbit ./tests/dist/mod.js",
+		"test:browsers": "npx jackrabbit_webdriver jr.json tests/dist/mod.js"
 	},
 	"author": "wolfpup",
 	"license": "BSD-3-Clause",

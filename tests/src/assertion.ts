@@ -1,4 +1,4 @@
-import type { Results } from "../dist/mod.js";
+import type { Results } from "../../dist/mod.js";
 
 export function assert(expected: string, results: Results) {
 	let [doc, error] = results;

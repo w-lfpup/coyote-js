@@ -1,8 +1,7 @@
 {
 	"extends": "../tsconfig.json",
 	"compilerOptions": {
-		"paths": {
-			"@w-lfpup/coyote": ["../dist/mod.d.ts"]
-		}
+		"rootDir": "src/",
+		"outDir": "dist/"
 	}
 }

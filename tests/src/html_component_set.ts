@@ -1,5 +1,5 @@
-import type { Component } from "../dist/mod.js";
-import { tmpl, tmplStr, attr } from "../dist/mod.js";
+import type { Component } from "../../dist/mod.js";
+import { tmpl, tmplStr, attr } from "../../dist/mod.js";
 
 export function empty_element_retains_spacing(): Component {
 	return tmplStr(

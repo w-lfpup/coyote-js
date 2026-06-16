@@ -1,5 +1,5 @@
-import type { Component } from "../dist/mod.js";
-import { attr, attrVal, tmplStr } from "../dist/mod.js";
+import type { Component } from "../../dist/mod.js";
+import { attr, attrVal, tmplStr } from "../../dist/mod.js";
 
 function submit_button(): Component {
 	return tmplStr(
