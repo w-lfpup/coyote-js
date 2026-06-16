@@ -1,19 +1,16 @@
-import type { StepInterface, StepKind } from "./parse_str.js";
-import type { RulesetInterface } from "./rulesets.js";
+import type { StepKind } from "./routes.ts";
+import type { StepInterface } from "./parse_str.ts";
+import type { RulesetInterface } from "./rulesets.ts";
 
-import { parseStr, route } from "./parse_str.js";
+import { parseStr } from "./parse_str.js";
+import { route } from "./routes.js";
 
-export type { ResultsInterface };
-
-// export { Results, compose, composeTemplateArr };
-export { Results, compose, composeTemplateArr };
-
-interface ResultsInterface {
+export interface TemplateStepsInterface {
 	steps: StepInterface[][];
 	injs: (StepKind | undefined)[];
 }
 
-class Results implements ResultsInterface {
+export class TemplateSteps implements TemplateStepsInterface {
 	steps: StepInterface[][] = [[]];
 	injs: (StepKind | undefined)[] = [];
 }
@@ -22,11 +19,11 @@ function isInjection(kind: StepKind): boolean {
 	return "AttrMapInjection" === kind || "DescendantInjection" === kind;
 }
 
-function compose(
+export function compose(
 	ruleset: RulesetInterface,
 	templateStr: string,
-): ResultsInterface {
-	let results = new Results();
+): TemplateStepsInterface {
+	let results = new TemplateSteps();
 
 	for (let step of parseStr(ruleset, templateStr, "Initial")) {
 		if (isInjection(step.kind)) {
@@ -40,11 +37,11 @@ function compose(
 	return results;
 }
 
-function composeTemplateArr(
+export function composeTemplateArr(
 	ruleset: RulesetInterface,
 	templateStrArr: TemplateStringsArray,
-): ResultsInterface {
-	let results = new Results();
+): TemplateStepsInterface {
+	let results = new TemplateSteps();
 
 	let stepKind: StepKind = "Initial";
 
@@ -61,24 +58,27 @@ function composeTemplateArr(
 		// if last template str stop
 		if (index > templateStrArr.length - 1) continue;
 
-		let injStepKind = route("{", stepKind);
+		let injStepKind: StepKind | undefined = route("{", stepKind);
 		if (!isInjection(injStepKind)) {
 			injStepKind = undefined;
+			continue;
 		}
+
 		pushInjection(results, injStepKind);
 
 		if ("DescendantInjection" === injStepKind) stepKind = "Initial";
-		if ("AttrMapInjection" === injStepKind) stepKind = "ElementSpace";
+		// breaking or non-breaking space
+		if ("AttrMapInjection" === injStepKind) stepKind = "NonBreakingSpace";
 	}
 
 	return results;
 }
 
-function pushStep(results: ResultsInterface, step: StepInterface) {
+function pushStep(results: TemplateStepsInterface, step: StepInterface) {
 	results.steps[results.steps.length - 1]?.push(step);
 }
 
-function pushInjection(results: ResultsInterface, stepKind: StepKind) {
+function pushInjection(results: TemplateStepsInterface, stepKind: StepKind) {
 	results.steps.push([]);
 	results.injs.push(stepKind);
 }

@@ -1,22 +1,7 @@
-export type { Component };
+export class CoyoteComponent {}
+export type Component = CoyoteComponent | Node | string | undefined;
 
-export {
-	CoyoteComponent,
-	AttrComponent,
-	AttrValComponent,
-	TmplComponent,
-	TaggedTmplComponent,
-	tmplStr,
-	tmpl,
-	text,
-	attr,
-	attrVal,
-};
-
-class CoyoteComponent {}
-type Component = CoyoteComponent | Node | string | undefined;
-
-class AttrComponent extends CoyoteComponent {
+export class AttrComponent extends CoyoteComponent {
 	#attr: string;
 	constructor(attr: string) {
 		super();
@@ -28,14 +13,14 @@ class AttrComponent extends CoyoteComponent {
 	}
 }
 
-class AttrValComponent extends CoyoteComponent {
+export class AttrValComponent extends CoyoteComponent {
 	#attr: string;
 	#value: string;
 
 	constructor(attr: string, val: string) {
 		super();
 		this.#attr = attr;
-		this.#value = val.replaceAll('"', "&quot;").replaceAll("&", "&amp;");
+		this.#value = val.replaceAll('"', "&quot;");
 	}
 
 	get attr() {
@@ -47,7 +32,7 @@ class AttrValComponent extends CoyoteComponent {
 	}
 }
 
-class TmplComponent extends CoyoteComponent {
+export class TmplComponent extends CoyoteComponent {
 	#templateStr: string;
 	#injections: Component[];
 
@@ -66,7 +51,7 @@ class TmplComponent extends CoyoteComponent {
 	}
 }
 
-class TaggedTmplComponent extends CoyoteComponent {
+export class TaggedTmplComponent extends CoyoteComponent {
 	#templateArr: TemplateStringsArray;
 	#injections: Component[];
 
@@ -85,28 +70,21 @@ class TaggedTmplComponent extends CoyoteComponent {
 	}
 }
 
-function tmplStr(txt: string, injections: Component[]): TmplComponent {
+export function tmplStr(txt: string, injections: Component[]): TmplComponent {
 	return new TmplComponent(txt, injections);
 }
 
-function tmpl(
+export function tmpl(
 	txts: TemplateStringsArray,
 	...injections: Component[]
 ): TaggedTmplComponent {
 	return new TaggedTmplComponent(txts, injections);
 }
 
-function text(txt: string): string {
-	return txt
-		.replaceAll("<", "&lt;")
-		.replaceAll("&", "&amp;")
-		.replaceAll("{", "&#123;");
-}
-
-function attr(attrStr: string): AttrComponent {
+export function attr(attrStr: string): AttrComponent {
 	return new AttrComponent(attrStr);
 }
 
-function attrVal(attr: string, val: string): AttrValComponent {
+export function attrVal(attr: string, val: string): AttrValComponent {
 	return new AttrValComponent(attr, val);
 }

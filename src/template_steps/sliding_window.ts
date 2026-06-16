@@ -1,12 +1,8 @@
-export type { SlidingWindowInterface };
-
-export { SlidingWindow };
-
-interface SlidingWindowInterface {
+export interface SlidingWindowInterface {
 	slide(glyph: string): boolean;
 }
 
-class SlidingWindow implements SlidingWindow {
+export class SlidingWindow implements SlidingWindow {
 	#index: number = 1;
 	#target: string;
 
@@ -15,7 +11,7 @@ class SlidingWindow implements SlidingWindow {
 	}
 
 	slide(glyph: string): boolean {
-		if (this.#target.charAt(this.#index - 1) !== glyph) {
+		if (this.#target[this.#index - 1] !== glyph) {
 			this.#index = 0;
 		}
 

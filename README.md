@@ -1,5 +1,7 @@
 # Coyote-js
 
+[![Tests](https://github.com/w-lfpup/wctk-js/actions/workflows/tests.yml/badge.svg)](https://github.com/w-lfpup/wctk-js/actions/workflows/Tests.yml)
+
 Create html with function components in Typescript / Javascript.
 
 There are no dependencies.
@@ -27,17 +29,15 @@ function hai() {
 Render components as `html` with [document builders](./document_builders.md).
 
 ```TS
-import { Html, tmpl } from "coyote";
+import { Coyote, tmpl } from "coyote";
 
 function hai() {
     return tmpl`<p>hai :3</p>`;
 }
 
-let helloWorld = hai();
+let coyote = new Coyote();
 
-let html = new Html();
-
-let [document, _error] = html.build(helloWorld);
+let [document, _error] = coyote.render(hai());
 
 console.log(document);
 ```
