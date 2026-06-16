@@ -1,5 +1,7 @@
 # Coyote-js
 
+[![Tests](https://github.com/w-lfpup/wctk-js/actions/workflows/tests.yml/badge.svg)](https://github.com/w-lfpup/wctk-js/actions/workflows/Tests.yml)
+
 Create html with function components in Typescript / Javascript.
 
 There are no dependencies.
