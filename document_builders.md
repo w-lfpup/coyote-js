@@ -59,12 +59,12 @@ Coyote Err: the following template component is imbalanced:
 
 ### Hello, safer world!
 
-The example below creates a _safer_ fragment for client-side renders using `ClientHtml`.
+The example below creates a _safer_ fragment for client-side renders using `HtmlOnlyRules`.
 
 ```ts
 import type { Component } from "coyote";
 
-import { ClientHtml, tmpl } from "coyote";
+import { HtmlOnlyRules, tmpl } from "coyote";
 
 function malicious(): Component {
 	return tmpl`
@@ -87,7 +87,7 @@ function hai(): Component {
 
 let hello_world = hai();
 
-let saferHtml = new ClientHtml();
+let saferHtml = new HtmlOnlyRules();
 let [doc, _error] = saferHtml.build(hello_world);
 
 console.log(doc);
@@ -101,7 +101,7 @@ The output will be:
 
 `Coyote` composes templates with `rulesets`.
 
-The `ruleset` for `ClientHtml` rejects elements like `<script>`, `<style>`, and `<link>` elements.
+The `ruleset` for `HtmlOnlyRules` rejects elements like `<script>`, `<style>`, and `<link>` elements.
 It also removes unneccessary spaces.
 
 ## License
