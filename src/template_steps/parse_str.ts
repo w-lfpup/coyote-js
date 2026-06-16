@@ -122,8 +122,6 @@ export function parseStr(
 		// Add CURRENT STEP
 		let step = new Step(currKind, nextStepOrigin, index);
 		steps.push(step);
-		// <!--comment_edge_case-->
-		// if (contentless) pushContentlessStepsEdge(rules, steps, tag, index);
 	}
 
 	let step = steps[steps.length - 1];
@@ -131,7 +129,6 @@ export function parseStr(
 		step.target = templateStr.length;
 	}
 
-	// console.log("parstStr: ", steps);
 	return steps;
 }
 
@@ -153,7 +150,7 @@ function pushAltElementSteps(
 	steps: Step[],
 	tag: string,
 	index: number,
-) {
+): void {
 	let step = steps[steps.length - 1];
 	if (step === undefined) return;
 
@@ -175,7 +172,7 @@ function pushContentlessSteps(
 	steps: Step[],
 	tag: string,
 	index: number,
-) {
+): void {
 	let closingSequence = rules.getCloseSequenceFromContentlessTag(tag);
 	if (!closingSequence) return;
 
@@ -194,7 +191,7 @@ function pushContentlessStepsEdge(
 	steps: Step[],
 	tag: string,
 	index: number,
-) {
+): void {
 	let closingSequence = rules.getCloseSequenceFromContentlessTag(tag);
 	if (!closingSequence) return;
 
