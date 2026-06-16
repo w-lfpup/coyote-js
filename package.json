@@ -12,11 +12,11 @@
 		"format": "npx prettier --write ./",
 		"test": "npx jackrabbit --file ./tests/mod.test.js"
 	},
+	"author": "wolfpup",
+	"license": "BSD-3-Clause",
 	"devDependencies": {
 		"@w-lfpup/jackrabbit": "^0.3.3",
-		"prettier": "^3.8.3",
+		"prettier": "^3.8.4",
 		"typescript": "^6.0.3"
-	},
-	"author": "wolfpup",
-	"license": "BSD-3-Clause"
+	}
 }

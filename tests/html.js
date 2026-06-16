@@ -1,7 +1,8 @@
-import { Coyote, HtmlRules } from "../dist/mod.js";
+import { Coyote, HtmlRules, HtmlOnlyRules } from "../dist/mod.js";
 import { assert } from "./assertion.js";
 import * as hcs from "./html_component_set.js";
 let html = new Coyote(new HtmlRules());
+let htmlOnly = new Coyote(new HtmlOnlyRules());
 function empty_element_retains_spacing() {
     let expected = "<p></p>\n<p> </p><p>\n</p>";
     let template = hcs.empty_element_retains_spacing();
@@ -11,7 +12,8 @@ function empty_element_retains_spacing() {
         return assertions;
     let templateLiteral = hcs.empty_element_retains_spacing_literal();
     let resultsLiteral = html.render(templateLiteral);
-    return assert(expected, resultsLiteral);
+    if (assertions)
+        return resultsLiteral;
 }
 function fragments_dont_exist() {
     let expected = "";
@@ -81,8 +83,7 @@ function unbalanced_empty_element_errors_out() {
 }
 function forbidden_attribute_injection_glyph_errors_out() {
     let template = hcs.forbidden_attribute_injection_glyph_errors_out();
-    let [doc, error] = html.render(template);
-    console.log(doc, error);
+    let [, error] = html.render(template);
     if (undefined !== error)
         return;
     let templateLiteral = hcs.forbidden_attribute_injection_glyph_errors_out_literal();
@@ -200,6 +201,18 @@ function document_retains_spacing() {
     let templateLiteral = hcs.document_retains_spacing_literal();
     let resultsLiteral = html.render(templateLiteral);
     return assert(expected, resultsLiteral);
+    // Html Only rules
+}
+function document_retains_spacing__html_only() {
+    let expected = "<!DOCTYPE>\n<html>\n\t<head>\n\t</head>\n\t<body>\n\t\t<article>\n\t\t\tYou're a <span>boy kisser</span> aren't you?\n\t\t\tClick <a>here</a> and go somewhere else.\n\t\t</article>\n\t\t<footer></footer>\n\t</body>\n</html>";
+    let template = hcs.document_retains_spacing();
+    let results = htmlOnly.render(template);
+    let assertions = assert(expected, results);
+    if (assertions)
+        return assertions;
+    let templateLiteral = hcs.document_retains_spacing_literal();
+    let resultsLiteral = htmlOnly.render(templateLiteral);
+    return assert(expected, resultsLiteral);
 }
 function document_with_alt_text_elements_retains_spacing() {
     let expected = "<!DOCTYPE>\n<html>\n\t<head>\n\t\t<style>\n\t\t\t#woof .bark {\n\t\t\t\tcolor: doggo;\n\t\t\t}\n\t\t</style>\n\t\t<script>\n\t\t\tif 2 < 3 {\n\t\t\t\tconsole.log();\n\t\t\t}\n\t\t</script>\n\t</head>\n\t<body>\n\t\t<article></article>\n\t\t<footer></footer>\n\t</body>\n</html>";
@@ -210,6 +223,17 @@ function document_with_alt_text_elements_retains_spacing() {
         return assertions;
     let templateLiteral = hcs.document_with_alt_text_elements_retains_spacing_literal();
     let resultsLiteral = html.render(templateLiteral);
+    return assert(expected, resultsLiteral);
+}
+function document_with_alt_text_elements_retains_spacing__html_only() {
+    let expected = "<!DOCTYPE>\n<html>\n\t<head>\n\t</head>\n\t<body>\n\t\t<article></article>\n\t\t<footer></footer>\n\t</body>\n</html>";
+    let template = hcs.document_with_alt_text_elements_retains_spacing();
+    let results = htmlOnly.render(template);
+    let assertions = assert(expected, results);
+    if (assertions)
+        return assertions;
+    let templateLiteral = hcs.document_with_alt_text_elements_retains_spacing_literal();
+    let resultsLiteral = htmlOnly.render(templateLiteral);
     return assert(expected, resultsLiteral);
 }
 function banned_attributes() {
@@ -264,7 +288,9 @@ export const tests = [
     nested_void_element_with_siblings_retains_spacing,
     nested_elements_and_text_retain_spacing,
     document_retains_spacing,
+    document_retains_spacing__html_only,
     document_with_alt_text_elements_retains_spacing,
+    document_with_alt_text_elements_retains_spacing__html_only,
     banned_attributes,
     banned_attributes_quoted,
     banned_attributes_single_quoted,

@@ -62,6 +62,7 @@ export class HtmlOnlyRules implements RulesetInterface {
 	tagIsBannedEl(tag: string): boolean {
 		if ("link" === tag) return true;
 		if ("script" === tag) return true;
+		if ("style" === tag) return true;
 
 		return fw.bannedElements.has(tag);
 	}
