@@ -1,6 +1,6 @@
 node_modules/
 dist/
-tests/dist/
+tests/
 
 LICENSE
 package-lock.json
