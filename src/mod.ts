@@ -1,7 +1,7 @@
 // IMPORTANT!
 //
 // Any use of exports from any other file is not supported.
-// I WILL break your build. I do not care.
+// I WILL BREAK YOUR BUILD. I do not care.
 //
 // Thanks <3
 //
